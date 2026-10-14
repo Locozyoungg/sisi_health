@@ -71,6 +71,19 @@ switch ($Target) {
         Push-Location (Join-Path $Repo "ussd-whatsapp")
         try { & (Join-Path $Repo "backend\.venv\Scripts\python.exe") scripts/demo_phase3.py } finally { Pop-Location }
     }
+    "web-setup" {
+        Push-Location (Join-Path $Repo "web")
+        try { npm install; npx playwright install chromium } finally { Pop-Location }
+    }
+    "web-test" {
+        Push-Location (Join-Path $Repo "web")
+        try { npm run e2e } finally { Pop-Location }
+    }
+    "phase4-demo" {
+        Backend-Py @("scripts/seed_school_demo.py")
+        Push-Location (Join-Path $Repo "web")
+        try { npm run e2e } finally { Pop-Location }
+    }
     "clean" {
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue `
             (Join-Path $Backend ".venv"), (Join-Path $Backend ".pytest_cache"), `

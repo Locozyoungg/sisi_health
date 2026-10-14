@@ -778,8 +778,308 @@ paths:
                 title: Response Dsr Queue V1 Admin Dsr Get
       security:
       - HTTPBearer: []
+  /v1/school/queue:
+    get:
+      tags:
+      - school
+      - school
+      summary: Queue
+      operationId: queue_v1_school_queue_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Queue V1 School Queue Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/school/actions:
+    post:
+      tags:
+      - school
+      - school
+      summary: Action
+      operationId: action_v1_school_actions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Action V1 School Actions Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/school/reidentify:
+    post:
+      tags:
+      - school
+      - school
+      summary: Reidentify
+      operationId: reidentify_v1_school_reidentify_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReidentifyIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Reidentify V1 School Reidentify Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/school/guardian-consents:
+    post:
+      tags:
+      - school
+      - school
+      summary: Guardian Consent
+      operationId: guardian_consent_v1_school_guardian_consents_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Guardian Consent V1 School Guardian Consents Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/school/guardian-alerts/run:
+    post:
+      tags:
+      - school
+      - school
+      summary: Run Guardian Alerts
+      operationId: run_guardian_alerts_v1_school_guardian_alerts_run_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Run Guardian Alerts V1 School Guardian Alerts Run
+                  Post
+      security:
+      - HTTPBearer: []
+  /v1/school/dashboard:
+    get:
+      tags:
+      - school
+      - school
+      summary: Dashboard
+      operationId: dashboard_v1_school_dashboard_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: school_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: School Id
+      - name: term
+        in: query
+        required: false
+        schema:
+          type: string
+          default: 2026-T1
+          title: Term
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Dashboard V1 School Dashboard Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/vouchers/issue:
+    post:
+      tags:
+      - vouchers
+      - vouchers
+      summary: Issue
+      operationId: issue_v1_vouchers_issue_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Issue V1 Vouchers Issue Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/vouchers/redeem:
+    post:
+      tags:
+      - vouchers
+      - vouchers
+      summary: Redeem
+      operationId: redeem_v1_vouchers_redeem_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedeemIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Redeem V1 Vouchers Redeem Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/vouchers/daraja/callback:
+    post:
+      tags:
+      - vouchers
+      - vouchers
+      summary: Daraja Callback
+      description: 'Verified, idempotent Daraja callback: the receipt number is the
+
+        idempotency key; the redemption service replays duplicates instead of
+
+        double-redeeming (DoD).'
+      operationId: daraja_callback_v1_vouchers_daraja_callback_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Daraja Callback V1 Vouchers Daraja Callback Post
+  /v1/vouchers/reconciliation:
+    get:
+      tags:
+      - vouchers
+      - vouchers
+      summary: Reconciliation
+      operationId: reconciliation_v1_vouchers_reconciliation_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Reconciliation V1 Vouchers Reconciliation Get
+      security:
+      - HTTPBearer: []
 components:
   schemas:
+    ActionIn:
+      properties:
+        assessment_id:
+          type: string
+          format: uuid
+          title: Assessment Id
+        action:
+          type: string
+          pattern: ^(spoke_to|referred|escalated|contacted)$
+          title: Action
+        note:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Note
+      type: object
+      required:
+      - assessment_id
+      - action
+      title: ActionIn
     ActivationIn:
       properties:
         rule_id:
@@ -794,6 +1094,26 @@ components:
       - rule_id
       - version
       title: ActivationIn
+    ConsentIn:
+      properties:
+        assessment_id:
+          type: string
+          format: uuid
+          title: Assessment Id
+        method:
+          type: string
+          pattern: ^(sms_link|paper|voice)$
+          title: Method
+        evidence_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Ref
+      type: object
+      required:
+      - assessment_id
+      - method
+      title: ConsentIn
     DsrPayload:
       properties:
         type:
@@ -838,6 +1158,39 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    IssueIn:
+      properties:
+        school_id:
+          type: string
+          format: uuid
+          title: School Id
+        assessment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Assessment Id
+        category:
+          type: string
+          pattern: ^(sanitary|otc_pain)$
+          title: Category
+        amount_ksh:
+          type: integer
+          maximum: 5000.0
+          minimum: 1.0
+          title: Amount Ksh
+        ttl_days:
+          type: integer
+          maximum: 90.0
+          minimum: 1.0
+          title: Ttl Days
+          default: 30
+      type: object
+      required:
+      - school_id
+      - category
+      - amount_ksh
+      title: IssueIn
     OtpRequestIn:
       properties:
         phone:
@@ -888,6 +1241,36 @@ components:
           title: Language
       type: object
       title: ProfilePatch
+    RedeemIn:
+      properties:
+        pharmacy_id:
+          type: string
+          format: uuid
+          title: Pharmacy Id
+        code:
+          type: string
+          title: Code
+        receipt_no:
+          type: string
+          maxLength: 64
+          minLength: 4
+          title: Receipt No
+        amount_ksh:
+          type: integer
+          maximum: 5000.0
+          minimum: 1.0
+          title: Amount Ksh
+        callback:
+          additionalProperties: true
+          type: object
+          title: Callback
+      type: object
+      required:
+      - pharmacy_id
+      - code
+      - receipt_no
+      - amount_ksh
+      title: RedeemIn
     RefreshIn:
       properties:
         refresh_token:
@@ -897,6 +1280,22 @@ components:
       required:
       - refresh_token
       title: RefreshIn
+    ReidentifyIn:
+      properties:
+        assessment_id:
+          type: string
+          format: uuid
+          title: Assessment Id
+        reason:
+          type: string
+          maxLength: 200
+          minLength: 5
+          title: Reason
+      type: object
+      required:
+      - assessment_id
+      - reason
+      title: ReidentifyIn
     StaffLoginIn:
       properties:
         email:

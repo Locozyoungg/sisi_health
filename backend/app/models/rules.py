@@ -1,6 +1,7 @@
 """Schema rules: activation/approval state for ontology rule versions. The JSON in
 /ontology is the canonical payload; the DB stores a copy keyed by content hash plus
 the two-person approval workflow."""
+
 import uuid
 from datetime import datetime
 from typing import Any

@@ -1,5 +1,6 @@
 """JWT access tokens + rotating refresh tokens with device binding. Refresh tokens
 are single-use: reuse of a rotated token revokes the whole family."""
+
 import hashlib
 import uuid
 from datetime import UTC, datetime, timedelta

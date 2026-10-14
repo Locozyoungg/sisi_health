@@ -1,6 +1,7 @@
 """Schema audit: append-only, hash-chained. Hashing is computed by a DB trigger
 (migration 0001) so the writer and the Python verifier can never drift. Payloads are
 sanitized in the service layer: never names, phone numbers, or symptom content."""
+
 import uuid
 from datetime import datetime
 from typing import Any

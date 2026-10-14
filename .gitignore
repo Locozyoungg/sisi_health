@@ -32,6 +32,8 @@ Thumbs.db
 
 # Future phases
 node_modules/
+web/test-results/
+web/playwright-report/
 
 # Android / Gradle
 mobile/.gradle/

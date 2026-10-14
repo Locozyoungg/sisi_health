@@ -8,6 +8,29 @@ OpenAPI spec).
 ## Log
 
 ### CC-1 (2026-10-14, Phase 3) — school assessments + USSD sessions + assessment-mode evaluation
+- **Migration 0002** adds `diary.school_assessments` (encrypted answers/band)
+  and `core.ussd_sessions` (Postgres session fallback); the rules engine gains
+  `evaluate_assessment()` (identical band semantics without the 14-day gate).
+
+### CC-2 (2026-10-15, Phase 4) — school module, vouchers, re-identification
+
+- **Migration 0003** adds (school module, spec 5.3):
+  - `core.schools`, `core.school_staff` (staff→school binding), `core.students`
+    (pseudonym_id is what staff see), `core.student_contact_map` (envelope-
+    encrypted name/phone per student — only the re-identify path reads it),
+    `core.guardians` (encrypted contact), `core.pharmacies`
+  - `school.assessment_actions`, `school.guardian_consents`,
+    `school.guardian_alerts`, `school.vouchers`, `school.voucher_redemptions`,
+    `school.wallets`, `school.wallet_ledger`, `school.reconciliation_reports`
+  - `diary.school_assessments` gains `requested_contact` (student asked to be
+    contacted — grounds for re-identification per spec 3.1)
+- **RBAC**: new `PHARMACY` role (`vouchers:redeem`); `SCHOOL_ADMIN`/`NURSE`
+  gain school-scope permissions (queue read, actions, guardian consent record,
+  dashboard read). Role matrix doc updated.
+- **k-anonymity**: new shared module `backend/app/k_anon.py` (spec 3.4) —
+  all school dashboards pass through it; nothing else may compute aggregates.
+- **OpenAPI**: regenerated for the new `/v1/school/*` and `/v1/vouchers/*`
+  surface (backend OpenAPI v2 frozen in `docs/openapi.yaml`).
 
 - **Migration 0002** adds:
   - `diary.school_assessments` — one-time USSD/WhatsApp assessments. Health

@@ -1,14 +1,16 @@
 """Shared test helpers, importable as a package module (CI-safe: does not depend
+from typing import Any
 on pytest's sys.path rootdir insertion)."""
 
 import uuid
+from typing import Any
 
 
 def auth_headers(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
-def register_via_otp(client, *, phone: str, birth_date: str) -> dict[str, str]:
+def register_via_otp(client: Any, *, phone: str, birth_date: str) -> dict[str, str]:
     """Full OTP registration against the API; returns the auth header dict."""
     resp = client.post("/v1/auth/otp/request", json={"phone": phone})
     assert resp.status_code == 200, resp.text

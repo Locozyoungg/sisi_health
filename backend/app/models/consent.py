@@ -1,5 +1,6 @@
 """Schema consent: versioned consent texts, consent/revoke events, DSR requests,
 and the cross-border processing register."""
+
 import uuid
 from datetime import datetime
 from typing import Any

@@ -70,4 +70,5 @@ def require(permission: str) -> Callable[..., StaffUser]:
         if not has_permission(staff.role, permission):
             raise PermissionDenied(staff.role, permission)
         return staff
+
     return _check

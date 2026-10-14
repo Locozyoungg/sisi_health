@@ -1,6 +1,7 @@
 """Two-person rule activation (spec 5.5): author and clinician approver must differ,
 the golden test suite must pass before activation, rollback is instant, and every
 transition writes an audit entry."""
+
 import json
 import uuid
 from typing import Any

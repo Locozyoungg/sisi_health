@@ -1,6 +1,7 @@
 """Background jobs (arq). Phase 1: the audit chain verifier and erasure runner are
 callable directly (make audit-verify / DSR processing); the arq worker wiring lands
 with Phase 3 when Redis-backed jobs (SMS, USSD) arrive."""
+
 from typing import Any
 
 from app.audit.verifier import verify_chain

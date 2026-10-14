@@ -1,4 +1,5 @@
 """Schema core: identity, auth, staff, envelope keys, config."""
+
 import uuid
 from datetime import datetime
 from typing import Any

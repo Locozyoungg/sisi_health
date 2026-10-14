@@ -1,5 +1,6 @@
 """Schema diary: separately encrypted append-only symptom events, evaluations, erasure jobs.
 Every payload column holds envelope-encrypted ciphertext; plaintext never touches this schema."""
+
 import uuid
 from datetime import datetime
 from typing import Any
@@ -84,6 +85,10 @@ class SchoolAssessment(Base):
     language: Mapped[str] = mapped_column(String(8))
     # none | self_granted | minor_assent_only | minor_full
     consent_state: Mapped[str] = mapped_column(String(24), default="none")
+    requested_contact: Mapped[bool] = mapped_column(Boolean, default=False)
+    student_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("core.students.id", ondelete="SET NULL")
+    )
     payload_ciphertext: Mapped[bytes] = mapped_column(LargeBinary)
     key_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("core.data_keys.id"))
     channel: Mapped[str] = mapped_column(String(16))  # ussd | whatsapp

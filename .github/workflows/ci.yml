@@ -65,7 +65,7 @@ jobs:
         run: ./gradlew assembleRelease --console=plain
       - name: APK size budget (25 MB)
         run: |
-          size=$(stat -c%s mobile/app/build/outputs/apk/release/app-release.apk)
+          size=$(stat -c%s mobile/app/build/outputs/apk/release/app-release-unsigned.apk)
           mb=$((size / 1048576))
           echo "APK size: $mb MB (budget 25 MB)"
           test "$size" -le 26214400

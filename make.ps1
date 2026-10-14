@@ -52,7 +52,8 @@ switch ($Target) {
     "android-release" { & (Join-Path $Repo "scripts\android.ps1") "assembleRelease" }
     "android-size" {
         & (Join-Path $Repo "scripts\android.ps1") "assembleRelease"
-        $apk = Join-Path $Repo "mobile\app\build\outputs\apk\release\app-release.apk"
+        # Unsigned: signing is human task H1 (Play Console upload key).
+        $apk = Join-Path $Repo "mobile\app\build\outputs\apk\release\app-release-unsigned.apk"
         if (Test-Path $apk) {
             $mb = [math]::Round((Get-Item $apk).Length / 1MB, 2)
             Write-Host "APK size: $mb MB (budget: 25 MB)"

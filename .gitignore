@@ -38,5 +38,8 @@ mobile/.gradle/
 mobile/build/
 mobile/app/build/
 mobile/local.properties
+# Generated ontology copies (built by gradle from /ontology — never versioned)
+mobile/app/src/main/assets/ontology/
+mobile/app/src/test/resources/ontology/
 *.apk
 *.aab

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SISI Health</string>
+    <string name="discreet_app_name">Notes</string>
+
+    <string name="notification_channel_name">Vikumbusho vya kila siku</string>
+    <string name="notification_daily_title">Muda wa kujaza shajara yako ya kila siku</string>
+    <string name="notification_daily_text">Muda wa kujaza shajara yako ya kila siku</string>
+
+    <string name="nav_home">Nyumbani</string>
+    <string name="nav_diary">Shajara</string>
+    <string name="nav_settings">Mipangilio</string>
+
+    <string name="home_checkin_title">Shajara ya kila siku (chini ya dakika)</string>
+    <string name="home_save_checkin">Hifadhi leo</string>
+    <string name="home_saved_today">Imehifadhiwa. Rudi kesho.</string>
+
+    <string name="diary_pain">Maumivu</string>
+    <string name="diary_bleeding">Kutokwa na damu</string>
+    <string name="diary_fatigue">Uchovu</string>
+    <string name="diary_cycle_start">Hedhi imeanza leo</string>
+    <string name="diary_delete">Futa taarifa hii</string>
+
+    <string name="result_not_enough_title">Bado hakuna taarifa za kutosha</string>
+    <string name="result_not_enough_body">Endelea kujaza shajara. Baada ya siku 14, SISI inaweza kuangalia mifumo ya dalili zako. Hii si utambuzi.</string>
+    <string name="result_days_so_far">Siku zilizorekodiwa: %1$d kati ya 14</string>
+    <string name="result_band_title">Hatua inayopendekezwa: %1$s</string>
+    <string name="result_pattern_suggests">Mfumo wako unapendekeza kuzungumza na mhudumu wa afya kuhusu:</string>
+    <string name="result_urgent_body">Tafadhali tafuta huduma haraka — usisubiri.</string>
+    <string name="result_helpline">Onyesha nambari za msaada</string>
+    <string name="result_disclaimer">SISI inakusaidia wewe na daktari wako — haitoi utambuzi.</string>
+
+    <string name="vault_unlock">Fungua</string>
+    <string name="vault_wrong_pin">PIN si sahihi, jaribu tena</string>
+
+    <string name="settings_privacy_title">Faragha</string>
+    <string name="settings_vault">Sehemu ya faragha</string>
+    <string name="settings_vault_on">Imewashwa — app inafungwa kwa PIN yako</string>
+    <string name="settings_vault_off">Imezimwa</string>
+    <string name="settings_pin_hint">PIN ya tarakimu 4-6</string>
+    <string name="settings_enable_vault">Washa</string>
+    <string name="settings_disable_vault">Zima</string>
+    <string name="settings_pin_set">PIN imewekwa — sehemu ya faragha imewashwa</string>
+    <string name="settings_pin_invalid">PIN lazima iwe na tarakimu 4-6</string>
+    <string name="settings_vault_disabled">Sehemu ya faragha imezimwa</string>
+    <string name="settings_decoy">Hali ya siri</string>
+    <string name="settings_decoy_body">Skrini ya kufunga inaonekana kama app ya notisi. Bonyeza kwa muda kufungua.</string>
+    <string name="settings_low_literacy">Hali ya kusoma rahisi</string>
+    <string name="settings_low_literacy_body">Maandishi makubwa na skrini rahisi</string>
+    <string name="settings_language">Lugha</string>
+    <string name="settings_disclaimer">SISI inakusaidia wewe na daktari wako — haitoi utambuzi.</string>
+</resources>

@@ -93,6 +93,7 @@ dependencies {
     implementation(libs.compose.ui.graphics)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons)
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
@@ -122,5 +123,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.android)
 
     androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple neutral motif: a circle inside a heart — no condition imagery. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,38 C54,38 50,30 42,30 C35,30 30,35 30,42 C30,52 44,60 54,68 C64,60 78,52 78,42 C78,35 73,30 66,30 C58,30 54,38 54,38 Z" />
+</vector>

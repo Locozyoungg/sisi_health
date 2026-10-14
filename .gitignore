@@ -32,3 +32,11 @@ Thumbs.db
 
 # Future phases
 node_modules/
+
+# Android / Gradle
+mobile/.gradle/
+mobile/build/
+mobile/app/build/
+mobile/local.properties
+*.apk
+*.aab

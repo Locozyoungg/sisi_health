@@ -47,6 +47,18 @@ switch ($Target) {
     "audit-verify" { Backend-Py @("scripts/verify_audit_chain.py") }
     "lint" { Backend-Py @("-m", "ruff", "check", "app", "tests", "scripts") }
     "typecheck" { Backend-Py @("-m", "mypy", "app") }
+    "android-test" { & (Join-Path $Repo "scripts\android.ps1") "testDebugUnitTest" }
+    "android-build" { & (Join-Path $Repo "scripts\android.ps1") "assembleDebug" }
+    "android-release" { & (Join-Path $Repo "scripts\android.ps1") "assembleRelease" }
+    "android-size" {
+        & (Join-Path $Repo "scripts\android.ps1") "assembleRelease"
+        $apk = Join-Path $Repo "mobile\app\build\outputs\apk\release\app-release.apk"
+        if (Test-Path $apk) {
+            $mb = [math]::Round((Get-Item $apk).Length / 1MB, 2)
+            Write-Host "APK size: $mb MB (budget: 25 MB)"
+            if ($mb -gt 25) { Write-Error "APK over the 25 MB budget" }
+        } else { Write-Error "release APK not found" }
+    }
     "clean" {
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue `
             (Join-Path $Backend ".venv"), (Join-Path $Backend ".pytest_cache"), `

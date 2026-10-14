@@ -60,6 +60,17 @@ switch ($Target) {
             if ($mb -gt 25) { Write-Error "APK over the 25 MB budget" }
         } else { Write-Error "release APK not found" }
     }
+    "ussd-setup" {
+        Backend-Py @("-m", "pip", "install", "-e", (Join-Path $Repo "ussd-whatsapp[dev]"))
+    }
+    "ussd-test" {
+        Push-Location (Join-Path $Repo "ussd-whatsapp")
+        try { & (Join-Path $Repo "backend\.venv\Scripts\python.exe") -m pytest } finally { Pop-Location }
+    }
+    "ussd-demo" {
+        Push-Location (Join-Path $Repo "ussd-whatsapp")
+        try { & (Join-Path $Repo "backend\.venv\Scripts\python.exe") scripts/demo_phase3.py } finally { Pop-Location }
+    }
     "clean" {
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue `
             (Join-Path $Backend ".venv"), (Join-Path $Backend ".pytest_cache"), `

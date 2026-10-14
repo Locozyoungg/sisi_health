@@ -107,3 +107,16 @@ class ConfigValue(Base):
     value_json: Mapped[dict[str, Any]] = mapped_column(JSON)
     updated_by: Mapped[uuid.UUID | None] = mapped_column()
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
+
+
+class UssdSession(Base):
+    """USSD session state, Postgres fallback store (CC-1, assumption A19).
+    Keyed by phone hash — never the phone number itself."""
+
+    __tablename__ = "ussd_sessions"
+    __table_args__ = {"schema": "core"}
+
+    phone_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    state_json: Mapped[dict[str, Any]] = mapped_column(JSON)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)

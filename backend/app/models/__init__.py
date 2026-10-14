@@ -11,6 +11,7 @@ from app.models.core import (
     RefreshToken,
     StaffUser,
     User,
+    UssdSession,
 )
 from app.models.diary import (
     DiaryEntry,
@@ -18,6 +19,7 @@ from app.models.diary import (
     ErasureJob,
     ProcessingFlag,
     RuleEvaluation,
+    SchoolAssessment,
 )
 from app.models.rules import RuleActivation, RuleVersion
 
@@ -40,6 +42,8 @@ __all__ = [
     "RuleActivation",
     "RuleEvaluation",
     "RuleVersion",
+    "SchoolAssessment",
     "StaffUser",
     "User",
+    "UssdSession",
 ]

@@ -70,6 +70,26 @@ class ErasureJob(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
 
 
+class SchoolAssessment(Base):
+    """One-time USSD/WhatsApp assessment (CC-1, spec 5.3). Answers and band are
+    envelope-encrypted (per-assessment data key); plaintext columns are limited
+    to the phone hash, age band, consent state, language, channel, timestamps."""
+
+    __tablename__ = "school_assessments"
+    __table_args__ = {"schema": "diary"}
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
+    phone_hash: Mapped[str] = mapped_column(String(64))
+    age_band: Mapped[str] = mapped_column(String(8))
+    language: Mapped[str] = mapped_column(String(8))
+    # none | self_granted | minor_assent_only | minor_full
+    consent_state: Mapped[str] = mapped_column(String(24), default="none")
+    payload_ciphertext: Mapped[bytes] = mapped_column(LargeBinary)
+    key_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("core.data_keys.id"))
+    channel: Mapped[str] = mapped_column(String(16))  # ussd | whatsapp
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
+
+
 class ProcessingFlag(Base):
     """Restriction flags that survive erasure only as long as the processing register needs them;
     no personal content. (Right-to-objection marker.)"""

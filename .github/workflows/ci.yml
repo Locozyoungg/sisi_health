@@ -48,6 +48,41 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  gateway:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: sisi
+          POSTGRES_PASSWORD: sisi_dev_pw
+          POSTGRES_DB: sisi
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sisi"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install -e "backend[dev]" -e "ussd-whatsapp[dev]"
+      - name: Lint + type check
+        working-directory: ussd-whatsapp
+        run: |
+          ruff check gateway tests scripts
+          mypy gateway
+      - name: Tests (e2e journeys, timeout/resume, 160-char lint, consent paths)
+        env:
+          SISI_TEST_DATABASE_URL: postgresql+psycopg://sisi:sisi_dev_pw@localhost:5432/sisi_test
+          SISI_MASTER_KEY_B64: dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHQ=
+        working-directory: ussd-whatsapp
+        run: pytest
+
   android:
     runs-on: ubuntu-latest
     steps:

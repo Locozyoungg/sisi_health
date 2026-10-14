@@ -47,6 +47,18 @@ class RuleEngine:
                 rule_set_version=self._rule_set_version,
                 evaluated_at=utc_now(),
             )
+        return self._evaluate_common(age=age, features=features)
+
+    def evaluate_assessment(self, *, age: int, features: Mapping[str, Any]) -> Evaluation:
+        """One-time assessment entry point (CC-1, spec 5.3): identical band
+        semantics and red-flag asymmetry, WITHOUT the 14-diary-day window gate
+        (that gate is a diary-pattern rule; a one-time USSD/WhatsApp assessment
+        must still produce immediate guidance from the same deterministic rules)."""
+        if age < MIN_AGE:
+            raise ValidationError("users under 13 are blocked")
+        return self._evaluate_common(age=age, features=features)
+
+    def _evaluate_common(self, *, age: int, features: Mapping[str, Any]) -> Evaluation:
         matches: list[Rule] = []
         for rule in self._rules:
             if age < rule.min_age:

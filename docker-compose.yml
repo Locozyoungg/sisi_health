@@ -1,0 +1,45 @@
+# Dev environment. Staging/prod compose files arrive with the deploy phase (8).
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sisi
+      POSTGRES_PASSWORD: sisi_dev_pw
+      POSTGRES_DB: sisi
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sisi -d sisi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: ./backend
+    environment:
+      SISI_DATABASE_URL: postgresql+psycopg://sisi:sisi_dev_pw@db:5432/sisi
+      SISI_REDIS_URL: redis://redis:6379/0
+      SISI_ENV: dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles: ["api"]   # run explicitly: docker compose --profile api up backend
+
+volumes:
+  pgdata:

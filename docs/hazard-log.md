@@ -1,0 +1,22 @@
+# Hazard Log
+
+Every entry: cause, control, test, owner. Seeded per spec §6; cervical-module
+hazards (C1–C5) are seeded now and their controls/tests land with Phase 5.
+
+| ID | Hazard | Cause | Control | Test | Owner |
+|---|---|---|---|---|---|
+| HZ-01 | Missed red flag | Rule too strict; pattern list incomplete; red-flag input silently missing | Red flags evaluate first; missing/invalid red-flag input resolves to matched (safety asymmetry); patterns versioned in /ontology | `tests/test_rules_redflags.py` (asymmetry), golden cases | Clinician (H7) |
+| HZ-02 | False reassurance | Band too low; "not enough data" read as "all clear" | Safety asymmetry resolves uncertainty upward; NOT_ENOUGH_DATA always carries guidance, never a band; screening messaging includes "a normal symptom check does not replace screening" | Band tests; golden cases 11–12; cervical eval cases (Phase 5) | Clinician (H7) |
+| HZ-03 | False alarm | Draft thresholds too sensitive | All rules `clinically_validated: false` until sign-off; rule activation is two-person with rollback | Validation tests; rollback test | Clinician (H7) |
+| HZ-04 | Guardian alert harms the child | RED alert sent where guardian may be the source of risk | Safeguarding override: abuse/sexual-violence/minor-pregnancy/self-harm/guardian-risk signals route to safeguarding lead, never the guardian; generic wording, no symptom detail | Safeguarding routing tests (extended in Phase 4) | Safeguarding lead |
+| HZ-05 | Re-identification misuse | Nurse re-identifies without cause | Re-identification only at ORANGE/RED or on request, typed reason, audit entry; mapping in encrypted table only the endpoint can read | Phase 4 tests | School lead |
+| HZ-06 | Shared-phone exposure | Results/call history remain on borrowed phone | No history on handset; first-screen note to clear call log; nothing condition-identifying in USSD/SMS | Phase 3 160-char + string lints | School lead |
+| HZ-07 | LLM diagnosis leakage | Model states a diagnosis or contradicts a band | LLM never assigns bands; post-filter rejects diagnosis claims, drug+dose, band mismatch; answers must cite chunks | Phase 6 ≥150-case guardrail suite | AI lead |
+| HZ-08 | Rule-version error | Wrong rule set active; silent schema drift | Versioned rules with content hash; activation workflow runs the full test suite; instant rollback; golden-file parity on-device vs server | Activation + rollback tests; parity test (Phase 2) | Clinician (H7) |
+| HZ-09 | Sync data loss | Conflict merge drops data; crash mid-sync | Append-only events; highest-version-wins per field, server timestamp tiebreak; idempotency keys | `tests/test_diary_sync.py`; property tests (Phase 2) | Backend lead |
+| HZ-10 | Voucher fraud | Reused/forged codes | Single-use expiring codes, registered-pharmacy redemption only, capped per student per term, verified idempotent Daraja callbacks, reconciliation flags mismatches | Phase 4 tests | Finance lead |
+| C1 | False reassurance → woman skips screening | "Low risk" output or symptoms-only framing | No risk scoring from symptoms alone; no "low risk" output ever; every screening message carries the screening disclaimer | Phase 5 cervical guardrail cases | Clinician (H7) |
+| C2 | Missed red-flag bleeding | Post-coital / intermenstrual / post-menopausal bleeding not flagged | Deterministic cervical red-flag rules, minimum band "see a doctor soon"; ≥25 rule cases incl. thresholds + age gating | Phase 5 tests | Clinician (H7) |
+| C3 | Lost follow-up after positive result | Tracker stalls | Follow-up tracker with states, reminder intervals, loss-to-follow-up flag for nurses | Phase 5 state-machine tests | Nurse lead |
+| C4 | Stale facility data | Directory not re-verified | 90-day staleness flag + warning on unverified entries | Phase 5 staleness tests | Ops lead |
+| C5 | Minor's post-coital bleeding reaches guardian without review | Generic flow leaks symptom detail to guardian | Minor + post-coital bleeding = safeguarding signal: generic nurse-referral wording, safeguarding check, never guardian alert with symptom detail | Phase 5 tests | Safeguarding lead |

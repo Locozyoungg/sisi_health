@@ -1,0 +1,174 @@
+{
+  "version": "1.0.0",
+  "description": "Golden test cases for rules-engine parity. The Python engine (Phase 1) and the Kotlin engine (Phase 2) MUST produce the same band, indicators, and escalations on every case. Never edit a case without a rule-version change; expected bands follow the safety asymmetry (red flags can never lower a band).",
+  "cases": [
+    {
+      "id": "gc-01-normal",
+      "description": "Mild pain and bleeding, no symptoms -> self-care.",
+      "age": 24, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.2, "cyclical_pain_ratio_90d": 0.4,
+        "avg_bleeding_volume_90d": 1.5, "fatigue_ratio_30d": 0.2, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "GREEN", "expected_indicators": [],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-02-anemia",
+      "description": "Heavy bleeding plus fatigue -> anemia risk flag, see a doctor soon.",
+      "age": 24, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 4, "avg_pain_90d": 2.0, "cyclical_pain_ratio_90d": 0.3,
+        "avg_bleeding_volume_90d": 3.2, "fatigue_ratio_30d": 0.7, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["anemia-risk-flag"],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-03-heavy-bleeding-dizziness",
+      "description": "Heavy bleeding with dizziness -> urgent red flag.",
+      "age": 24, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 5, "avg_pain_90d": 2.5, "cyclical_pain_ratio_90d": 0.4,
+        "avg_bleeding_volume_90d": 3.5, "fatigue_ratio_30d": 0.6, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": true
+      },
+      "expected_band": "RED", "expected_indicators": ["redflag-heavy-bleeding-dizziness", "anemia-risk-flag"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-04-severe-pain",
+      "description": "Severe acute pain (NRS 9) -> urgent red flag.",
+      "age": 24, "diary_days": 30,
+      "features": {
+        "max_pain_90d": 9, "avg_pain_90d": 6.0, "cyclical_pain_ratio_90d": 0.5,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "RED", "expected_indicators": ["redflag-severe-acute-pain"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-05-self-harm",
+      "description": "Self-harm signal -> urgent red flag with safeguarding escalation.",
+      "age": 15, "diary_days": 45,
+      "features": {
+        "max_pain_90d": 4, "avg_pain_90d": 2.0, "cyclical_pain_ratio_90d": 0.4,
+        "avg_bleeding_volume_90d": 1.5, "fatigue_ratio_30d": 0.3, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": true, "dizziness_signal": false
+      },
+      "expected_band": "RED", "expected_indicators": ["redflag-self-harm"],
+      "expected_escalations": {"urgent": true, "safeguarding": true}
+    },
+    {
+      "id": "gc-06-pcos",
+      "description": "Irregular cycles plus androgenic symptoms -> PCOS indicator.",
+      "age": 20, "diary_days": 90,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.2, "cycle_irregularity_90d": 9.0,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": true,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["pcos-indicator"],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-07-endo-minor",
+      "description": "Minor with cyclical pain and dyschezia -> endo indicator. Dyspareunia present in features is IGNORED (age-gated rule); minors never see sexual-health questions.",
+      "age": 15, "diary_days": 75,
+      "features": {
+        "max_pain_90d": 7, "avg_pain_90d": 4.0, "cyclical_pain_ratio_90d": 0.8,
+        "avg_bleeding_volume_90d": 2.0, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": null,
+        "dyschezia": true, "dyspareunia": true, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["endo-indicator"],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-08-endo-adult",
+      "description": "Adult with identical features -> both endo indicators (adult rule now applies).",
+      "age": 25, "diary_days": 75,
+      "features": {
+        "max_pain_90d": 7, "avg_pain_90d": 4.0, "cyclical_pain_ratio_90d": 0.8,
+        "avg_bleeding_volume_90d": 2.0, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": null,
+        "dyschezia": true, "dyspareunia": true, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["endo-indicator", "endo-indicator-adult"],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-09-fibroid",
+      "description": "Heavy bleeding plus pelvic pressure -> fibroid indicator.",
+      "age": 38, "diary_days": 80,
+      "features": {
+        "max_pain_90d": 5, "avg_pain_90d": 3.0, "cyclical_pain_ratio_90d": 0.3,
+        "avg_bleeding_volume_90d": 3.4, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": 2.0,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": true,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["fibroid-indicator"],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-10-insufficient-data",
+      "description": "Fewer than 14 diary days -> NOT_ENOUGH_DATA, never a band.",
+      "age": 24, "diary_days": 13,
+      "features": {
+        "max_pain_90d": 5, "avg_pain_90d": 3.0, "cyclical_pain_ratio_90d": null,
+        "avg_bleeding_volume_90d": 2.0, "fatigue_ratio_30d": 0.5, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "NOT_ENOUGH_DATA", "expected_indicators": [],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-11-boundary-14-days",
+      "description": "Exactly 14 diary days -> evaluation proceeds (boundary).",
+      "age": 24, "diary_days": 14,
+      "features": {
+        "max_pain_90d": 2, "avg_pain_90d": 0.8, "cyclical_pain_ratio_90d": null,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "GREEN", "expected_indicators": [],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-12-red-flag-asymmetry",
+      "description": "Otherwise-mild inputs plus a red flag -> RED. No combination lowers a band when a red-flag symptom is present.",
+      "age": 24, "diary_days": 50,
+      "features": {
+        "max_pain_90d": 9, "avg_pain_90d": 3.0, "cyclical_pain_ratio_90d": 0.1,
+        "avg_bleeding_volume_90d": 0.5, "fatigue_ratio_30d": 0.0, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false
+      },
+      "expected_band": "RED", "expected_indicators": ["redflag-severe-acute-pain"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    }
+  ]
+}

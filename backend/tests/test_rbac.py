@@ -4,7 +4,7 @@
 from pathlib import Path
 
 from app.auth.rbac import ROLE_PERMISSIONS
-from tests.conftest import auth_headers
+from app.testkit import auth_headers
 
 # (method, path, required permission)
 PROTECTED = [

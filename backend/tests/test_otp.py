@@ -10,7 +10,7 @@ from app.auth.otp import normalize_phone, request_otp, verify_otp
 from app.config import get_settings
 from app.core.errors import Locked, RateLimited, Unauthorized, ValidationError
 from app.models import OtpRequest
-from tests.conftest import register_via_otp
+from app.testkit import register_via_otp
 
 
 def test_normalize_phone():

@@ -9,7 +9,7 @@ from app.auth.tokens import decode_token
 from app.config import get_settings
 from app.core.errors import Unauthorized
 from app.core.time import utc_now_naive
-from tests.conftest import auth_headers
+from app.testkit import auth_headers
 
 
 def test_staff_totp_setup_and_login(db, provider, make_staff):

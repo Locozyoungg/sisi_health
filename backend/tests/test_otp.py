@@ -14,7 +14,7 @@ from tests.conftest import register_via_otp
 
 
 def test_normalize_phone():
-    assert normalize_phone("0712 345 678") == "+712345678"
+    assert normalize_phone("0712 345 678") == "+0712345678"  # digits preserved as-entered
     assert normalize_phone("+254712345678") == "+254712345678"
     with pytest.raises(ValidationError):
         normalize_phone("123")
@@ -59,6 +59,20 @@ def test_expiry(db):
     db.flush()
     with pytest.raises(Unauthorized, match="expired"):
         verify_otp(db, phone, code, settings)
+
+
+def test_otp_survives_across_sessions(test_engine, settings):
+    """Regression: request in one session, verify in a fresh one (real request
+    lifecycle — the shared-session test client cannot catch this)."""
+    from sqlalchemy.orm import sessionmaker
+
+    factory = sessionmaker(bind=test_engine, autoflush=False, expire_on_commit=False)
+    with factory() as s1:
+        code = request_otp(s1, "+254700000005", settings)
+        s1.commit()
+    with factory() as s2:
+        verify_otp(s2, "+254700000005", code, settings)  # must not raise
+        s2.commit()
 
 
 def test_otp_api_e2e_registration(client):

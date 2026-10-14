@@ -113,9 +113,8 @@ def login_staff(
         raise Unauthorized("invalid credentials")
     if not verify_staff_password(staff, password):
         raise Unauthorized("invalid credentials")
-    if not staff.totp_confirmed:
-        raise Unauthorized("TOTP not set up; use /staff/auth/totp/setup")
     if not verify_totp(provider, db, staff, totp_code):
+        # First successful check confirms the secret; failure stays generic.
         raise Unauthorized("invalid TOTP code")
     staff.last_active_at = utc_now_naive()
     db.flush()

@@ -214,7 +214,7 @@ def compute_features(
             continue
         if day < window_start:
             continue
-        records.append({"date": day, **payload})
+        records.append({**payload, "date": day})  # parsed date object wins over raw string
 
     diary_days = len({r["date"] for r in records})
     pain = [r["pain"] for r in records if r.get("pain") is not None]

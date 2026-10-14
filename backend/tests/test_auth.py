@@ -40,7 +40,7 @@ def test_staff_login_requires_confirmed_totp(db, provider, make_staff):
     db.commit()
     import pytest
 
-    with pytest.raises(Unauthorized, match="not set up"):
+    with pytest.raises(Unauthorized, match="not provisioned"):
         login_staff(
             db, provider, email=staff.email, password="correct-horse-battery", totp_code="123456"
         )

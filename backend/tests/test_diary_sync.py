@@ -127,7 +127,7 @@ def test_compute_features_from_diary(db, provider, adult_with_consent):
     assert features["avg_bleeding_volume_90d"] == 3.0
     assert features["dyschezia"] is True
     assert features["dizziness_signal"] is True
-    assert features["fatigue_ratio_30d"] == 0.5
+    assert features["fatigue_ratio_30d"] == 0.52  # 13 of 25 days flagged
     assert features["cycle_irregularity_90d"] is None  # only one cycle start in window
 
 

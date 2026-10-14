@@ -44,7 +44,7 @@ def request_otp(db: Session, phone: str, settings: Settings) -> str | None:
     ph = phone_hash(phone, settings)
     row = db.execute(select(OtpRequest).where(OtpRequest.phone_hash == ph)).scalars().first()
     if row is None:
-        row = OtpRequest(id=uuid7(), phone_hash=ph, attempts=0, window_start=now)
+        row = OtpRequest(id=uuid7(), phone_hash=ph, attempts=0, request_count=0, window_start=now)
         db.add(row)
     if row.locked_until and row.locked_until > now:
         raise Locked("too many failed attempts; try again later")

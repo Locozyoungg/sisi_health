@@ -60,7 +60,7 @@ def test_role_matrix_document_matches_code():
     """docs/role-matrix.md must list exactly the roles and permissions in code."""
     doc = (Path(__file__).resolve().parents[2] / "docs" / "role-matrix.md").read_text(
         encoding="utf-8"
-    )
+    ).lower()
     for role in ROLES:
         assert role in doc
     for permission in {

@@ -98,9 +98,9 @@ class RuleEngine:
             lo, hi = (node.values or [])[:2]
             return lo <= value <= hi
         if isinstance(value, (int, float)) and node.value is not None:
-            other = float(node.value) if isinstance(node.value, (int, float)) else node.value
-            if isinstance(other, bool):  # never compare numbers to booleans
-                return False
+            if isinstance(node.value, bool):
+                return False  # never compare numbers to booleans (bool is a subclass of int)
+            other = float(node.value)
             if op == "gte":
                 return value >= other
             if op == "gt":

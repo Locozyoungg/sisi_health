@@ -35,9 +35,11 @@ def _decrypt_pii(provider: DatabaseKeyProvider, db: Session, user: User) -> dict
         return {}
     out: dict[str, Any] = {}
     if user.birth_date_encrypted is not None:
-        out["birth_date"] = json.loads(provider.unwrap(user.birth_date_encrypted).decode())
+        payload = json.loads(provider.unwrap(user.birth_date_encrypted).decode("utf-8"))
+        out["birth_date"] = payload["birth_date"]
     if user.phone_encrypted is not None:
-        out["phone"] = json.loads(provider.unwrap(user.phone_encrypted).decode())
+        payload = json.loads(provider.unwrap(user.phone_encrypted).decode("utf-8"))
+        out["phone"] = payload["phone"]
     return out
 
 

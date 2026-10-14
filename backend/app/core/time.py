@@ -17,5 +17,7 @@ def to_nairobi(dt: datetime) -> datetime:
 
 
 def utc_now_naive() -> datetime:
-    """UTC now without tzinfo, for DB columns (timestamptz normalizes to UTC)."""
-    return datetime.now(UTC).replace(tzinfo=None)
+    """UTC now, timezone-aware. timestamptz columns round-trip as aware datetimes,
+    so every stored/computed timestamp is aware UTC for consistent comparison.
+    (The name is historical; it is never naive.)"""
+    return datetime.now(UTC)

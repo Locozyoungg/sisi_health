@@ -124,11 +124,12 @@ def main() -> int:
                 .scalars()
                 .first()
             )
-            if nurse is not None and nurse.last_active_at is None:
-                from app.auth.staff import touch_activity
+            # Fresh activity, exactly as a real login would set it (idle timeout is
+            # enforced per request; a stale last_active_at would 401 the demo).
+            from app.auth.staff import touch_activity
 
-                touch_activity(db, nurse)
-                db.commit()
+            touch_activity(db, nurse)
+            db.commit()
             nurse_token = create_staff_access_token(nurse.id, nurse.role, settings)
         resp = client.get("/v1/admin/users", headers={"Authorization": f"Bearer {nurse_token}"})
         check("RBAC denies nurse on admin endpoints", resp.status_code == 403)
@@ -170,11 +171,10 @@ def main() -> int:
                 .scalars()
                 .first()
             )
-            if admin.last_active_at is None:
-                from app.auth.staff import touch_activity
+            from app.auth.staff import touch_activity
 
-                touch_activity(db, admin)
-                db.commit()
+            touch_activity(db, admin)
+            db.commit()
             admin_token = create_staff_access_token(admin.id, admin.role, settings)
         resp = client.post(
             f"/v1/dsr/requests/{dsr_id}/process",

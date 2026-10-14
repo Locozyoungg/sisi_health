@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     ontology_dir: Path = REPO_ROOT / "ontology"
 
     # Auth (users)
-    jwt_secret: str = "dev-only-secret-change-me"  # noqa: S105 — dev default; prod guarded below
+    jwt_secret: str = "dev-only-secret-change-me-32-bytes-minimum!"  # noqa: S105 — dev default; prod guarded below
     access_token_minutes: int = 15
     refresh_token_days: int = 30
     phone_pepper: str = "dev-only-pepper-change-me"  # noqa: S105 — dev default; prod guarded below
@@ -62,7 +62,7 @@ class Settings(BaseSettings):
                 raise ValueError("SISI_ALLOW_UNVALIDATED_RULES must be false in staging/prod")
             if self.otp_dev_return:
                 raise ValueError("SISI_OTP_DEV_RETURN must be false in staging/prod")
-            if self.jwt_secret == "dev-only-secret-change-me":  # noqa: S105 — guard, not a secret
+            if self.jwt_secret == "dev-only-secret-change-me-32-bytes-minimum!":  # noqa: S105 — guard, not a secret
                 raise ValueError("SISI_JWT_SECRET must be set in staging/prod")
             if self.phone_pepper == "dev-only-pepper-change-me":
                 raise ValueError("SISI_PHONE_PEPPER must be set in staging/prod")

@@ -109,4 +109,5 @@ class DatabaseKeyProvider:
         )
         for key in keys:
             db.delete(key)
+        db.flush()
         return len(keys)

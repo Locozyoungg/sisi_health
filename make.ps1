@@ -7,9 +7,9 @@ $Repo = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Backend = Join-Path $Repo "backend"
 $Python = Join-Path $Backend ".venv\Scripts\python.exe"
 
-function Backend-Py([string[]]$Args) {
+function Backend-Py([string[]]$PyArgs) {
     Push-Location $Backend
-    try { & $Python @Args; if ($LASTEXITCODE -ne 0) { throw "python exited $LASTEXITCODE" } }
+    try { & $Python @PyArgs; if ($LASTEXITCODE -ne 0) { throw "python exited $LASTEXITCODE" } }
     finally { Pop-Location }
 }
 
@@ -23,23 +23,22 @@ switch ($Target) {
         & (Join-Path $Backend ".venv\Scripts\pip.exe") install -e (Join-Path $Backend "[dev]")
     }
     "db-up" {
-        docker compose -f (Join-Path $Repo "docker-compose.yml") up -d db redis
-        $DbId = docker compose -f (Join-Path $Repo "docker-compose.yml") ps -q db
-        $ready = $false
-        for ($i = 0; $i -lt 60; $i++) {
-            docker exec $DbId pg_isready -U sisi -d sisi *> $null
-            if ($LASTEXITCODE -eq 0) { $ready = $true; break }
-            Start-Sleep -Seconds 1
+        docker info *> $null 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            docker compose -f (Join-Path $Repo "docker-compose.yml") up -d db redis
+        } else {
+            Write-Host "docker unavailable — using portable PostgreSQL"
+            & (Join-Path $Repo "scripts\pg_local.ps1") "ensure"
         }
-        if (-not $ready) { throw "postgres not ready after 60s" }
-        Write-Host "postgres ready"
     }
+    "db-local" { & (Join-Path $Repo "scripts\pg_local.ps1") "ensure" }
     "db-down" { docker compose -f (Join-Path $Repo "docker-compose.yml") down }
     "migrate" { Backend-Py @("-m", "alembic", "upgrade", "head") }
     "seed" { Backend-Py @("scripts/seed_demo.py") }
     "test" { Backend-Py @("-m", "pytest") }
     "coverage" { Backend-Py @("-m", "pytest", "--cov=app", "--cov-report=term-missing", "--cov-fail-under=70") }
     "demo-phase1" {
+        & $MyInvocation.MyCommand.Path "db-up"
         Backend-Py @("-m", "alembic", "upgrade", "head")
         Backend-Py @("scripts/seed_demo.py")
         Backend-Py @("scripts/demo_phase1.py")

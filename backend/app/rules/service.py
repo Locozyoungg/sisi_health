@@ -59,9 +59,10 @@ def register_rule_version(
     return version
 
 
-def _run_golden_check(db: Session, rule_id: str, rule_version: str) -> None:
+def _run_golden_check(db: Session, rule_version: RuleVersion) -> None:
     """Activation gate: the full rules test suite (golden cases) must pass with the
-    proposed rule set active. Runs in-process here; CI runs the same cases."""
+    CANDIDATE payload active (not the ontology file). Runs in-process here; CI runs
+    the same cases."""
     from app.config import get_settings
     from app.rules.engine import RuleEngine
 
@@ -69,8 +70,8 @@ def _run_golden_check(db: Session, rule_id: str, rule_version: str) -> None:
     golden_path = settings.ontology_dir / "golden" / "cases.json"
     golden = json.loads(golden_path.read_text(encoding="utf-8"))
     ontology_rules = {r.id: r for r in load_rules(settings.ontology_dir)}
-    proposed = ontology_rules[rule_id].model_copy(update={"version": rule_version})
-    ontology_rules[rule_id] = proposed
+    candidate = validate_rule_dict(rule_version.payload)
+    ontology_rules[candidate.id] = candidate
     engine = RuleEngine(
         list(ontology_rules.values()),
         rule_set_version="candidate",
@@ -150,7 +151,7 @@ def approve_activation(
     if rule_version is None:
         raise NotFound("rule version missing")
 
-    _run_golden_check(db, rule_version.rule_id, rule_version.version)
+    _run_golden_check(db, rule_version)
 
     previous = (
         db.execute(
@@ -164,6 +165,7 @@ def approve_activation(
     if previous is not None:
         previous.status = "rolled_back"
         previous.rolled_back_at = utc_now_naive()
+        db.flush()  # persist the rollback before activating (partial unique index on active)
     rule_version.status = "active"
     rule_version.activated_at = utc_now_naive()
     activation.status = "approved"
@@ -202,10 +204,15 @@ def rollback_rule(db: Session, *, rule_id: str, staff: StaffUser) -> RuleVersion
         raise NotFound("no active version to roll back")
     active.status = "rolled_back"
     active.rolled_back_at = utc_now_naive()
+    db.flush()  # persist before restoring (partial unique index on active)
     restored = (
         db.execute(
             select(RuleVersion)
-            .where(RuleVersion.rule_id == rule_id, RuleVersion.status == "rolled_back")
+            .where(
+                RuleVersion.rule_id == rule_id,
+                RuleVersion.status == "rolled_back",
+                RuleVersion.id != active.id,  # never self-restore the row just rolled back
+            )
             .order_by(RuleVersion.activated_at.desc().nulls_last())
         )
         .scalars()

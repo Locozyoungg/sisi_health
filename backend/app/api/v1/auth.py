@@ -44,6 +44,7 @@ class RefreshIn(BaseModel):
 def otp_request(body: OtpRequestIn, db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
     phone = normalize_phone(body.phone)
     code = request_otp(db, phone, get_settings())
+    db.commit()  # the OTP row must survive this request's session
     data: dict[str, Any] = {"status": "sent"}
     if code is not None:
         data["dev_otp"] = code  # dev/demo only (settings guard; never in staging/prod)

@@ -160,6 +160,7 @@ def minor_with_consent(make_minor, db, provider):
 @pytest.fixture()
 def make_staff(db, provider):
     from app.auth.staff import create_staff
+    from app.core.time import utc_now_naive
 
     def _make(role: str) -> StaffUser:
         ensure_consent_texts(db)
@@ -170,6 +171,7 @@ def make_staff(db, provider):
             password="correct-horse-battery",  # noqa: S106 — synthetic test credential
             role=role,
         )
+        staff.last_active_at = utc_now_naive()  # freshly issued account = active session
         db.commit()
         return staff
 

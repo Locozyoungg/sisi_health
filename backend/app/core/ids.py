@@ -1,28 +1,34 @@
-"""UUIDv7 generation (RFC 9562). All SISI ids are UUIDv7; no auto-increment ids are exposed."""
+"""UUIDv7 generation (RFC 9562). All SISI ids are UUIDv7; no auto-increment ids are
+exposed (non-negotiable 6). Monotonic within the process via a rand_a counter."""
 
 import os
 import time
 import uuid
 
-_LAST: tuple[int, int] | None = None
+_last_ts = 0
+_last_rand_a = 0
 
 
 def uuid7() -> uuid.UUID:
-    """Return a time-ordered UUIDv7. Monotonic within the process."""
-    global _LAST
+    """Return a time-ordered UUIDv7, monotonic within the process."""
+    global _last_ts, _last_rand_a
     ts = time.time_ns() // 1_000_000
-    if _LAST is not None:
-        ts = max(ts, _LAST[0] + 1) if _LAST[0] == ts else ts
-        if _LAST[0] >= ts and _LAST[1] >= 0xFFFF:
-            ts = _LAST[0] + 1
-    rand_a = os.urandom(2)
-    if _LAST is not None and _LAST[0] == ts:
-        rand_a = (int.from_bytes(rand_a, "big") + 1).to_bytes(2, "big")
+    if ts <= _last_ts:
+        if _last_rand_a >= 0xFFF:
+            _last_ts += 1  # counter exhausted within the same millisecond: bump time
+            _last_rand_a = 0
+        else:
+            _last_rand_a += 1
+            ts = _last_ts
+    else:
+        _last_rand_a = 0
+        _last_ts = ts
+
+    b = bytearray(16)
+    b[0:6] = ts.to_bytes(6, "big")
+    b[6] = 0x70 | (_last_rand_a >> 8)  # version 7 in the high nibble, rand_a high bits
+    b[7] = _last_rand_a & 0xFF
     rand_b = os.urandom(8)
-    b = bytearray(ts.to_bytes(6, "big"))
-    b += rand_a
-    b += rand_b
-    b[6] = (b[6] & 0x0F) | 0x70  # version 7
-    b[8] = (b[8] & 0x3F) | 0x80  # variant 10
-    _LAST = (ts, int.from_bytes(rand_a, "big"))
+    b[8] = 0x80 | (rand_b[0] & 0x3F)  # variant 10
+    b[9:16] = rand_b[1:]
     return uuid.UUID(bytes=bytes(b))

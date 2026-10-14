@@ -5,10 +5,10 @@
   "patterns": [
     { "id": "sw-severe-pain-01", "category": "severe_acute_pain", "urgency": "RED", "regex": "maumivu (makali|ya ghafla|yasiyovumilika|ya kutisha)" },
     { "id": "sw-severe-pain-02", "category": "severe_acute_pain", "urgency": "RED", "regex": "maumivu (ya|kama) (kisu|visu)" },
-    { "id": "sw-severe-pain-03", "category": "severe_acute_pain", "urgency": "RED", "regex": "maumivu (10|kumi|9|tisa)( kati ya (10|kumi))?" },
+    { "id": "sw-severe-pain-03", "category": "severe_acute_pain", "urgency": "RED", "regex": "maumivu( ni)? (10|kumi|9|tisa)( kati ya (10|kumi))?" },
     { "id": "sw-bleed-dizzy-01", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "damu (nyingi|nyingi sana)( na)?( naskia)?( kizunguzungu|kuzimia)" },
     { "id": "sw-bleed-dizzy-02", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "(kizunguzungu|naweweseka|kuzimia)" },
-    { "id": "sw-bleed-dizzy-03", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "pedi (inalowa|zinajaa) (kila|ndani ya) (saa|dakika)" },
+    { "id": "sw-bleed-dizzy-03", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "pedi (inalowa|inajaa|zinajaa) (kila|ndani ya) (saa|dakika)" },
     { "id": "sw-self-harm-01", "category": "self_harm", "urgency": "SAFEGUARDING", "regex": "(nataka|ninataka) kuji(umiza|ua)" },
     { "id": "sw-self-harm-02", "category": "self_harm", "urgency": "SAFEGUARDING", "regex": "kuji(umiza|ua)" },
     { "id": "sw-self-harm-03", "category": "self_harm", "urgency": "SAFEGUARDING", "regex": "maisha (hayana|yamepoteza) maana" },

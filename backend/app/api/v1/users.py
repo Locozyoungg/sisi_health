@@ -1,6 +1,6 @@
 """User profile (non-medical)."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -23,7 +23,7 @@ class ProfilePatch(BaseModel):
 def me(
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[User, Depends(get_current_user)],
-) -> dict:
+) -> dict[str, Any]:
     return ok(public_view(user))
 
 
@@ -32,7 +32,7 @@ def patch_me(
     body: ProfilePatch,
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[User, Depends(get_current_user)],
-) -> dict:
+) -> dict[str, Any]:
     if body.language in {"en", "sw"}:
         user.language = body.language
         db.commit()

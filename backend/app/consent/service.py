@@ -7,7 +7,6 @@
 Guardians NEVER read a minor's diary or answers; nothing here grants that."""
 
 import uuid
-from datetime import datetime
 from typing import Any
 
 from sqlalchemy import select
@@ -25,20 +24,13 @@ GRANT_TYPES = ("guardian_grant", "minor_assent", "self_grant")
 METHODS = ("digital", "sms_link", "paper", "voice")
 
 
-def _age_of(user: User) -> int | None:
-    """Decrypted birth-date age; decryption is done by callers that hold the provider."""
-    return getattr(user, "_age", None)
-
-
 def ensure_consent_texts(db: Session) -> None:
     """Seed the versioned consent texts (idempotent)."""
     import hashlib
 
     from app.consent.texts import CONSENT_TEXTS
 
-    existing = set(
-        db.execute(select(ConsentText.key, ConsentText.language)).all()
-    )
+    existing = set(db.execute(select(ConsentText.key, ConsentText.language)).all())
     for spec in CONSENT_TEXTS:
         if (spec.key, spec.language) in existing:
             continue
@@ -116,11 +108,15 @@ def grant_consent(
         if existing.event_type == event_type:
             return existing  # idempotent: an active grant of this type already exists
 
-    text = db.execute(
-        select(ConsentText)
-        .where(ConsentText.key == _text_key(event_type), ConsentText.language == user.language)
-        .order_by(ConsentText.version.desc())
-    ).scalars().first()
+    text = (
+        db.execute(
+            select(ConsentText)
+            .where(ConsentText.key == _text_key(event_type), ConsentText.language == user.language)
+            .order_by(ConsentText.version.desc())
+        )
+        .scalars()
+        .first()
+    )
     if text is None:
         raise NotFound("consent text missing; run ensure_consent_texts")
 
@@ -192,7 +188,11 @@ def revoke_consent(db: Session, user: User) -> dict[str, Any]:
             payload={"grants_deactivated": len(grants)},
         )
     job = schedule_erasure(db, user.id, requested_via="revocation")
-    return {"revoked": len(grants), "erasure_job_id": str(job.id), "erasure_deadline": job.deadline_at}
+    return {
+        "revoked": len(grants),
+        "erasure_job_id": str(job.id),
+        "erasure_deadline": job.deadline_at,
+    }
 
 
 def effective_consent(db: Session, user: User, age: int | None) -> bool:

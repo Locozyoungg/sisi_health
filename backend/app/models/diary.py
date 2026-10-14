@@ -1,8 +1,8 @@
 """Schema diary: separately encrypted append-only symptom events, evaluations, erasure jobs.
 Every payload column holds envelope-encrypted ciphertext; plaintext never touches this schema."""
-
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -59,12 +59,14 @@ class ErasureJob(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("core.users.id", ondelete="CASCADE"))
-    status: Mapped[str] = mapped_column(String(16), default="pending")  # pending|processing|done|failed
+    status: Mapped[str] = mapped_column(
+        String(16), default="pending"
+    )  # pending|processing|done|failed
     requested_via: Mapped[str] = mapped_column(String(16))  # dsr | revocation
     deadline_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    report_json: Mapped[dict | None] = mapped_column(JSON)
+    report_json: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
 
 

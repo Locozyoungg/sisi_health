@@ -1,9 +1,9 @@
 """JWT access tokens + rotating refresh tokens with device binding. Refresh tokens
 are single-use: reuse of a rotated token revokes the whole family."""
-
 import hashlib
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import jwt
 from sqlalchemy import select
@@ -23,7 +23,7 @@ def hash_token(raw: str) -> str:
 
 
 def create_access_token(user_id: uuid.UUID, settings: Settings) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return jwt.encode(
         {
             "sub": str(user_id),
@@ -37,7 +37,7 @@ def create_access_token(user_id: uuid.UUID, settings: Settings) -> str:
 
 
 def create_staff_access_token(staff_id: uuid.UUID, role: str, settings: Settings) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return jwt.encode(
         {
             "sub": str(staff_id),
@@ -53,7 +53,7 @@ def create_staff_access_token(staff_id: uuid.UUID, role: str, settings: Settings
     )
 
 
-def decode_token(raw: str, settings: Settings) -> dict:
+def decode_token(raw: str, settings: Settings) -> dict[str, Any]:
     try:
         payload = jwt.decode(raw, settings.jwt_secret, algorithms=[ALGORITHM])
     except jwt.PyJWTError as exc:
@@ -61,7 +61,9 @@ def decode_token(raw: str, settings: Settings) -> dict:
     return payload
 
 
-def issue_refresh(db: Session, user_id: uuid.UUID, device_id: uuid.UUID, settings: Settings) -> tuple[str, RefreshToken]:
+def issue_refresh(
+    db: Session, user_id: uuid.UUID, device_id: uuid.UUID, settings: Settings
+) -> tuple[str, RefreshToken]:
     """Create a new refresh-token family head, bound to the device."""
     raw = uuid7().hex
     row = RefreshToken(
@@ -80,18 +82,22 @@ def issue_refresh(db: Session, user_id: uuid.UUID, device_id: uuid.UUID, setting
 def rotate_refresh(db: Session, raw: str, settings: Settings) -> tuple[str, RefreshToken]:
     """Single-use rotation. Presenting an already-rotated token revokes the family."""
     token_hash = hash_token(raw)
-    row = db.execute(
-        select(RefreshToken).where(RefreshToken.token_hash == token_hash)
-    ).scalars().first()
+    row = (
+        db.execute(select(RefreshToken).where(RefreshToken.token_hash == token_hash))
+        .scalars()
+        .first()
+    )
     if row is None:
         raise Unauthorized("unknown refresh token")
     now = utc_now_naive()
     if row.revoked_at is not None or row.expires_at < now:
         raise Unauthorized("refresh token revoked or expired")
     if row.rotated_at is not None:
-        family = db.execute(
-            select(RefreshToken).where(RefreshToken.family_id == row.family_id)
-        ).scalars().all()
+        family = (
+            db.execute(select(RefreshToken).where(RefreshToken.family_id == row.family_id))
+            .scalars()
+            .all()
+        )
         for member in family:
             member.revoked_at = now
         db.flush()
@@ -112,9 +118,11 @@ def rotate_refresh(db: Session, raw: str, settings: Settings) -> tuple[str, Refr
 
 
 def revoke_refresh(db: Session, raw: str) -> None:
-    row = db.execute(
-        select(RefreshToken).where(RefreshToken.token_hash == hash_token(raw))
-    ).scalars().first()
+    row = (
+        db.execute(select(RefreshToken).where(RefreshToken.token_hash == hash_token(raw)))
+        .scalars()
+        .first()
+    )
     if row is not None:
         row.revoked_at = utc_now_naive()
         db.flush()

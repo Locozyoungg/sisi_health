@@ -4,8 +4,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api import v1
+from app.api import v1  # noqa: F401  — package import for docs; router below
 from app.api.envelope import err
+from app.api.v1.router import router as v1_router
 from app.config import get_settings
 from app.core.errors import AppError
 
@@ -39,7 +40,7 @@ def create_app() -> FastAPI:
             allow_credentials=False,
         )
 
-    app.include_router(v1.router, prefix="/v1")
+    app.include_router(v1_router, prefix="/v1")
     return app
 
 

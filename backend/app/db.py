@@ -1,5 +1,7 @@
 """SQLAlchemy engine/session wiring (sync; FastAPI runs endpoints in the threadpool)."""
 
+from collections.abc import Iterator
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -9,7 +11,7 @@ engine = create_engine(get_settings().database_url, pool_pre_ping=True, future=T
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
-def get_db() -> Session:
+def get_db() -> Iterator[Session]:
     """FastAPI dependency: one session per request."""
     db = SessionLocal()
     try:

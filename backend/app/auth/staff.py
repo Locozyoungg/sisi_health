@@ -1,7 +1,6 @@
 """Staff accounts: email + password (argon2id) + mandatory TOTP."""
 
 import uuid
-from typing import Any
 
 import pyotp
 from argon2 import PasswordHasher
@@ -16,6 +15,13 @@ from app.crypto.key_provider import DatabaseKeyProvider
 from app.models import StaffUser
 
 _hasher = PasswordHasher()
+
+
+def verify_staff_password(staff: StaffUser, password: str) -> bool:
+    try:
+        return _hasher.verify(staff.password_hash, password)
+    except VerifyMismatchError:
+        return False
 
 
 def create_staff(
@@ -67,12 +73,15 @@ def _seal_totp(
 
 def _open_totp(provider: DatabaseKeyProvider, db: Session, staff: StaffUser) -> str:
     import json
+    from typing import Any, cast
 
     data_key = provider.get_data_key(db, "staff", staff.id)
     if data_key is None or staff.totp_secret_encrypted is None:
         raise Unauthorized("TOTP not provisioned")
-    payload = json.loads(provider.unwrap(staff.totp_secret_encrypted).decode("utf-8"))
-    return payload["totp"]
+    payload = cast(
+        dict[str, Any], json.loads(provider.unwrap(staff.totp_secret_encrypted).decode("utf-8"))
+    )
+    return cast(str, payload["totp"])
 
 
 def verify_totp(provider: DatabaseKeyProvider, db: Session, staff: StaffUser, code: str) -> bool:
@@ -95,15 +104,15 @@ def login_staff(
     password: str,
     totp_code: str,
 ) -> StaffUser:
-    staff = db.execute(
-        select(StaffUser).where(StaffUser.email == email.strip().lower())
-    ).scalars().first()
+    staff = (
+        db.execute(select(StaffUser).where(StaffUser.email == email.strip().lower()))
+        .scalars()
+        .first()
+    )
     if staff is None or staff.disabled:
         raise Unauthorized("invalid credentials")
-    try:
-        _hasher.verify(staff.password_hash, password)
-    except VerifyMismatchError as exc:
-        raise Unauthorized("invalid credentials") from exc
+    if not verify_staff_password(staff, password):
+        raise Unauthorized("invalid credentials")
     if not staff.totp_confirmed:
         raise Unauthorized("TOTP not set up; use /staff/auth/totp/setup")
     if not verify_totp(provider, db, staff, totp_code):

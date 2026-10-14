@@ -1,9 +1,9 @@
 """Two-person rule activation (spec 5.5): author and clinician approver must differ,
 the golden test suite must pass before activation, rollback is instant, and every
 transition writes an audit entry."""
-
 import json
 import uuid
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -18,16 +18,20 @@ from app.rules.validator import validate_rule_dict
 
 
 def register_rule_version(
-    db: Session, rule_dict: dict, *, created_by: uuid.UUID | None
+    db: Session, rule_dict: dict[str, Any], *, created_by: uuid.UUID | None
 ) -> RuleVersion:
     """Register a rule from /ontology as a draft version (idempotent per rule+version)."""
     rule = validate_rule_dict(rule_dict)
     content_hash = rule_content_hash(rule_dict)
-    existing = db.execute(
-        select(RuleVersion).where(
-            RuleVersion.rule_id == rule.id, RuleVersion.version == rule.version
+    existing = (
+        db.execute(
+            select(RuleVersion).where(
+                RuleVersion.rule_id == rule.id, RuleVersion.version == rule.version
+            )
         )
-    ).scalars().first()
+        .scalars()
+        .first()
+    )
     if existing is not None:
         return existing
     version = RuleVersion(
@@ -90,13 +94,19 @@ def _run_golden_check(db: Session, rule_id: str, rule_version: str) -> None:
         )
 
 
-def request_activation(db: Session, *, rule_id: str, version: str, author: StaffUser) -> RuleActivation:
+def request_activation(
+    db: Session, *, rule_id: str, version: str, author: StaffUser
+) -> RuleActivation:
     """Author requests activation of a rule version (workflow step 1 of 2)."""
-    rule_version = db.execute(
-        select(RuleVersion).where(
-            RuleVersion.rule_id == rule_id, RuleVersion.version == version
+    rule_version = (
+        db.execute(
+            select(RuleVersion).where(
+                RuleVersion.rule_id == rule_id, RuleVersion.version == version
+            )
         )
-    ).scalars().first()
+        .scalars()
+        .first()
+    )
     if rule_version is None:
         raise NotFound(f"rule version not registered: {rule_id}@{version}")
     if rule_version.status == "active":
@@ -124,7 +134,9 @@ def request_activation(db: Session, *, rule_id: str, version: str, author: Staff
     return activation
 
 
-def approve_activation(db: Session, *, activation_id: uuid.UUID, approver: StaffUser) -> RuleActivation:
+def approve_activation(
+    db: Session, *, activation_id: uuid.UUID, approver: StaffUser
+) -> RuleActivation:
     """Clinician approves (step 2 of 2). Author and approver must differ; the golden
     suite must pass; previous active version is rolled back; audit entry written."""
     activation = db.get(RuleActivation, activation_id)
@@ -140,11 +152,15 @@ def approve_activation(db: Session, *, activation_id: uuid.UUID, approver: Staff
 
     _run_golden_check(db, rule_version.rule_id, rule_version.version)
 
-    previous = db.execute(
-        select(RuleVersion).where(
-            RuleVersion.rule_id == rule_version.rule_id, RuleVersion.status == "active"
+    previous = (
+        db.execute(
+            select(RuleVersion).where(
+                RuleVersion.rule_id == rule_version.rule_id, RuleVersion.status == "active"
+            )
         )
-    ).scalars().first()
+        .scalars()
+        .first()
+    )
     if previous is not None:
         previous.status = "rolled_back"
         previous.rolled_back_at = utc_now_naive()
@@ -173,18 +189,28 @@ def approve_activation(db: Session, *, activation_id: uuid.UUID, approver: Staff
 
 def rollback_rule(db: Session, *, rule_id: str, staff: StaffUser) -> RuleVersion | None:
     """Instant rollback of the active version. Restores the previous version if one exists."""
-    active = db.execute(
-        select(RuleVersion).where(RuleVersion.rule_id == rule_id, RuleVersion.status == "active")
-    ).scalars().first()
+    active = (
+        db.execute(
+            select(RuleVersion).where(
+                RuleVersion.rule_id == rule_id, RuleVersion.status == "active"
+            )
+        )
+        .scalars()
+        .first()
+    )
     if active is None:
         raise NotFound("no active version to roll back")
     active.status = "rolled_back"
     active.rolled_back_at = utc_now_naive()
-    restored = db.execute(
-        select(RuleVersion)
-        .where(RuleVersion.rule_id == rule_id, RuleVersion.status == "rolled_back")
-        .order_by(RuleVersion.activated_at.desc().nulls_last())
-    ).scalars().first()
+    restored = (
+        db.execute(
+            select(RuleVersion)
+            .where(RuleVersion.rule_id == rule_id, RuleVersion.status == "rolled_back")
+            .order_by(RuleVersion.activated_at.desc().nulls_last())
+        )
+        .scalars()
+        .first()
+    )
     if restored is not None:
         restored.status = "active"
         restored.activated_at = utc_now_naive()
@@ -197,6 +223,10 @@ def rollback_rule(db: Session, *, rule_id: str, staff: StaffUser) -> RuleVersion
         actor_role=staff.role,
         resource_type="rule_version",
         resource_id=active.id,
-        payload={"rule_id": rule_id, "version": active.version, "restored": restored.version if restored else None},
+        payload={
+            "rule_id": rule_id,
+            "version": active.version,
+            "restored": restored.version if restored else None,
+        },
     )
     return restored

@@ -1,8 +1,8 @@
 """Schema consent: versioned consent texts, consent/revoke events, DSR requests,
 and the cross-border processing register."""
-
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -54,7 +54,7 @@ class DsrRequest(Base):
     type: Mapped[str] = mapped_column(String(16))
     # open | processing | fulfilled | rejected
     status: Mapped[str] = mapped_column(String(16), default="open")
-    payload: Mapped[dict | None] = mapped_column(JSON)
+    payload: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     deadline_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

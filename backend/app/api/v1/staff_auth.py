@@ -1,6 +1,6 @@
 """Staff auth: email + password + mandatory TOTP."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
@@ -11,7 +11,6 @@ from app.api.envelope import ok
 from app.auth import tokens
 from app.auth.staff import login_staff, setup_totp
 from app.config import get_settings
-from app.crypto.key_provider import DatabaseKeyProvider
 from app.db import get_db
 
 router = APIRouter()
@@ -33,28 +32,22 @@ def totp_setup(
     body: StaffTotpSetupIn,
     db: Annotated[Session, Depends(get_db)],
     provider: ProviderDep,
-) -> dict:
+) -> dict[str, Any]:
     """Provisional TOTP provisioning: email+password identify the staff member; the
     otpauth URI is returned exactly once."""
-    from app.auth.staff import _hasher  # noqa: PLC2701
-
     from sqlalchemy import select
 
+    from app.auth.staff import verify_staff_password
+    from app.core.errors import Unauthorized
     from app.models import StaffUser
 
-    staff = db.execute(
-        select(StaffUser).where(StaffUser.email == body.email.strip().lower())
-    ).scalars().first()
-    if staff is None or staff.disabled:
-        from app.core.errors import Unauthorized
-
+    staff = (
+        db.execute(select(StaffUser).where(StaffUser.email == body.email.strip().lower()))
+        .scalars()
+        .first()
+    )
+    if staff is None or staff.disabled or not verify_staff_password(staff, body.password):
         raise Unauthorized("invalid credentials")
-    try:
-        _hasher.verify(staff.password_hash, body.password)
-    except Exception as exc:  # noqa: BLE001
-        from app.core.errors import Unauthorized
-
-        raise Unauthorized("invalid credentials") from exc
     uri = setup_totp(db, provider, staff)
     db.commit()
     return ok({"otpauth_uri": uri})
@@ -65,7 +58,7 @@ def login(
     body: StaffLoginIn,
     db: Annotated[Session, Depends(get_db)],
     provider: ProviderDep,
-) -> dict:
+) -> dict[str, Any]:
     staff = login_staff(
         db, provider, email=body.email, password=body.password, totp_code=body.totp_code
     )

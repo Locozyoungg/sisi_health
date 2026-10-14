@@ -6,8 +6,8 @@
 - users under 13 are rejected (blocked at the age check upstream, enforced again here)
 - unvalidated rules refuse to run unless the dev/demo flag is on (non-negotiable 3)"""
 
-from datetime import datetime
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 from app.core.errors import UnvalidatedRulesError, ValidationError
 from app.core.time import utc_now

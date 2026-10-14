@@ -19,7 +19,9 @@ from app.models import DataKey
 class KeyProvider(Protocol):
     def master(self) -> bytes: ...
 
-    def get_or_create_data_key(self, db: Session, owner_type: str, owner_id: uuid.UUID) -> DataKey: ...
+    def get_or_create_data_key(
+        self, db: Session, owner_type: str, owner_id: uuid.UUID
+    ) -> DataKey: ...
 
     def get_data_key(self, db: Session, owner_type: str, owner_id: uuid.UUID) -> DataKey | None: ...
 
@@ -78,19 +80,33 @@ class DatabaseKeyProvider:
         return key
 
     def get_data_key(self, db: Session, owner_type: str, owner_id: uuid.UUID) -> DataKey | None:
-        return db.execute(
-            select(DataKey)
-            .where(DataKey.owner_type == owner_type, DataKey.owner_id == owner_id, DataKey.active.is_(True))
-            .order_by(DataKey.key_version.desc())
-        ).scalars().first()
+        return (
+            db.execute(
+                select(DataKey)
+                .where(
+                    DataKey.owner_type == owner_type,
+                    DataKey.owner_id == owner_id,
+                    DataKey.active.is_(True),
+                )
+                .order_by(DataKey.key_version.desc())
+            )
+            .scalars()
+            .first()
+        )
 
     def unwrap_data_key(self, data_key: DataKey) -> bytes:
         return self.unwrap(data_key.wrapped_key)
 
     def delete_data_keys(self, db: Session, owner_type: str, owner_id: uuid.UUID) -> int:
-        keys = db.execute(
-            select(DataKey).where(DataKey.owner_type == owner_type, DataKey.owner_id == owner_id)
-        ).scalars().all()
+        keys = (
+            db.execute(
+                select(DataKey).where(
+                    DataKey.owner_type == owner_type, DataKey.owner_id == owner_id
+                )
+            )
+            .scalars()
+            .all()
+        )
         for key in keys:
             db.delete(key)
         return len(keys)

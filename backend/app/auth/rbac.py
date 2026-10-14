@@ -27,12 +27,6 @@ def has_permission(role: str, permission: str) -> bool:
     return permission in ROLE_PERMISSIONS.get(role, set())
 
 
-def require_permission(permission: str) -> None:
-    """Imperative check for service-level calls; HTTP routes use the dependency."""
-    # The HTTP dependency (auth/deps.py) performs this check with request context.
-    raise NotImplementedError
-
-
 class PermissionDenied(Forbidden):
     def __init__(self, role: str, permission: str) -> None:
         super().__init__(f"role {role} lacks permission {permission}")

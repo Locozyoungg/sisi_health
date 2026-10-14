@@ -4,7 +4,7 @@ numbers, diary content, or symptom narratives (spec 6, non-negotiable 5)."""
 
 import re
 import uuid
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy.orm import Session
 
@@ -50,7 +50,7 @@ def sanitize_payload(payload: dict[str, Any]) -> dict[str, Any]:
             return _PHONE_LIKE.sub(REDACTED, value)
         return value
 
-    return scrub(payload)
+    return cast(dict[str, Any], scrub(payload))
 
 
 def record_event(

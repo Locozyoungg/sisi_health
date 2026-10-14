@@ -1,10 +1,10 @@
 """Severity bands. The rules engine assigns bands; the LLM never does (non-negotiable 1)."""
 
-from enum import Enum
-from typing import Iterable
+from collections.abc import Iterable
+from enum import StrEnum
 
 
-class Band(str, Enum):
+class Band(StrEnum):
     GREEN = "GREEN"
     YELLOW = "YELLOW"
     ORANGE = "ORANGE"

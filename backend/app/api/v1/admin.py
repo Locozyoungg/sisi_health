@@ -1,6 +1,6 @@
 """Admin views: users (pseudonyms + status only, never medical data) and the DSR queue."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
@@ -21,9 +21,13 @@ def users(
     _staff: Annotated[StaffUser, Depends(require("admin:users"))],
     limit: int = 100,
     offset: int = 0,
-) -> dict:
+) -> dict[str, Any]:
     limit = min(max(limit, 1), 500)
-    rows = db.execute(select(User).order_by(User.created_at.desc()).limit(limit).offset(offset)).scalars().all()
+    rows = (
+        db.execute(select(User).order_by(User.created_at.desc()).limit(limit).offset(offset))
+        .scalars()
+        .all()
+    )
     return ok([public_view(u) for u in rows])
 
 
@@ -31,10 +35,8 @@ def users(
 def dsr_queue(
     db: Annotated[Session, Depends(get_db)],
     _staff: Annotated[StaffUser, Depends(require("admin:dsr"))],
-) -> dict:
-    rows = db.execute(
-        select(DsrRequest).order_by(DsrRequest.submitted_at.desc())
-    ).scalars().all()
+) -> dict[str, Any]:
+    rows = db.execute(select(DsrRequest).order_by(DsrRequest.submitted_at.desc())).scalars().all()
     return ok(
         [
             {

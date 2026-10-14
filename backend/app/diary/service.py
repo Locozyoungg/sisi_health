@@ -11,7 +11,6 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.errors import Conflict
 from app.core.ids import uuid7
 from app.core.time import utc_now_naive
 from app.crypto.envelope import open_json, seal_json
@@ -70,19 +69,27 @@ def sync_entries(
     reported as duplicate. Edits add a new version of the same client_id."""
     results: list[dict[str, Any]] = []
     for entry in entries:
-        existing_key = db.execute(
-            select(DiaryEntry).where(DiaryEntry.idempotency_key == entry.idempotency_key)
-        ).scalars().first()
+        existing_key = (
+            db.execute(
+                select(DiaryEntry).where(DiaryEntry.idempotency_key == entry.idempotency_key)
+            )
+            .scalars()
+            .first()
+        )
         if existing_key is not None:
             results.append(
                 {"client_id": str(existing_key.client_id), "status": "duplicate", "version": None}
             )
             continue
-        row = db.execute(
-            select(DiaryEntry).where(
-                DiaryEntry.user_id == user.id, DiaryEntry.client_id == entry.client_id
+        row = (
+            db.execute(
+                select(DiaryEntry).where(
+                    DiaryEntry.user_id == user.id, DiaryEntry.client_id == entry.client_id
+                )
             )
-        ).scalars().first()
+            .scalars()
+            .first()
+        )
         if row is None:
             row = DiaryEntry(
                 id=uuid7(),
@@ -93,14 +100,22 @@ def sync_entries(
             db.add(row)
             db.flush()
         else:
-            latest = db.execute(
-                select(DiaryEntryVersion)
-                .where(DiaryEntryVersion.entry_id == row.id)
-                .order_by(DiaryEntryVersion.version.desc())
-            ).scalars().first()
+            latest = (
+                db.execute(
+                    select(DiaryEntryVersion)
+                    .where(DiaryEntryVersion.entry_id == row.id)
+                    .order_by(DiaryEntryVersion.version.desc())
+                )
+                .scalars()
+                .first()
+            )
             if latest is not None and entry.version <= latest.version:
                 results.append(
-                    {"client_id": str(entry.client_id), "status": "stale_version", "version": latest.version}
+                    {
+                        "client_id": str(entry.client_id),
+                        "status": "stale_version",
+                        "version": latest.version,
+                    }
                 )
                 continue
         blob, key_id = seal_json(provider, db, "user", user.id, entry.payload)
@@ -117,22 +132,47 @@ def sync_entries(
         )
         row.updated_at = utc_now_naive()
         db.flush()
-        results.append({"client_id": str(entry.client_id), "status": "accepted", "version": entry.version})
-    return {"accepted": sum(1 for r in results if r["status"] == "accepted"), "results": results}
+        results.append(
+            {"client_id": str(entry.client_id), "status": "accepted", "version": entry.version}
+        )
+    accepted = sum(1 for r in results if r["status"] == "accepted")
+    from app.audit.service import record_event
+
+    record_event(
+        db,
+        event_type="diary_synced",
+        actor_type="user",
+        actor_id=user.id,
+        actor_role=None,
+        resource_type="user",
+        resource_id=user.id,
+        payload={"entries": len(entries), "accepted": accepted},  # counts only, never content
+    )
+    return {"accepted": accepted, "results": results}
 
 
 def get_entries(db: Session, provider: DatabaseKeyProvider, user: User) -> list[dict[str, Any]]:
     """Merged current view (decrypted) of the user's diary, newest first."""
-    rows = db.execute(
-        select(DiaryEntry).where(DiaryEntry.user_id == user.id).order_by(DiaryEntry.created_at.desc())
-    ).scalars().all()
+    rows = (
+        db.execute(
+            select(DiaryEntry)
+            .where(DiaryEntry.user_id == user.id)
+            .order_by(DiaryEntry.created_at.desc())
+        )
+        .scalars()
+        .all()
+    )
     out: list[dict[str, Any]] = []
     for row in rows:
-        versions = db.execute(
-            select(DiaryEntryVersion)
-            .where(DiaryEntryVersion.entry_id == row.id)
-            .order_by(DiaryEntryVersion.version.asc(), DiaryEntryVersion.server_ts.asc())
-        ).scalars().all()
+        versions = (
+            db.execute(
+                select(DiaryEntryVersion)
+                .where(DiaryEntryVersion.entry_id == row.id)
+                .order_by(DiaryEntryVersion.version.asc(), DiaryEntryVersion.server_ts.asc())
+            )
+            .scalars()
+            .all()
+        )
         payloads = [
             {
                 "payload": open_json(provider, db, v.payload_ciphertext, v.key_id),
@@ -153,7 +193,9 @@ def get_entries(db: Session, provider: DatabaseKeyProvider, user: User) -> list[
     return out
 
 
-def compute_features(db: Session, provider: DatabaseKeyProvider, user: User) -> tuple[dict[str, Any], int]:
+def compute_features(
+    db: Session, provider: DatabaseKeyProvider, user: User
+) -> tuple[dict[str, Any], int]:
     """Deterministic feature extraction over the 90-day window. Keys match the rule
     schema input names exactly; missing data is None (the engine applies asymmetry)."""
     entries = get_entries(db, provider, user)
@@ -177,12 +219,17 @@ def compute_features(db: Session, provider: DatabaseKeyProvider, user: User) -> 
     diary_days = len({r["date"] for r in records})
     pain = [r["pain"] for r in records if r.get("pain") is not None]
     bleeding = [r["bleeding_volume"] for r in records if r.get("bleeding_volume") is not None]
+
+    def _in_window(record: dict[str, Any], start: date) -> bool:
+        day = record["date"]
+        return isinstance(day, date) and day >= start
+
     fatigue_days = [
         r["date"]
         for r in records
-        if r.get("date") >= fat_start and r.get("symptoms", {}).get("fatigue") is True
+        if _in_window(r, fat_start) and r.get("symptoms", {}).get("fatigue") is True
     ]
-    logged_30d = [r["date"] for r in records if r.get("date") >= fat_start]
+    logged_30d = [r["date"] for r in records if _in_window(r, fat_start)]
     cycle_starts = sorted(r["date"] for r in records if r.get("cycle_start") is True)
 
     pain_days = {r["date"] for r in records if r.get("pain") is not None}
@@ -192,7 +239,7 @@ def compute_features(db: Session, provider: DatabaseKeyProvider, user: User) -> 
             near_days.add(start + timedelta(days=offset))
     cyclical = len(pain_days & near_days) / len(pain_days) if pain_days else None
 
-    gaps = [(b - a).days for a, b in zip(cycle_starts, cycle_starts[1:])]
+    gaps = [(b - a).days for a, b in zip(cycle_starts, cycle_starts[1:], strict=False)]
     irregularity = statistics.pstdev(gaps) if len(gaps) >= 2 else None
 
     symptoms = [r.get("symptoms", {}) for r in records]

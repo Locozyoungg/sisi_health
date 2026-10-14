@@ -3,6 +3,7 @@ checks. A rule that fails any check never reaches the engine."""
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 import jsonschema
 from pydantic import ValidationError as PydanticError
@@ -17,9 +18,9 @@ class RuleValidationError(ValueError):
     pass
 
 
-def _load_json_schema() -> dict:
+def _load_json_schema() -> dict[str, Any]:
     with open(_SCHEMA_PATH, encoding="utf-8") as fh:
-        return json.load(fh)
+        return cast(dict[str, Any], json.load(fh))
 
 
 def _collect_inputs(node: LogicNode, acc: set[str]) -> None:
@@ -50,10 +51,12 @@ def _semantic_checks(rule: Rule) -> None:
     _collect_inputs(rule.logic, referenced)
     undeclared = referenced - declared
     if undeclared:
-        raise RuleValidationError(f"{rule.id}: logic references undeclared inputs {sorted(undeclared)}")
+        raise RuleValidationError(
+            f"{rule.id}: logic references undeclared inputs {sorted(undeclared)}"
+        )
 
 
-def validate_rule_dict(data: dict) -> Rule:
+def validate_rule_dict(data: dict[str, Any]) -> Rule:
     """Validate one rule dict against the ontology schema + semantics. Returns the Rule."""
     errors = list(jsonschema.Draft202012Validator(_load_json_schema()).iter_errors(data))
     if errors:

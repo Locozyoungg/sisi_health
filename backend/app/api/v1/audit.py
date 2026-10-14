@@ -1,6 +1,6 @@
 """Audit endpoints: read (sanitized, admin only) and chain verification."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
@@ -21,11 +21,13 @@ def events(
     _staff: Annotated[StaffUser, Depends(require("audit:read"))],
     limit: int = 100,
     offset: int = 0,
-) -> dict:
+) -> dict[str, Any]:
     limit = min(max(limit, 1), 500)
-    rows = db.execute(
-        select(AuditEvent).order_by(AuditEvent.seq.desc()).limit(limit).offset(offset)
-    ).scalars().all()
+    rows = (
+        db.execute(select(AuditEvent).order_by(AuditEvent.seq.desc()).limit(limit).offset(offset))
+        .scalars()
+        .all()
+    )
     return ok(
         [
             {
@@ -46,5 +48,5 @@ def events(
 def verify(
     db: Annotated[Session, Depends(get_db)],
     _staff: Annotated[StaffUser, Depends(require("audit:verify"))],
-) -> dict:
+) -> dict[str, Any]:
     return ok(verify_chain(db))

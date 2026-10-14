@@ -17,9 +17,9 @@ from app.core.ids import uuid7
 from app.core.time import utc_now, utc_now_naive
 from app.models import (
     ConsentEvent,
+    Device,
     DiaryEntry,
     DiaryEntryVersion,
-    Device,
     DsrRequest,
     ErasureJob,
     RefreshToken,
@@ -54,9 +54,7 @@ def run_erasure(db: Session, user_id: uuid.UUID, provider: Any) -> dict[str, Any
 
     # 1. Diary ciphertexts, evaluations, and the user's data keys (data destroyed
     #    with the key, not recoverable even from a restored backup).
-    entries = db.execute(
-        select(DiaryEntry.id).where(DiaryEntry.user_id == user_id)
-    ).scalars().all()
+    entries = db.execute(select(DiaryEntry.id).where(DiaryEntry.user_id == user_id)).scalars().all()
     if entries:
         db.execute(delete(DiaryEntryVersion).where(DiaryEntryVersion.entry_id.in_(entries)))
         db.execute(delete(DiaryEntry).where(DiaryEntry.user_id == user_id))

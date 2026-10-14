@@ -11,7 +11,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=(".env", "../.env"), env_prefix="SISI_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=(".env", "../.env"), env_prefix="SISI_", extra="ignore"
+    )
 
     # Environment
     env: str = "dev"  # dev | demo | staging | prod
@@ -21,10 +23,10 @@ class Settings(BaseSettings):
     ontology_dir: Path = REPO_ROOT / "ontology"
 
     # Auth (users)
-    jwt_secret: str = "dev-only-secret-change-me"
+    jwt_secret: str = "dev-only-secret-change-me"  # noqa: S105 — dev default; prod guarded below
     access_token_minutes: int = 15
     refresh_token_days: int = 30
-    phone_pepper: str = "dev-only-pepper-change-me"
+    phone_pepper: str = "dev-only-pepper-change-me"  # noqa: S105 — dev default; prod guarded below
 
     # Auth (staff)
     staff_idle_minutes: int = 15
@@ -40,7 +42,9 @@ class Settings(BaseSettings):
     otp_dev_return: bool = True  # return OTP in the response (dev/demo ONLY)
 
     # Safety gating
-    allow_unvalidated_rules: bool = True  # dev/demo ONLY; engine refuses unvalidated rules otherwise
+    allow_unvalidated_rules: bool = (
+        True  # dev/demo ONLY; engine refuses unvalidated rules otherwise
+    )
 
     # Compliance config (defaults recorded in docs/assumptions.md A1-A4)
     self_consent_age: int = 18
@@ -58,13 +62,17 @@ class Settings(BaseSettings):
                 raise ValueError("SISI_ALLOW_UNVALIDATED_RULES must be false in staging/prod")
             if self.otp_dev_return:
                 raise ValueError("SISI_OTP_DEV_RETURN must be false in staging/prod")
-            if self.jwt_secret == "dev-only-secret-change-me":
+            if self.jwt_secret == "dev-only-secret-change-me":  # noqa: S105 — guard, not a secret
                 raise ValueError("SISI_JWT_SECRET must be set in staging/prod")
             if self.phone_pepper == "dev-only-pepper-change-me":
                 raise ValueError("SISI_PHONE_PEPPER must be set in staging/prod")
             if not self.master_key_b64:
                 raise ValueError("SISI_MASTER_KEY_B64 must be set in staging/prod")
-        if self.env not in {"dev", "demo"} and self.master_key_b64 == "" and not self.master_key_file.exists():
+        if (
+            self.env not in {"dev", "demo"}
+            and self.master_key_b64 == ""
+            and not self.master_key_file.exists()
+        ):
             raise ValueError("master key required: set SISI_MASTER_KEY_B64 or create the key file")
         return self
 

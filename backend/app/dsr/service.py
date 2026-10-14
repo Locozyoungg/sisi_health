@@ -88,10 +88,29 @@ def process_request(
     elif request.type == "correction":
         payload = request.payload or {}
         if "language" in payload:
-            user.language = payload["language"] if payload["language"] in {"en", "sw"} else user.language
+            user.language = (
+                payload["language"] if payload["language"] in {"en", "sw"} else user.language
+            )
         result = {"corrected": ["language"] if "language" in payload else []}
     elif request.type == "erasure":
+        # Erasure deletes DSR rows (including this one): record fulfilment first,
+        # then destroy. run_erasure writes its own audit entry and commits.
+        request.status = "fulfilled"
+        request.completed_at = utc_now_naive()
+        request.handler_id = handler_id
+        db.flush()
+        record_event(
+            db,
+            event_type="dsr_fulfilled",
+            actor_type="staff",
+            actor_id=handler_id,
+            actor_role=None,
+            resource_type="dsr_request",
+            resource_id=request.id,
+            payload={"type": request.type},
+        )
         result = run_erasure(db, user.id, provider)
+        return result
     elif request.type == "objection":
         user.processing_restricted = True
         result = {"processing_restricted": True}
@@ -113,6 +132,4 @@ def process_request(
 
 
 def list_requests(db: Session) -> list[DsrRequest]:
-    return list(
-        db.execute(select(DsrRequest).order_by(DsrRequest.submitted_at.desc())).scalars()
-    )
+    return list(db.execute(select(DsrRequest).order_by(DsrRequest.submitted_at.desc())).scalars())

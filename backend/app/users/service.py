@@ -3,7 +3,8 @@ age derivation for consent and rules."""
 
 import json
 import uuid
-from datetime import date, datetime
+from datetime import date
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -19,18 +20,20 @@ from app.models import User
 MIN_AGE = 13
 
 
-def _encrypt_pii(provider: DatabaseKeyProvider, db: Session, user_id: uuid.UUID, data: dict) -> bytes:
-    data_key = provider.get_or_create_data_key(db, "user", user_id)
+def _encrypt_pii(
+    provider: DatabaseKeyProvider, db: Session, user_id: uuid.UUID, data: dict[str, Any]
+) -> bytes:
+    provider.get_or_create_data_key(db, "user", user_id)
     return provider.wrap(json.dumps(data, separators=(",", ":")).encode("utf-8"))
 
 
-def _decrypt_pii(provider: DatabaseKeyProvider, db: Session, user: User) -> dict:
+def _decrypt_pii(provider: DatabaseKeyProvider, db: Session, user: User) -> dict[str, Any]:
     if user.birth_date_encrypted is None and user.phone_encrypted is None:
         return {}
     data_key = provider.get_data_key(db, "user", user.id)
     if data_key is None:
         return {}
-    out: dict = {}
+    out: dict[str, Any] = {}
     if user.birth_date_encrypted is not None:
         out["birth_date"] = json.loads(provider.unwrap(user.birth_date_encrypted).decode())
     if user.phone_encrypted is not None:
@@ -49,7 +52,11 @@ def create_user(
 ) -> User:
     """Register a user. Users under 13 are blocked (spec 3.2)."""
     today = date.today()
-    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    age = (
+        today.year
+        - birth_date.year
+        - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    )
     if age < MIN_AGE:
         raise ValidationError("users under 13 cannot use SISI Health")
     ph = phone_hash(phone, settings)
@@ -65,16 +72,20 @@ def create_user(
     db.add(user)
     db.flush()
     user.phone_encrypted = _encrypt_pii(provider, db, user.id, {"phone": phone})
-    user.birth_date_encrypted = _encrypt_pii(provider, db, user.id, {"birth_date": birth_date.isoformat()})
+    user.birth_date_encrypted = _encrypt_pii(
+        provider, db, user.id, {"birth_date": birth_date.isoformat()}
+    )
     user.phone_hash = ph
     db.flush()
     return user
 
 
 def get_by_phone(db: Session, phone: str, settings: Settings) -> User | None:
-    return db.execute(
-        select(User).where(User.phone_hash == phone_hash(phone, settings))
-    ).scalars().first()
+    return (
+        db.execute(select(User).where(User.phone_hash == phone_hash(phone, settings)))
+        .scalars()
+        .first()
+    )
 
 
 def age_of(provider: DatabaseKeyProvider, db: Session, user: User) -> int | None:
@@ -87,7 +98,7 @@ def age_of(provider: DatabaseKeyProvider, db: Session, user: User) -> int | None
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
-def public_view(user: User) -> dict:
+def public_view(user: User) -> dict[str, Any]:
     """Non-PII projection: pseudonym, age band, language, status."""
     return {
         "id": str(user.pseudonym_id or user.id),

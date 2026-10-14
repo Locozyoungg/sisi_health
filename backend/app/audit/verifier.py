@@ -45,7 +45,7 @@ VERIFY_SQL = text(
 
 def verify_chain(db: Session) -> dict[str, Any]:
     """Return {ok, events_checked, broken_seqs}. Logs an alert when the chain is broken."""
-    total = db.execute(text("SELECT count(*) FROM audit.audit_events")).scalar_one()
+    total: int = db.execute(text("SELECT count(*) FROM audit.audit_events")).scalar_one()
     broken = [row[0] for row in db.execute(VERIFY_SQL).all()]
     if broken:
         logger.error("AUDIT CHAIN BREAK detected at seq %s", broken)

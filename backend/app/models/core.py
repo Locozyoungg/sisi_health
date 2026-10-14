@@ -1,9 +1,9 @@
 """Schema core: identity, auth, staff, envelope keys, config."""
-
 import uuid
 from datetime import datetime
+from typing import Any
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, LargeBinary, String
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.ids import uuid7
@@ -47,7 +47,9 @@ class RefreshToken(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("core.users.id", ondelete="CASCADE"))
     family_id: Mapped[uuid.UUID] = mapped_column(default=uuid7)
     token_hash: Mapped[str] = mapped_column(String(64), unique=True)
-    device_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("core.devices.id", ondelete="SET NULL"))
+    device_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("core.devices.id", ondelete="SET NULL")
+    )
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     rotated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -102,6 +104,6 @@ class ConfigValue(Base):
     __table_args__ = {"schema": "core"}
 
     key: Mapped[str] = mapped_column(String(64), primary_key=True)
-    value_json: Mapped[dict] = mapped_column(JSON)
+    value_json: Mapped[dict[str, Any]] = mapped_column(JSON)
     updated_by: Mapped[uuid.UUID | None] = mapped_column()
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)

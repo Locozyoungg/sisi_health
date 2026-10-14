@@ -1,7 +1,7 @@
 """Data-subject-rights endpoints: submit/track (user), process queue (admin)."""
 
 import uuid
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -10,9 +10,8 @@ from app.api.deps import ProviderDep
 from app.api.envelope import ok
 from app.auth.deps import get_current_user, require
 from app.config import Settings, get_settings
-from app.crypto.key_provider import DatabaseKeyProvider
 from app.db import get_db
-from app.dsr.service import DsrPayload, get_request, list_requests, process_request, submit_request
+from app.dsr.service import DsrPayload, get_request, process_request, submit_request
 from app.models import StaffUser, User
 
 router = APIRouter()
@@ -24,7 +23,7 @@ def submit(
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[User, Depends(get_current_user)],
     settings: Annotated[Settings, Depends(get_settings)],
-) -> dict:
+) -> dict[str, Any]:
     row = submit_request(db, user, body, settings)
     db.commit()
     return ok(
@@ -42,7 +41,7 @@ def track(
     request_id: uuid.UUID,
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[User, Depends(get_current_user)],
-) -> dict:
+) -> dict[str, Any]:
     row = get_request(db, user, request_id)
     return ok(
         {
@@ -63,7 +62,7 @@ def process(
     provider: ProviderDep,
     staff: Annotated[StaffUser, Depends(require("dsr:process"))],
     settings: Annotated[Settings, Depends(get_settings)],
-) -> dict:
+) -> dict[str, Any]:
     from app.models import DsrRequest
 
     request = db.get(DsrRequest, request_id)

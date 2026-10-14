@@ -3,7 +3,7 @@
   "language": "sheng",
   "description": "Red-flag patterns (Sheng, Nairobi youth code-switched Kiswahili/English). Same rules as en/sw: detected BEFORE the LLM; safeguarding categories route to the safeguarding lead, never a guardian alert (spec 3.3).",
   "patterns": [
-    { "id": "sh-severe-pain-01", "category": "severe_acute_pain", "urgency": "RED", "regex": "maumivu ni (mingi|mengi) (sana|mpaka) (nashindwa|siwezi)" },
+    { "id": "sh-severe-pain-01", "category": "severe_acute_pain", "urgency": "RED", "regex": "maumivu ni (mingi|mengi)( sana)?( mpaka)? (nashindwa|siwezi)" },
     { "id": "sh-severe-pain-02", "category": "severe_acute_pain", "urgency": "RED", "regex": "pain ni (10|kumi|9|tisa)( out of (10|ten))?" },
     { "id": "sh-severe-pain-03", "category": "severe_acute_pain", "urgency": "RED", "regex": "naskia (kama nife|nitakufa) kwa pain" },
     { "id": "sh-bleed-dizzy-01", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "(bleed|damu) (nyingi|mingi)( na)? naskia (dizzy|kizunguzungu|weak)" },

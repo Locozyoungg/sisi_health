@@ -1,6 +1,7 @@
 """Auth dependencies: current user (JWT scope user), current staff (scope staff,
 RBAC permission, 15-minute idle timeout)."""
 
+from collections.abc import Callable
 from datetime import timedelta
 from typing import Annotated
 
@@ -10,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import tokens
 from app.auth.rbac import PermissionDenied, has_permission
-from app.config import Settings, get_settings
+from app.config import get_settings
 from app.core.errors import Unauthorized
 from app.core.time import utc_now_naive
 from app.db import get_db
@@ -62,12 +63,11 @@ def get_current_staff(
     return staff
 
 
-def require(permission: str):
+def require(permission: str) -> Callable[..., StaffUser]:
     """Dependency factory: staff must hold the permission."""
 
     def _check(staff: Annotated[StaffUser, Depends(get_current_staff)]) -> StaffUser:
         if not has_permission(staff.role, permission):
             raise PermissionDenied(staff.role, permission)
         return staff
-
     return _check

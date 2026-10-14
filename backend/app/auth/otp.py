@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from app.config import Settings
 from app.core.errors import Locked, RateLimited, Unauthorized, ValidationError
 from app.core.ids import uuid7
-from app.core.time import utc_now, utc_now_naive
+from app.core.time import utc_now_naive
 from app.models import OtpRequest
 
 REQUEST_WINDOW_MINUTES = 10
@@ -90,4 +90,6 @@ def verify_otp(db: Session, phone: str, code: str, settings: Settings) -> None:
 
 
 def device_key_hash(device_id: uuid.UUID, settings: Settings) -> str:
-    return hmac.new(settings.phone_pepper.encode(), str(device_id).encode(), hashlib.sha256).hexdigest()
+    return hmac.new(
+        settings.phone_pepper.encode(), str(device_id).encode(), hashlib.sha256
+    ).hexdigest()

@@ -1,7 +1,7 @@
 """Rules endpoints: evaluate (user), read + activation workflow (clinicians)."""
 
 import uuid
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
@@ -13,12 +13,16 @@ from app.api.envelope import ok
 from app.auth.deps import get_current_user, require
 from app.config import Settings, get_settings
 from app.core.errors import NotFound
-from app.crypto.key_provider import DatabaseKeyProvider
 from app.db import get_db
 from app.diary.service import compute_features
 from app.models import RuleVersion, StaffUser, User
 from app.rules.loader import RULE_SET_VERSION, build_engine
-from app.rules.service import approve_activation, register_rule_version, request_activation, rollback_rule
+from app.rules.service import (
+    approve_activation,
+    register_rule_version,
+    request_activation,
+    rollback_rule,
+)
 from app.users.service import age_of
 
 router = APIRouter()
@@ -39,16 +43,18 @@ def evaluate(
     provider: ProviderDep,
     user: Annotated[User, Depends(get_current_user)],
     settings: Annotated[Settings, Depends(get_settings)],
-) -> dict:
+) -> dict[str, Any]:
     from app.consent.service import require_consent
-    from app.crypto.envelope import seal_json
     from app.core.ids import uuid7
+    from app.crypto.envelope import seal_json
     from app.models import RuleEvaluation
 
     require_consent(db, user, age_of(provider, db, user))
     features, diary_days = compute_features(db, provider, user)
     engine = build_engine(settings.ontology_dir, allow_unvalidated=settings.allow_unvalidated_rules)
-    evaluation = engine.evaluate(age=age_of(provider, db, user) or 0, diary_days=diary_days, features=features)
+    evaluation = engine.evaluate(
+        age=age_of(provider, db, user) or 0, diary_days=diary_days, features=features
+    )
     blob, key_id = seal_json(provider, db, "user", user.id, evaluation.model_dump(mode="json"))
     db.add(
         RuleEvaluation(
@@ -72,8 +78,12 @@ class ActivationIn(BaseModel):
 def list_rules(
     db: Annotated[Session, Depends(get_db)],
     _staff: Annotated[StaffUser, Depends(require("rules:read"))],
-) -> dict:
-    rows = db.execute(select(RuleVersion).order_by(RuleVersion.rule_id, RuleVersion.version)).scalars().all()
+) -> dict[str, Any]:
+    rows = (
+        db.execute(select(RuleVersion).order_by(RuleVersion.rule_id, RuleVersion.version))
+        .scalars()
+        .all()
+    )
     return ok(
         [
             {
@@ -94,10 +104,16 @@ def get_rule(
     version: str,
     db: Annotated[Session, Depends(get_db)],
     _staff: Annotated[StaffUser, Depends(require("rules:read"))],
-) -> dict:
-    row = db.execute(
-        select(RuleVersion).where(RuleVersion.rule_id == rule_id, RuleVersion.version == version)
-    ).scalars().first()
+) -> dict[str, Any]:
+    row = (
+        db.execute(
+            select(RuleVersion).where(
+                RuleVersion.rule_id == rule_id, RuleVersion.version == version
+            )
+        )
+        .scalars()
+        .first()
+    )
     if row is None:
         raise NotFound("rule version not found")
     return ok(row.payload)
@@ -109,7 +125,7 @@ def register_rule(
     db: Annotated[Session, Depends(get_db)],
     staff: Annotated[StaffUser, Depends(require("rules:activate"))],
     settings: Annotated[Settings, Depends(get_settings)],
-) -> dict:
+) -> dict[str, Any]:
     import json
 
     path = settings.ontology_dir / "rules" / f"{body.rule_id}.json"
@@ -126,7 +142,7 @@ def activate_request(
     body: ActivationIn,
     db: Annotated[Session, Depends(get_db)],
     staff: Annotated[StaffUser, Depends(require("rules:activate"))],
-) -> dict:
+) -> dict[str, Any]:
     activation = request_activation(db, rule_id=body.rule_id, version=body.version, author=staff)
     db.commit()
     return ok({"activation_id": str(activation.id), "status": activation.status})
@@ -137,7 +153,7 @@ def activate_approve(
     activation_id: uuid.UUID,
     db: Annotated[Session, Depends(get_db)],
     staff: Annotated[StaffUser, Depends(require("rules:activate"))],
-) -> dict:
+) -> dict[str, Any]:
     activation = approve_activation(db, activation_id=activation_id, approver=staff)
     db.commit()
     return ok({"activation_id": str(activation.id), "status": activation.status})
@@ -148,7 +164,7 @@ def rollback(
     body: ActivationIn,
     db: Annotated[Session, Depends(get_db)],
     staff: Annotated[StaffUser, Depends(require("rules:activate"))],
-) -> dict:
+) -> dict[str, Any]:
     restored = rollback_rule(db, rule_id=body.rule_id, staff=staff)
     db.commit()
     return ok({"rule_id": body.rule_id, "restored_version": restored.version if restored else None})

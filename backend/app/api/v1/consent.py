@@ -1,6 +1,6 @@
 """Consent endpoints: state, grants (guardian/assent/self), revocation."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
@@ -10,7 +10,6 @@ from app.api.deps import ProviderDep
 from app.api.envelope import ok
 from app.auth.deps import get_current_user
 from app.consent import service as consent_service
-from app.crypto.key_provider import DatabaseKeyProvider
 from app.db import get_db
 from app.models import User
 from app.users.service import age_of
@@ -29,7 +28,7 @@ def state(
     db: Annotated[Session, Depends(get_db)],
     provider: ProviderDep,
     user: Annotated[User, Depends(get_current_user)],
-) -> dict:
+) -> dict[str, Any]:
     return ok(consent_service.consent_state(db, user, age_of(provider, db, user)))
 
 
@@ -39,7 +38,7 @@ def grant(
     db: Annotated[Session, Depends(get_db)],
     provider: ProviderDep,
     user: Annotated[User, Depends(get_current_user)],
-) -> dict:
+) -> dict[str, Any]:
     event = consent_service.grant_consent(
         db,
         user,
@@ -62,7 +61,7 @@ def grant(
 def revoke(
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[User, Depends(get_current_user)],
-) -> dict:
+) -> dict[str, Any]:
     result = consent_service.revoke_consent(db, user)
     db.commit()
     return ok(result)

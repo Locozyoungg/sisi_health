@@ -21,9 +21,9 @@ val copyOntologyTestResources by tasks.registering(Copy::class) {
     into("src/test/resources/ontology")
 }
 
-tasks.named("preBuild") { dependsOn(copyOntologyAssets) }
-tasks.named("preDebugUnitTestBuild") { dependsOn(copyOntologyTestResources) }
-tasks.named("preReleaseUnitTestBuild") { dependsOn(copyOntologyTestResources) }
+tasks.named("preBuild") {
+    dependsOn(copyOntologyAssets, copyOntologyTestResources)
+}
 
 android {
     namespace = "com.sisi.health"

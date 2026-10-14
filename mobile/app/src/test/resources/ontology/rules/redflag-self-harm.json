@@ -1,0 +1,36 @@
+{
+  "id": "redflag-self-harm",
+  "version": "1.0.0",
+  "condition": "self_harm",
+  "min_age": 13,
+  "red_flag": true,
+  "priority": 100,
+  "inputs": [
+    { "name": "self_harm_signal", "type": "boolean", "description": "Any reported self-harm thought or act in the last 90 days." }
+  ],
+  "logic": {
+    "op": "eq",
+    "input": "self_harm_signal",
+    "value": true
+  },
+  "output_band": "RED",
+  "evidence": [
+    {
+      "title": "Suicide fact sheet",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "url": "https://www.who.int/news-room/fact-sheets/detail/suicide",
+      "note": "Self-harm signals require urgent care and, for minors, safeguarding routing (spec 3.3) — never a guardian alert with symptom detail."
+    }
+  ],
+  "clinically_validated": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off."
+    }
+  ]
+}

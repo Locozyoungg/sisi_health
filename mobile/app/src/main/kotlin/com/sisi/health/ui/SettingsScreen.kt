@@ -65,6 +65,12 @@ class SettingsViewModel @Inject constructor(
 fun SettingsScreen(viewModel: SettingsViewModel, settings: SettingsStore) {
     var pin by remember { mutableStateOf("") }
     var status by remember { mutableStateOf<String?>(null) }
+    // Strings for callbacks are hoisted here (composable context) so lambdas
+    // (non-composable context) never call stringResource directly.
+    val pinSetMsg = stringResource(R.string.settings_pin_set)
+    val pinInvalidMsg = stringResource(R.string.settings_pin_invalid)
+    val vaultDisabledMsg = stringResource(R.string.settings_vault_disabled)
+    val wrongPinMsg = stringResource(R.string.vault_wrong_pin)
 
     Column(
         modifier = Modifier
@@ -97,8 +103,8 @@ fun SettingsScreen(viewModel: SettingsViewModel, settings: SettingsStore) {
                 TextButton(onClick = {
                     viewModel.setPin(pin) { result ->
                         status = result.fold(
-                            onSuccess = { stringResourceSafe(R.string.settings_pin_set) },
-                            onFailure = { stringResourceSafe(R.string.settings_pin_invalid) },
+                            onSuccess = { pinSetMsg },
+                            onFailure = { pinInvalidMsg },
                         )
                         pin = ""
                     }
@@ -108,7 +114,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, settings: SettingsStore) {
             } else {
                 TextButton(onClick = {
                     viewModel.disableVault(pin) { ok ->
-                        status = stringResourceSafe(if (ok) R.string.settings_vault_disabled else R.string.vault_wrong_pin)
+                        status = if (ok) vaultDisabledMsg else wrongPinMsg
                         pin = ""
                     }
                 }) {
@@ -150,6 +156,3 @@ fun SettingsScreen(viewModel: SettingsViewModel, settings: SettingsStore) {
         Text(text = stringResource(R.string.settings_disclaimer), style = MaterialTheme.typography.bodySmall)
     }
 }
-
-@Composable
-private fun stringResourceSafe(id: Int): String = androidx.compose.ui.res.stringResource(id)

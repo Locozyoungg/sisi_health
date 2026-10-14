@@ -96,12 +96,14 @@ object AppModule {
 }
 
 /** Ontology served from app assets at runtime (bundled by the copyOntologyAssets
- * Gradle task from /ontology — the single source of truth). */
+ * Gradle task from /ontology — the single source of truth). The asset dir is
+ * ontology/, so loader-relative paths get that prefix. */
 class AndroidRuleSource(private val context: Context) : RuleSource {
     private val assets = context.assets
 
-    override fun listFiles(dir: String): List<String> = assets.list(dir)?.toList() ?: emptyList()
+    override fun listFiles(dir: String): List<String> =
+        assets.list("ontology/$dir")?.toList() ?: emptyList()
 
     override fun readText(path: String): String =
-        assets.open(path).bufferedReader(Charsets.UTF_8).use { it.readText() }
+        assets.open("ontology/$path").bufferedReader(Charsets.UTF_8).use { it.readText() }
 }

@@ -8,13 +8,13 @@ import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
 import io.kotest.property.forAll
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /** DoD: sync-conflict property tests (spec 2). The merge rule is "highest version
  * wins per field, server timestamp breaks ties" — property-checked against a
- * brute-force oracle over random version sets, and against the backend semantics. */
+ * brute-force oracle over random version sets. */
 class FieldMergePropertyTest {
 
     private fun oracle(pairs: List<Triple<Int, Long, Map<String, Any?>>>): Map<String, Any?> {
@@ -29,18 +29,25 @@ class FieldMergePropertyTest {
     }
 
     @Test
-    fun `merge matches brute-force oracle for random flat payloads`() = checkAll(
-        Arb.int(1, 100),
-        Arb.list(Arb.int(1, 20), 1..50),
-        Arb.long(0, 1_000_000),
-        Arb.map(Arb.string(1, 8), Arb.int(-100, 100), 1..8),
-    ) { version, versions, serverTs, values ->
-        val payloads = versions.map { v ->
-            FieldMerge.VersionedPayload(v, serverTs, values.entries.associate { it.key to it.value })
+    fun `merge matches brute-force oracle for random flat payloads`() {
+        runBlocking {
+            checkAll(
+                Arb.int(1, 100),
+                Arb.list(Arb.int(1, 20), 1..50),
+                Arb.long(0, 1_000_000),
+                Arb.map(Arb.string(1, 8), Arb.int(-100, 100), 1, 8),
+            ) { _seed, versions, serverTs, values ->
+                val payloads = versions.map { v ->
+                    FieldMerge.VersionedPayload(
+                        v, serverTs,
+                        values.entries.associate { it.key to it.value },
+                    )
+                }
+                val merged = FieldMerge.merge(payloads)
+                val expected = oracle(payloads.map { Triple(it.version, it.serverTs, it.payload) })
+                assertEquals(expected, merged)
+            }
         }
-        val merged = FieldMerge.merge(payloads)
-        val expected = oracle(payloads.map { Triple(it.version, it.serverTs, it.payload) })
-        assertEquals(expected, merged)
     }
 
     @Test
@@ -77,16 +84,17 @@ class FieldMergePropertyTest {
     }
 
     @Test
-    fun `golden parity guard - merge never changes rule inputs unexpectedly`() {
-        // Property: merged pain values are always the highest-version pain value.
-        forAll<Int, Int, Long, Long> { pain1, pain2, ts1, ts2 ->
-            val merged = FieldMerge.merge(
-                listOf(
-                    FieldMerge.VersionedPayload(1, ts1, mapOf("pain" to pain1)),
-                    FieldMerge.VersionedPayload(2, ts2, mapOf("pain" to pain2)),
+    fun `merged pain is always the highest-version pain value`() {
+        runBlocking {
+            forAll<Int, Int, Long, Long> { pain1, pain2, ts1, ts2 ->
+                val merged = FieldMerge.merge(
+                    listOf(
+                        FieldMerge.VersionedPayload(1, ts1, mapOf("pain" to pain1)),
+                        FieldMerge.VersionedPayload(2, ts2, mapOf("pain" to pain2)),
+                    )
                 )
-            )
-            merged["pain"] == pain2
+                merged["pain"] == pain2
+            }
         }
     }
 }

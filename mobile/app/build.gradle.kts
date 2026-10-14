@@ -11,13 +11,18 @@ plugins {
 
 // The ontology is the single source of truth for rules/golden cases/red flags.
 // The app bundles the same JSON the backend runs (spec: identical engines).
+// Single-root copy preserves the rules/golden/redflags/schema subdirectories.
 val copyOntologyAssets by tasks.registering(Copy::class) {
-    from("../ontology/rules", "../ontology/golden", "../ontology/redflags", "../ontology/schema")
+    from("../../ontology") {
+        include("rules/**", "golden/**", "redflags/**", "schema/**")
+    }
     into("src/main/assets/ontology")
 }
 
 val copyOntologyTestResources by tasks.registering(Copy::class) {
-    from("../ontology/rules", "../ontology/golden", "../ontology/redflags", "../ontology/schema")
+    from("../../ontology") {
+        include("rules/**", "golden/**", "redflags/**", "schema/**")
+    }
     into("src/test/resources/ontology")
 }
 

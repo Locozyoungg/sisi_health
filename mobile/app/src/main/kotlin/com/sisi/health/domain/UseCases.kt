@@ -8,6 +8,7 @@ import com.sisi.health.engine.FeatureExtractor.DiaryRecord
 import com.sisi.health.engine.RuleEngine
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -40,19 +41,19 @@ class AddDiaryEntryUseCase @Inject constructor(
         androgenic: Boolean? = null,
         selfHarm: Boolean? = null,
     ): JsonObject = buildJsonObject {
-        put("date", date)
-        pain?.let { put("pain", it) }
-        bleedingVolume?.let { put("bleeding_volume", it) }
-        put("cycle_start", cycleStart)
+        put("date", JsonPrimitive(date))
+        pain?.let { put("pain", JsonPrimitive(it)) }
+        bleedingVolume?.let { put("bleeding_volume", JsonPrimitive(it)) }
+        put("cycle_start", JsonPrimitive(cycleStart))
         val symptoms = buildJsonObject {
-            fatigue?.let { put("fatigue", it) }
-            dyschezia?.let { put("dyschezia", it) }
-            dyspareunia?.let { put("dyspareunia", it) }
-            dizziness?.let { put("dizziness", it) }
-            pelvicPressure?.let { put("pelvic_pressure", it) }
-            urinaryFrequency?.let { put("urinary_frequency", it) }
-            androgenic?.let { put("androgenic", it) }
-            selfHarm?.let { put("self_harm", it) }
+            fatigue?.let { put("fatigue", JsonPrimitive(it)) }
+            dyschezia?.let { put("dyschezia", JsonPrimitive(it)) }
+            dyspareunia?.let { put("dyspareunia", JsonPrimitive(it)) }
+            dizziness?.let { put("dizziness", JsonPrimitive(it)) }
+            pelvicPressure?.let { put("pelvic_pressure", JsonPrimitive(it)) }
+            urinaryFrequency?.let { put("urinary_frequency", JsonPrimitive(it)) }
+            androgenic?.let { put("androgenic", JsonPrimitive(it)) }
+            selfHarm?.let { put("self_harm", JsonPrimitive(it)) }
         }
         if (symptoms.isNotEmpty()) put("symptoms", symptoms)
     }

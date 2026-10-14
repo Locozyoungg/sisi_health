@@ -1,0 +1,47 @@
+{
+  "id": "redflag-heavy-bleeding-dizziness",
+  "version": "1.0.0",
+  "condition": "heavy_bleeding_dizziness",
+  "min_age": 13,
+  "red_flag": true,
+  "priority": 95,
+  "inputs": [
+    { "name": "avg_bleeding_volume_90d", "type": "numeric", "description": "Average daily bleeding volume score (0-4) over the last 90 days." },
+    { "name": "dizziness_signal", "type": "boolean", "description": "Any reported dizziness or fainting in the last 90 days." }
+  ],
+  "logic": {
+    "op": "and",
+    "operands": [
+      { "op": "gte", "input": "avg_bleeding_volume_90d", "value": 3 },
+      { "op": "eq", "input": "dizziness_signal", "value": true }
+    ]
+  },
+  "output_band": "RED",
+  "evidence": [
+    {
+      "title": "Heavy menstrual bleeding: assessment and management (NG88)",
+      "source_type": "clinical_guideline",
+      "organization": "NICE",
+      "year": 2018,
+      "url": "https://www.nice.org.uk/guidance/ng88",
+      "note": "Draft: heavy bleeding with dizziness is an urgent-care signal. Threshold is a DRAFT pending Kenyan clinician sign-off."
+    },
+    {
+      "title": "Anaemia fact sheet",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "url": "https://www.who.int/news-room/fact-sheets/detail/anaemia",
+      "note": "Heavy menstrual bleeding is a common cause of iron-deficiency anaemia; dizziness may indicate significant blood loss."
+    }
+  ],
+  "clinically_validated": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off."
+    }
+  ]
+}

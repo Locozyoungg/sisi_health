@@ -7,6 +7,8 @@ $Tools = "E:\Projects\sisi_health\.tools"
 $env:JAVA_HOME = Join-Path $Tools "jdk17"
 $env:ANDROID_HOME = Join-Path $Tools "android-sdk"
 $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
+# Gradle caches live on E: — C: had <1 GB free (moved 2026-10-14, user-approved).
+$env:GRADLE_USER_HOME = Join-Path $Tools "gradle-home"
 
 Push-Location "E:\Projects\sisi_health\mobile"
 try {

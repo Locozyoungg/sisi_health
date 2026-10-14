@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "language": "sheng",
+  "description": "Red-flag patterns (Sheng, Nairobi youth code-switched Kiswahili/English). Same rules as en/sw: detected BEFORE the LLM; safeguarding categories route to the safeguarding lead, never a guardian alert (spec 3.3).",
+  "patterns": [
+    { "id": "sh-severe-pain-01", "category": "severe_acute_pain", "urgency": "RED", "regex": "maumivu ni (mingi|mengi)( sana)?( mpaka)? (nashindwa|siwezi)" },
+    { "id": "sh-severe-pain-02", "category": "severe_acute_pain", "urgency": "RED", "regex": "pain ni (10|kumi|9|tisa)( out of (10|ten))?" },
+    { "id": "sh-severe-pain-03", "category": "severe_acute_pain", "urgency": "RED", "regex": "naskia (kama nife|nitakufa) kwa pain" },
+    { "id": "sh-bleed-dizzy-01", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "(bleed|damu) (nyingi|mingi)( na)? naskia (dizzy|kizunguzungu|weak)" },
+    { "id": "sh-bleed-dizzy-02", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "(nimefaint|nilifaint|faint) (leo|jana)" },
+    { "id": "sh-self-harm-01", "category": "self_harm", "urgency": "SAFEGUARDING", "regex": "(nataka|siwezi kuendelea)( kuishi| kuishi)" },
+    { "id": "sh-self-harm-02", "category": "self_harm", "urgency": "SAFEGUARDING", "regex": "(life yangu|maisha) (haina|yameisha)( maana)?" },
+    { "id": "sh-abuse-01", "category": "abuse_signal", "urgency": "SAFEGUARDING", "regex": "ame(force|touch) (kitu|me)" },
+    { "id": "sh-abuse-02", "category": "abuse_signal", "urgency": "SAFEGUARDING", "regex": "niko scared ya (baba|mjomba|mlezi|guardian)" },
+    { "id": "sh-pregnancy-minor-01", "category": "pregnancy_concern_minor", "urgency": "SAFEGUARDING", "regex": "(naskia|nadhani)( niko na| nina) (mimba|preggo)" },
+    { "id": "sh-guardian-risk-01", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "(baba|mjomba|mlezi|guardian) (ananibeat|ananichapa|ananigusa)" }
+  ]
+}

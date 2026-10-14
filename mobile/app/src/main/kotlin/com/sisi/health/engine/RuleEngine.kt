@@ -1,5 +1,8 @@
 package com.sisi.health.engine
 
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+
 /** The deterministic band engine — a faithful port of backend/app/rules/engine.py.
  * Invariants (all under test, mirrored on the server):
  * - red flags evaluate FIRST; a red-flag match can never lower the band

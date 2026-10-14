@@ -1,0 +1,37 @@
+{
+  "id": "redflag-severe-acute-pain",
+  "version": "1.0.0",
+  "condition": "severe_acute_pain",
+  "min_age": 13,
+  "red_flag": true,
+  "priority": 95,
+  "inputs": [
+    { "name": "max_pain_90d", "type": "numeric", "description": "Maximum reported pain (0-10 NRS) in the last 90 days." }
+  ],
+  "logic": {
+    "op": "gte",
+    "input": "max_pain_90d",
+    "value": 9
+  },
+  "output_band": "RED",
+  "evidence": [
+    {
+      "title": "Endometriosis: diagnosis and management (NG73)",
+      "source_type": "clinical_guideline",
+      "organization": "NICE",
+      "year": 2017,
+      "url": "https://www.nice.org.uk/guidance/ng73",
+      "note": "Draft threshold: NRS 9+ as a marker of severe acute pain warranting urgent assessment. Threshold is a DRAFT pending Kenyan clinician sign-off."
+    }
+  ],
+  "clinically_validated": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off."
+    }
+  ]
+}

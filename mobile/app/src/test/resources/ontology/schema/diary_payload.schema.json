@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sisi-health.org/ontology/schema/diary_payload.schema.json",
+  "title": "SISI diary entry payload",
+  "description": "One day's symptom record, encrypted field-by-field in the diary schema. pain is the validated 0-10 NRS; bleeding_volume is 0-4 (none/spotting/light/moderate/heavy/flooding). sexual-health fields (dyspareunia) are only collected from users 18+; the server validates payload shape, the app enforces age gating at collection time.",
+  "type": "object",
+  "required": ["date"],
+  "additionalProperties": false,
+  "properties": {
+    "date": { "type": "string", "format": "date" },
+    "pain": { "type": ["integer", "null"], "minimum": 0, "maximum": 10 },
+    "bleeding_volume": { "type": ["integer", "null"], "minimum": 0, "maximum": 4 },
+    "bleeding_pattern": {
+      "type": ["string", "null"],
+      "enum": ["none", "spotting", "light", "moderate", "heavy", "flooding"]
+    },
+    "cycle_start": { "type": "boolean" },
+    "symptoms": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dyschezia": { "type": "boolean" },
+        "dyspareunia": { "type": "boolean" },
+        "pelvic_pressure": { "type": "boolean" },
+        "urinary_frequency": { "type": "boolean" },
+        "dizziness": { "type": "boolean" },
+        "fatigue": { "type": "boolean" },
+        "androgenic": { "type": "boolean" },
+        "mood": { "type": ["string", "null"] },
+        "self_harm": { "type": "boolean" }
+      }
+    },
+    "notes": { "type": ["string", "null"], "maxLength": 500 }
+  }
+}

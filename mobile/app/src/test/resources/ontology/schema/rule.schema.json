@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sisi-health.org/ontology/schema/rule.schema.json",
+  "title": "SISI deterministic triage rule",
+  "description": "A versioned, clinician-reviewable triage rule. The logic tree is a constrained expression DSL evaluated identically by the Python and Kotlin engines. Rules ship with clinically_validated=false and empty sign-off fields until a licensed Kenyan clinician signs off; the backend additionally enforces: if clinically_validated is true all three sign-off fields must be present, if false they must all be empty. min_age gates the rule; red-flag rules are always evaluated first and can never lower a band.",
+  "type": "object",
+  "required": [
+    "id", "version", "condition", "inputs", "logic", "output_band",
+    "min_age", "evidence", "clinically_validated", "changelog"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]{3,64}$",
+      "description": "Stable rule identifier, e.g. anemia-risk-flag."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "endometriosis_indicator",
+        "pcos_indicator",
+        "fibroid_indicator",
+        "anemia_risk",
+        "severe_acute_pain",
+        "heavy_bleeding_dizziness",
+        "self_harm"
+      ],
+      "description": "The condition indicator this rule contributes to. Never a diagnosis."
+    },
+    "min_age": { "type": "integer", "minimum": 13 },
+    "red_flag": {
+      "type": "boolean",
+      "default": false,
+      "description": "Red-flag rules evaluate first; a match forces urgent escalation and can never lower the final band."
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 50
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/input" }
+    },
+    "logic": { "$ref": "#/$defs/logic" },
+    "output_band": {
+      "type": "string",
+      "enum": ["GREEN", "YELLOW", "ORANGE", "RED"],
+      "description": "Band contributed when the logic matches. Red-flag rules must be ORANGE or RED (enforced by the validator)."
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/evidence" }
+    },
+    "clinically_validated": { "type": "boolean" },
+    "reviewer_name": { "type": ["string", "null"] },
+    "reviewer_registration_no": { "type": ["string", "null"] },
+    "signed_at": { "type": ["string", "null"], "format": "date-time" },
+    "changelog": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["version", "note"],
+        "additionalProperties": false,
+        "properties": {
+          "version": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "input": {
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z0-9_]{1,64}$" },
+        "type": { "type": "string", "enum": ["numeric", "boolean"] },
+        "description": { "type": "string" }
+      }
+    },
+    "logic": {
+      "type": "object",
+      "required": ["op"],
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": ["and", "or", "not", "gte", "gt", "lte", "lt", "eq", "neq", "between", "in"]
+        },
+        "operands": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/logic" }
+        },
+        "input": { "type": "string" },
+        "value": {},
+        "values": { "type": "array" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "op": { "enum": ["and", "or"] } } },
+          "then": { "required": ["operands"], "not": { "required": ["input", "value", "values"] } }
+        },
+        {
+          "if": { "properties": { "op": { "const": "not" } } },
+          "then": {
+            "required": ["operands"],
+            "properties": { "operands": { "maxItems": 1 } },
+            "not": { "required": ["input", "value", "values"] }
+          }
+        },
+        {
+          "if": { "properties": { "op": { "enum": ["gte", "gt", "lte", "lt", "eq", "neq"] } } },
+          "then": { "required": ["input", "value"], "not": { "required": ["operands", "values"] } }
+        },
+        {
+          "if": { "properties": { "op": { "const": "between" } } },
+          "then": {
+            "required": ["input", "values"],
+            "properties": { "values": { "minItems": 2, "maxItems": 2 } },
+            "not": { "required": ["operands", "value"] }
+          }
+        },
+        {
+          "if": { "properties": { "op": { "const": "in" } } },
+          "then": {
+            "required": ["input", "values"],
+            "not": { "required": ["operands", "value"] }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["title", "source_type"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "source_type": {
+          "type": "string",
+          "enum": ["clinical_guideline", "systematic_review", "health_authority", "other"]
+        },
+        "organization": { "type": "string" },
+        "year": { "type": "integer" },
+        "url": { "type": "string", "format": "uri" },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

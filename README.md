@@ -2,53 +2,80 @@
 
 Women's chronic gynecological health platform for Kenya — private symptom
 tracker, deterministic AI triage, "Period-Friendly School" program, and a
-specialist referral corridor. Built for review by UNICEF's Venture Fund and
-deployment in real Kenyan schools.
+specialist referral corridor. Built by **Kairon Technologies Limited** for
+review by UNICEF's Venture Fund and deployment in real Kenyan schools.
 
 **SISI supports you and your doctor — it does not diagnose.**
 
+## Status
+
+| Phase | Scope | Status |
+|---|---|---|
+| 1 | Backend core, deterministic rules engine, audit trail, consent/erasure | ✅ **Complete** — 111 tests, 91% coverage, demo 13/13 |
+| 2 | Consumer Android app (offline diary, pattern engine, privacy vault) | ✅ **Complete** — 39 tests incl. golden parity, release APK 15.0 MB |
+| 3 | USSD + WhatsApp assessment flows | ⏳ Next |
+| 4 | School nurse console, dashboards, M-Pesa vouchers | ⏳ |
+| 5 | Specialist corridor (+ cervical screening module) | ⏳ |
+| 6 | AI conversation layer with RAG + guardrails | ⏳ |
+| 7 | Employer admin (minimal) | ⏳ |
+| 8 | Hardening: pen-test checklist, load test, deploy | ⏳ |
+
 ## Monorepo
 
-| Path | Purpose | Phase |
-|---|---|---|
-| `/backend` | FastAPI API, deterministic rules engine, audit trail, consent/erasure | 1 |
-| `/ontology` | Open-source symptom ontology: rule JSON, red-flag patterns, golden cases (CC-BY 4.0) | 1 |
-| `/docs` | SPEC, assumptions, contract changes, human tasks, role matrix, hazard log | 1 |
-| `/mobile` | Android app (offline-first diary, pattern engine, privacy vault) | 2 |
-| `/ussd-whatsapp` | USSD + WhatsApp assessment flows | 3 |
-| `/web` | Nurse console, school dashboards, admin, M-Pesa vouchers | 4 |
-| `/ai` | LLM service, RAG, guardrails, eval harness | 6 |
+| Path | Purpose |
+|---|---|
+| `/backend` | FastAPI API, deterministic rules engine, hash-chained audit trail, consent/erasure, DSR (Python 3.12, PostgreSQL 16) |
+| `/ontology` | Open-source symptom ontology: rule JSON, red-flag patterns (en/sw/sheng), golden parity cases (CC-BY 4.0) |
+| `/mobile` | Android app: offline-first diary (Room + SQLCipher), Kotlin engine (same JSON rules as the server), privacy vault, discreet alias |
+| `/docs` | SPEC, assumptions, contract changes, human tasks, role matrix, hazard log, OpenAPI (frozen), clinician review packet |
+| `/ussd-whatsapp`, `/web`, `/ai` | Later phases (see Status) |
 
-## Quick start (Phase 1)
+## Quick start — backend (Phase 1)
 
 ```powershell
-# Windows (this machine): use the PowerShell wrapper
-.\make.ps1 setup      # create venv + install
-.\make.ps1 db-up      # postgres:16 + redis via Docker
-.\make.ps1 demo-phase1
+# Windows: PowerShell wrapper (uses portable PostgreSQL; no Docker needed)
+.\make.ps1 setup        # create venv + install backend
+.\make.ps1 db-up        # portable PostgreSQL 16 at .tools/ (auto-inits on first run)
+.\make.ps1 demo-phase1  # migrate + seed synthetic data + 13-step live demo
+.\make.ps1 test         # 111 tests
 ```
 
 ```bash
-# Linux / CI: plain make
+# Linux / CI: plain make + Docker
 make setup db-up demo-phase1
 ```
 
-## Non-negotiables (enforced by tests)
+## Quick start — Android app (Phase 2)
 
-1. The deterministic rules engine assigns every risk band; the LLM never does.
-2. Synthetic data only — no real patient data anywhere.
-3. Every rule ships `clinically_validated: false` until a Kenyan clinician signs off.
-4. Nothing condition-identifying in notifications, SMS, USSD screens, or crash reports.
-5. Minors' raw symptom data is never visible outside the clinical corridor.
-6. All timestamps UTC in storage, Africa/Nairobi in display; UUIDv7 IDs only.
-7. Secrets never in the repo.
-8. Every phase adds tests before it is done; a failing band test blocks the merge.
-9. Anything unspecified affecting safety, privacy, cost, or the database is a
-   question for the maintainer, not a guess.
+```powershell
+.\scripts\android.ps1 testDebugUnitTest   # 39 tests: golden parity, property tests, vault
+.\scripts\android.ps1 assembleRelease     # R8-minified release
+.\make.ps1 android-size                   # release build + 25 MB budget check (currently 15.0 MB)
+```
 
-See `/docs/SPEC.md` for the full build specification and `/AGENTS.md` for the
-session protocol.
+The Android toolchain is fully portable (JDK 17, Android SDK, Gradle 8.9 under
+`.tools/`, gitignored) — `scripts/android.ps1` wires `JAVA_HOME`,
+`ANDROID_HOME`, and `GRADLE_USER_HOME` (cache on E:).
+
+## Safety architecture (how the non-negotiables are enforced)
+
+| Non-negotiable | Enforcement |
+|---|---|
+| Rules engine assigns every band; the LLM never does | `backend/app/rules/` + `mobile/.../engine/` run the **same JSON** from `/ontology`; golden parity tests on both sides; LLM endpoints (Phase 6) are explain-only by contract |
+| Synthetic data only | Synthetic-only seeders/fixtures; CI + demo use generated data |
+| Every rule ships `clinically_validated: false` until a Kenyan clinician signs off | Validator enforces empty sign-off fields; the engine refuses unvalidated rules unless `ALLOW_UNVALIDATED_RULES` (dev/demo only); two-person activation workflow with a golden-suite gate |
+| Nothing condition-identifying in notifications/SMS/USSD/app-switcher | `StringsPrivacyTest` scans app strings; backend channel limits; discreet launcher alias ("Notes") |
+| Minors' raw symptom data invisible outside the clinical corridor | RBAC matrix + encrypted diary schema; staff see bands only |
+| UTC storage / Nairobi display; UUIDv7 only | `core/time`, `core/ids` (Python) + `Uuid7` (Kotlin), tested |
+| Secrets never in the repo | `.env.example` only; gitleaks in CI |
+| Tests before done; failing band test blocks merge | CI gates (backend + Android jobs) |
+| Unspecified safety/privacy/cost/DB questions go to the maintainer | `/docs/assumptions.md` A1–A18, every entry recorded before coding |
+
+See `/docs/SPEC.md` for the full build specification, `/AGENTS.md` for the
+session protocol, and `/docs/contract-changes.md` for frozen-contract changes.
 
 ## License
 
-Code: MIT. Ontology and content: CC-BY 4.0. See `/LICENSE` and `/ontology/LICENSE`.
+Code: MIT. Ontology and content: CC-BY 4.0.
+Copyright © 2026 Kairon Technologies Limited. See `/LICENSE` and
+`/ontology/LICENSE`.

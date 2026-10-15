@@ -1,0 +1,45 @@
+{
+  "id": "redflag-postmenopausal-bleeding",
+  "version": "1.0.0",
+  "condition": "postmenopausal_bleeding",
+  "min_age": 45,
+  "red_flag": true,
+  "priority": 93,
+  "inputs": [
+    { "name": "postmenopausal_bleeding_signal", "type": "boolean", "description": "Any reported bleeding after menopause in the last 90 days. Collected from users 45+ only." }
+  ],
+  "logic": {
+    "op": "eq",
+    "input": "postmenopausal_bleeding_signal",
+    "value": true
+  },
+  "output_band": "ORANGE",
+  "evidence": [
+    {
+      "title": "Suspected cancer: recognition and referral (NG12)",
+      "source_type": "clinical_guideline",
+      "organization": "NICE",
+      "year": 2015,
+      "url": "https://www.nice.org.uk/guidance/ng12",
+      "note": "Post-menopausal bleeding warrants referral consideration. The 45+ age threshold is a DRAFT pending Kenyan clinician sign-off."
+    },
+    {
+      "title": "Comprehensive Cervical Cancer Control: A Guide to Essential Practice",
+      "source_type": "clinical_guideline",
+      "organization": "WHO",
+      "year": 2014,
+      "url": "https://www.who.int/publications/i/item/9789241548953",
+      "note": "Bleeding after menopause warrants clinical evaluation. DRAFT pending Kenyan clinician sign-off."
+    }
+  ],
+  "clinically_validated": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off."
+    }
+  ]
+}

@@ -27,6 +27,6 @@ object RuleSetLoader {
             .sorted()
             .map { name -> json.decodeFromString(source.readText("redflags/$name")) }
 
-    fun buildEngine(source: RuleSource, allowUnvalidated: Boolean): RuleEngine =
-        RuleEngine(loadRules(source), RULE_SET_VERSION, allowUnvalidated)
+    fun buildEngine(source: RuleSource, allowUnvalidated: Boolean, minorAge: Int = 18): RuleEngine =
+        RuleEngine(loadRules(source), RULE_SET_VERSION, allowUnvalidated, minorAge)
 }

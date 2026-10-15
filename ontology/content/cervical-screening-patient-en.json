@@ -1,0 +1,37 @@
+{
+  "slug": "cervical-screening-patient-en",
+  "version": "1.0.0",
+  "language": "en",
+  "audience": "patient",
+  "title": "Cervical screening: what it is and when to go",
+  "body": "Cervical screening is a short test done at a health facility. A nurse or doctor takes a small sample of cells from the cervix (the opening of the womb), or looks at the cervix directly. Screening is for everyone with a cervix, whether or not you feel that anything is wrong.\n\nWhy go even when you feel well. Changes on the cervix usually cause no signs at all in the early years. Screening finds them while they are simple to treat, long before they would ever be noticed.\n\nWhen to go. In this app the screening start age and the repeat interval come from the screening schedule file (ontology/config/screening_schedule.json). Those values are PLACEHOLDERS pending confirmation with the Kenya Ministry of Health, so always follow the advice the health worker gives you.\n\nWhat happens at the visit. The health worker may offer an HPV test, a VIA test or a Pap smear: all three are ways of checking the cervix. It takes only a few minutes and is usually not painful. You can ask the health worker to explain each step before it happens, bring someone with you, and ask for a female health worker.\n\nWhat the result means. The clinic will tell you when to come back. If something needs a closer look you will be referred, which is routine follow-up and not a verdict about your body.\n\nYour privacy. Anything you record in this app is encrypted. It is never shared with your school, your employer or your family unless you approve it, and you can stop sharing at any time.\n\nA normal symptom check does not replace screening.",
+  "sources": [
+    {
+      "title": "Comprehensive Cervical Cancer Control: A Guide to Essential Practice",
+      "source_type": "clinical_guideline",
+      "organization": "WHO",
+      "year": 2014,
+      "url": "https://www.who.int/publications/i/item/9789241548953",
+      "note": "Screening ages, test options and follow-up wording. Content is a DRAFT pending licensed Kenyan clinician sign-off."
+    },
+    {
+      "title": "National Cancer Screening Guidelines",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2018,
+      "url": "https://www.health.go.ke/",
+      "note": "Kenyan screening pathway (HPV test, VIA, Pap smear) and referral language. Ages and intervals are PLACEHOLDERS pending MoH confirmation."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": true,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off (human task H13)."
+    }
+  ]
+}

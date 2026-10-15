@@ -4,6 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
@@ -110,6 +111,7 @@ fun JsonElement.toAny(): Any? = when (this) {
     }
     is JsonObject -> entries.associate { (key, value) -> key to value.toAny() }
     is JsonArray -> map { it.toAny() }
+    JsonNull -> null
 }
 
 fun featuresFromJson(features: Map<String, JsonElement>): Map<String, Any?> =

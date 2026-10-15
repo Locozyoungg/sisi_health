@@ -30,6 +30,10 @@ class EngineSafetyTest {
             "androgenic_symptoms" to false,
             "self_harm_signal" to false,
             "dizziness_signal" to false,
+            "postcoital_bleeding_signal" to false,
+            "intermenstrual_bleeding_signal" to false,
+            "postmenopausal_bleeding_signal" to false,
+            "unusual_discharge_days_90d" to 0,
         ) + pairs
 
     @Test
@@ -138,5 +142,54 @@ class EngineSafetyTest {
         val result = RuleEngine(listOf(synthetic), "test", true)
             .evaluate(20, 30, mapOf("x" to 3))
         assertFalse("t-weird" in result.indicators)
+    }
+
+    @Test
+    fun `minor postcoital bleeding floors to ORANGE with safeguarding`() {
+        val result = engine().evaluate(17, 60, features("postcoital_bleeding_signal" to true))
+        assertEquals("ORANGE", result.band)
+        assertTrue(result.indicators.isEmpty())
+        assertFalse(result.urgent)
+        assertTrue(result.safeguarding)
+    }
+
+    @Test
+    fun `postcoital bleeding at 18 matches the rule without safeguarding`() {
+        val result = engine().evaluate(18, 60, features("postcoital_bleeding_signal" to true))
+        assertEquals("ORANGE", result.band)
+        assertEquals(listOf("redflag-postcoital-bleeding"), result.indicators)
+        assertTrue(result.urgent)
+        assertFalse(result.safeguarding)
+    }
+
+    @Test
+    fun `discharge threshold 5 is inclusive`() {
+        assertTrue(
+            "redflag-persistent-discharge" in
+                engine().evaluate(24, 60, features("unusual_discharge_days_90d" to 5)).indicators
+        )
+        assertFalse(
+            "redflag-persistent-discharge" in
+                engine().evaluate(24, 60, features("unusual_discharge_days_90d" to 4)).indicators
+        )
+    }
+
+    @Test
+    fun `postmenopausal bleeding is age-gated at 45`() {
+        assertTrue(
+            "redflag-postmenopausal-bleeding" in
+                engine().evaluate(45, 60, features("postmenopausal_bleeding_signal" to true)).indicators
+        )
+        assertFalse(
+            "redflag-postmenopausal-bleeding" in
+                engine().evaluate(44, 60, features("postmenopausal_bleeding_signal" to true)).indicators
+        )
+    }
+
+    @Test
+    fun `missing cervical input counts as matched via asymmetry`() {
+        val result = engine().evaluate(25, 60, features("intermenstrual_bleeding_signal" to null))
+        assertEquals("ORANGE", result.band)
+        assertTrue("redflag-intermenstrual-bleeding" in result.indicators)
     }
 }

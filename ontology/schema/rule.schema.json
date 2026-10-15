@@ -28,7 +28,11 @@
         "anemia_risk",
         "severe_acute_pain",
         "heavy_bleeding_dizziness",
-        "self_harm"
+        "self_harm",
+        "postcoital_bleeding",
+        "intermenstrual_bleeding",
+        "postmenopausal_bleeding",
+        "persistent_discharge"
       ],
       "description": "The condition indicator this rule contributes to. Never a diagnosis."
     },

@@ -10,11 +10,14 @@ import kotlinx.serialization.json.JsonPrimitive
  *   rules it counts as not matched
  * - fewer than 14 diary days -> NOT_ENOUGH_DATA, never a band
  * - users under 13 are rejected
+ * - a minor (< minorAge) reporting post-coital bleeding is a safeguarding signal and
+ *   the band is raised to at least ORANGE (cervical module, spec 5.4.1)
  * - unvalidated rules refuse to run unless the dev flag is on (non-negotiable 3) */
 class RuleEngine(
     rules: List<Rule>,
     private val ruleSetVersion: String,
     allowUnvalidated: Boolean,
+    private val minorAge: Int = 18,
 ) {
     private val rules: List<Rule> =
         rules.sortedWith(compareByDescending<Rule> { it.redFlag }.thenByDescending { it.priority })
@@ -35,13 +38,23 @@ class RuleEngine(
         val matches = rules.filter { rule ->
             age >= rule.minAge && evalNode(rule.logic, features, rule.redFlag)
         }
-        val band = matches.map { Band.valueOf(it.outputBand) }.maxByOrNull { it.severity } ?: Band.GREEN
+        val matchedBand = matches.map { Band.valueOf(it.outputBand) }.maxByOrNull { it.severity } ?: Band.GREEN
+        // Minor + post-coital bleeding: safeguarding signal with an ORANGE floor
+        // (the postcoital rule is min_age-gated, so the signal never comes from a
+        // match — mirrors engine.py exactly).
+        val minorPostcoital = age < minorAge && features["postcoital_bleeding_signal"] == true
+        val band = if (minorPostcoital && matchedBand.severity < Band.ORANGE.severity) {
+            Band.ORANGE
+        } else {
+            matchedBand
+        }
         return Evaluation(
             band = band.name,
             indicators = matches.map { it.id }.sorted(),
             urgent = matches.any { it.redFlag },
             safeguarding = features["self_harm_signal"] == true ||
-                matches.any { it.condition == "self_harm" },
+                matches.any { it.condition == "self_harm" } ||
+                minorPostcoital,
             ruleSetVersion = ruleSetVersion,
         )
     }

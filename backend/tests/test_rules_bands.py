@@ -54,4 +54,8 @@ def test_engine_loads_expected_rules(engine):
         "redflag-heavy-bleeding-dizziness",
         "redflag-severe-acute-pain",
         "redflag-self-harm",
+        "redflag-postcoital-bleeding",
+        "redflag-intermenstrual-bleeding",
+        "redflag-postmenopausal-bleeding",
+        "redflag-persistent-discharge",
     }

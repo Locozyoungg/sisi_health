@@ -16,3 +16,6 @@ faked. Status: `open` / `blocked` / `in progress` / `done`.
 | H9 | Hotline number verification (116 / 1195) and partner-hospital pricing | open | Config carries UNVERIFIED flags until then |
 | H10 | UNICEF application narrative, budget, theory of change | open | Grant package docs (Phase 8) |
 | H11 | Pilot validation study ethics approval (sensitivity/specificity vs clinician assessment) | open | Stub in /docs (Phase 8) |
+| H12 | Jitsi deployment + account (self-hosted or provider API) | open | Phase 5 ships the JWT room-token contract; server provisioning before pilot (A25) |
+| H13 | Confirm current Kenya MoH cervical screening + HPV vaccination schedules (screening start age, interval, HPV doses/ages) | open | Config placeholder in /ontology/config/screening_schedule.json (A26) |
+| H14 | Partner-hospital pricing data (real quotes replacing indicative stubs) | open | Pricing stubs marked indicative + sourced (A31) |

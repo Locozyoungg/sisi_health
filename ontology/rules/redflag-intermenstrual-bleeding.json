@@ -1,0 +1,43 @@
+{
+  "id": "redflag-intermenstrual-bleeding",
+  "version": "1.0.0",
+  "condition": "intermenstrual_bleeding",
+  "min_age": 13,
+  "red_flag": true,
+  "priority": 94,
+  "inputs": [
+    { "name": "intermenstrual_bleeding_signal", "type": "boolean", "description": "Any reported bleeding between periods in the last 90 days." }
+  ],
+  "logic": {
+    "op": "eq",
+    "input": "intermenstrual_bleeding_signal",
+    "value": true
+  },
+  "output_band": "ORANGE",
+  "evidence": [
+    {
+      "title": "Comprehensive Cervical Cancer Control: A Guide to Essential Practice",
+      "source_type": "clinical_guideline",
+      "organization": "WHO",
+      "year": 2014,
+      "url": "https://www.who.int/publications/i/item/9789241548953",
+      "note": "Bleeding between periods is a symptom that warrants clinical evaluation. Cervical screening module (spec 5.4.1): minimum band 'see a doctor soon'. DRAFT pending Kenyan clinician sign-off."
+    },
+    {
+      "title": "National Cancer Screening Guidelines",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "note": "Abnormal vaginal bleeding is among the symptoms prompting referral under the national screening guideline. DRAFT pending Kenyan clinician sign-off and MoH confirmation."
+    }
+  ],
+  "clinically_validated": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off."
+    }
+  ]
+}

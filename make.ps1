@@ -15,7 +15,7 @@ function Backend-Py([string[]]$PyArgs) {
 
 switch ($Target) {
     "help" {
-        Write-Host "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck clean"
+        Write-Host "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase4-demo phase5-demo clean"
     }
     "setup" {
         py -3.12 -m venv (Join-Path $Backend ".venv")
@@ -81,6 +81,15 @@ switch ($Target) {
     }
     "phase4-demo" {
         Backend-Py @("scripts/seed_school_demo.py")
+        Push-Location (Join-Path $Repo "web")
+        try { npm run e2e } finally { Pop-Location }
+    }
+    "phase5-demo" {
+        # Corridor demo world. Seeding the school demo first keeps the whole web e2e
+        # suite (console.spec.ts + corridor.spec.ts) runnable from a fresh database.
+        # The backend must already be running on :8000 (not started here).
+        Backend-Py @("scripts/seed_school_demo.py")
+        Backend-Py @("scripts/seed_corridor_demo.py")
         Push-Location (Join-Path $Repo "web")
         try { npm run e2e } finally { Pop-Location }
     }

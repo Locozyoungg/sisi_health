@@ -5,10 +5,10 @@ PYTHON  := $(VENV)/bin/python
 PIP     := $(VENV)/bin/pip
 COMPOSE := docker compose
 
-.PHONY: help setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck clean
+.PHONY: help setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo clean
 
 help:
-	@echo "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck clean"
+	@echo "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo clean"
 
 setup:
 	$(PY) -m venv $(VENV)
@@ -38,6 +38,14 @@ coverage:
 
 demo-phase1: migrate seed
 	cd backend && $(abspath $(PYTHON)) scripts/demo_phase1.py
+
+# Corridor demo world. The school demo seeds first so the whole web e2e suite
+# (console.spec.ts + corridor.spec.ts) runs from a fresh database. The backend
+# must already be running on :8000 (it is not started here).
+phase5-demo:
+	cd backend && $(abspath $(PYTHON)) scripts/seed_school_demo.py
+	cd backend && $(abspath $(PYTHON)) scripts/seed_corridor_demo.py
+	cd web && npm run e2e
 
 openapi:
 	cd backend && $(abspath $(PYTHON)) scripts/export_openapi.py

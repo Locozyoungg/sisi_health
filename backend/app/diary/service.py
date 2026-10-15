@@ -257,4 +257,16 @@ def compute_features(
         "androgenic_symptoms": any(s.get("androgenic") for s in symptoms),
         "self_harm_signal": any(s.get("self_harm") for s in symptoms),
         "dizziness_signal": any(s.get("dizziness") for s in symptoms),
+        "postcoital_bleeding_signal": any(s.get("postcoital_bleeding") for s in symptoms),
+        "intermenstrual_bleeding_signal": any(s.get("intermenstrual_bleeding") for s in symptoms),
+        "postmenopausal_bleeding_signal": any(
+            s.get("postmenopausal_bleeding") for s in symptoms
+        ),
+        "unusual_discharge_days_90d": len(
+            {
+                r["date"]
+                for r in records
+                if r.get("symptoms", {}).get("unusual_discharge") is True
+            }
+        ),
     }, diary_days

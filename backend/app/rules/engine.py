@@ -4,6 +4,9 @@
   rules it counts as not matched
 - fewer than 14 diary days -> NOT_ENOUGH_DATA, never a band
 - users under 13 are rejected (blocked at the age check upstream, enforced again here)
+- a minor (< minor_age) reporting post-coital bleeding is a safeguarding signal and
+  the band is raised to at least ORANGE (cervical module, spec 5.4.1) — the postcoital
+  rule itself is min_age-gated, so the signal can never come from a rule match
 - unvalidated rules refuse to run unless the dev/demo flag is on (non-negotiable 3)"""
 
 from collections.abc import Mapping, Sequence
@@ -20,7 +23,12 @@ MIN_AGE = 13
 
 class RuleEngine:
     def __init__(
-        self, rules: Sequence[Rule], *, rule_set_version: str, allow_unvalidated: bool
+        self,
+        rules: Sequence[Rule],
+        *,
+        rule_set_version: str,
+        allow_unvalidated: bool,
+        minor_age: int = 18,
     ) -> None:
         if not allow_unvalidated and any(not r.clinically_validated for r in rules):
             raise UnvalidatedRulesError(
@@ -30,6 +38,7 @@ class RuleEngine:
         self._rules = sorted(rules, key=lambda r: (r.red_flag, r.priority), reverse=True)
         self._rule_set_version = rule_set_version
         self._allow_unvalidated = allow_unvalidated
+        self._minor_age = minor_age
 
     @property
     def rule_ids(self) -> list[str]:
@@ -66,13 +75,23 @@ class RuleEngine:
             if self._eval_node(rule.logic, features, red_flag=rule.red_flag):
                 matches.append(rule)
         matched_bands = [m.output_band for m in matches]
-        final_band: str = max_band(matched_bands).value if matched_bands else Band.GREEN.value
+        final_band: Band = max_band(matched_bands) if matched_bands else Band.GREEN
+        # Minor + post-coital bleeding: safeguarding signal (spec 5.4.1). The
+        # postcoital rule is min_age-gated so it never matches for a minor; the
+        # signal is feature-based and the band is floored at ORANGE so a minor
+        # never sees self-care guidance for it.
+        minor_postcoital = (
+            age < self._minor_age and features.get("postcoital_bleeding_signal") is True
+        )
+        if minor_postcoital:
+            final_band = max_band([final_band, Band.ORANGE])
         return Evaluation(
-            band=final_band,
+            band=final_band.value,
             indicators=sorted(m.id for m in matches),
             urgent=any(m.red_flag for m in matches),
             safeguarding=features.get("self_harm_signal") is True
-            or any(m.condition == "self_harm" for m in matches),
+            or any(m.condition == "self_harm" for m in matches)
+            or minor_postcoital,
             rule_set_version=self._rule_set_version,
             evaluated_at=utc_now(),
         )

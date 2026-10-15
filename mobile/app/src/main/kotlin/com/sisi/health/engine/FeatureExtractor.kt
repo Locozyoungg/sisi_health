@@ -26,6 +26,10 @@ object FeatureExtractor {
         val urinaryFrequency: Boolean?,
         val androgenic: Boolean?,
         val selfHarm: Boolean?,
+        val postcoitalBleeding: Boolean? = null,
+        val intermenstrualBleeding: Boolean? = null,
+        val postmenopausalBleeding: Boolean? = null,
+        val unusualDischarge: Boolean? = null,
     )
 
     data class Extracted(val features: Map<String, Any?>, val diaryDays: Int)
@@ -70,6 +74,11 @@ object FeatureExtractor {
                 "androgenic_symptoms" to recent.any { it.androgenic == true },
                 "self_harm_signal" to recent.any { it.selfHarm == true },
                 "dizziness_signal" to recent.any { it.dizziness == true },
+                "postcoital_bleeding_signal" to recent.any { it.postcoitalBleeding == true },
+                "intermenstrual_bleeding_signal" to recent.any { it.intermenstrualBleeding == true },
+                "postmenopausal_bleeding_signal" to recent.any { it.postmenopausalBleeding == true },
+                "unusual_discharge_days_90d" to
+                    recent.filter { it.unusualDischarge == true }.map { it.date }.distinct().size,
             ),
             diaryDays = diaryDays,
         )

@@ -1,0 +1,37 @@
+{
+  "slug": "cervical-screening-patient-sw",
+  "version": "1.0.0",
+  "language": "sw",
+  "audience": "patient",
+  "title": "Uchunguzi wa mlango wa kizazi: ni nini na wakati wa kwenda",
+  "body": "Uchunguzi wa mlango wa kizazi ni kipimo kifupi kinachofanywa kwa kituo cha afya. Muuguzi au daktari huchukua kiasi kidogo cha seli kwenye mlango wa kizazi, au huangalia mlango wa kizazi moja kwa moja. Uchunguzi huu ni kwa kila mtu mwenye mlango wa kizazi, iwe unajisikia vizuri au la.\n\nKwa nini uende hata unapojisikia vizuri. Mabadiliko kwenye mlango wa kizazi mara nyingi hayana dalili zozote mwanzoni. Uchunguzi huwapata mapema wakati bado ni rahisi kutibiwa.\n\nWakati wa kwenda. Katika app hii umri wa kuanza uchunguzi na muda wa kurudia hutoka kwenye faili ya ratiba ya uchunguzi (ontology/config/screening_schedule.json). Namba hizo ni za PLACEHOLDER hadi Kenya Ministry of Health idhibitishe, hivyo fuata ushauri wa mhudumu wa afya.\n\nKinachotokea kwenye kikao. Mhudumu wa afya anaweza kukupima HPV, VIA au Pap smear: zote ni njia za kuchunguza mlango wa kizazi. Kipimo hiki huchukua dakika chache na kwa kawaida hakiumi kwa uchungu. Unaweza kuomba mhudumu aeleze kila hatua kabla ya kufanyika, kuja na mtu mwingine, na kuomba mhudumu wa afya wa kike.\n\nNini maana ya matokeo. Kliniki itakueleza lini urudi. Kama kitu kinahitaji kuangaliwa kwa karibu zaidi utapelekwa kliniki kubwa zaidi — hiyo ni hatua ya kawaida ya kufuatilia, sio hukumu kuhusu mwili wako.\n\nFaragha yako. Kila unachoandika kwenye app hii kimefichwa kwa usiri. Hakishirikiwi na shule yako, mwajiri wako au familia yako isipokuwa ukiidhinisha, na unaweza kuacha kushiriki wakati wowote.\n\nUchunguzi wa kawaida wa dalili hauchukui nafasi ya uchunguzi wa saratani ya mlango wa kizazi.\nA normal symptom check does not replace screening.",
+  "sources": [
+    {
+      "title": "Comprehensive Cervical Cancer Control: A Guide to Essential Practice",
+      "source_type": "clinical_guideline",
+      "organization": "WHO",
+      "year": 2014,
+      "url": "https://www.who.int/publications/i/item/9789241548953",
+      "note": "Umri wa kuanza uchunguzi, njia za kipimo na maneno ya ufuatiliaji. Maudhui ni DRAFT hadi daktari wa Kenya aliyeidhinishwa asaini."
+    },
+    {
+      "title": "National Cancer Screening Guidelines",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2018,
+      "url": "https://www.health.go.ke/",
+      "note": "Njia ya uchunguzi ya Kenya (HPV test, VIA, Pap smear). Umri na muda ni PLACEHOLDER hadi MoH idhibitishe."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": true,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Rasimu ya kwanza kutoka miongozo iliyochapishwa. clinically_validated=false hadi daktari wa Kenya asaini (human task H13)."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "slug": "hpv-vaccination-guardian-en",
+  "version": "1.0.0",
+  "language": "en",
+  "audience": "guardian",
+  "title": "HPV vaccination for your daughter: what a guardian should know",
+  "body": "The HPV vaccine protects against the virus (human papillomavirus) that causes most cervical cancer later in life. The vaccine works best when it is given before any exposure to the virus, which is why it is offered in early adolescence.\n\nWho it is for. The vaccine is given to girls, and in many programmes to boys as well, as part of routine adolescent health. Ask the school nurse or the nearest health facility whether it is available there.\n\nWhen it is given. The dose schedule used by this app lives in the screening schedule file (ontology/config/screening_schedule.json). The ages in that file are PLACEHOLDERS pending confirmation with the Kenya Ministry of Health, so confirm the current schedule with the health worker.\n\nWhat to expect. The injection is given in the upper arm and takes a few seconds. Mild soreness, or a mild fever for a day, is common and settles on its own. Serious reactions are rare; the health worker will tell you what to watch for and who to contact.\n\nWhy it matters. The protection is long-lasting when the full course is completed. If a dose is missed, the course can usually be continued rather than restarted; the health worker will advise.\n\nYour daughter's privacy. Anything recorded in this app is encrypted and is not shared with the school, the employer or the family unless she approves it. A guardian never reads her symptom diary or her assessment answers.\n\nA normal symptom check does not replace screening. The vaccine lowers risk; it does not remove the need for screening tests at the ages set out in the national programme. SISI supports you and your doctor — it does not diagnose.",
+  "sources": [
+    {
+      "title": "Human papillomavirus vaccines: WHO position paper, May 2017",
+      "source_type": "clinical_guideline",
+      "organization": "WHO",
+      "year": 2017,
+      "url": "https://www.who.int/publications/i/item/who-wer9219",
+      "note": "Vaccine target group, dose schedule and safety profile. Content is a DRAFT pending licensed Kenyan clinician sign-off."
+    },
+    {
+      "title": "National Cancer Screening Guidelines",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2018,
+      "url": "https://www.health.go.ke/",
+      "note": "Kenyan adolescent HPV vaccination and screening pathway. Ages are PLACEHOLDERS pending MoH confirmation (human task H13)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": true,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off (human task H13)."
+    }
+  ]
+}

@@ -12,4 +12,4 @@ enum class Band(val severity: Int) {
 const val NOT_ENOUGH_DATA = "NOT_ENOUGH_DATA"
 const val MIN_DIARY_DAYS = 14
 const val MIN_AGE = 13
-const val RULE_SET_VERSION = "ontology-1.0"
+const val RULE_SET_VERSION = "ontology-1.1"

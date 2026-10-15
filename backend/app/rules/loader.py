@@ -6,12 +6,13 @@ import json
 from pathlib import Path
 from typing import Any
 
+from app.config import get_settings
 from app.rules.engine import RuleEngine
 from app.rules.redflags import RedFlagMatcher
 from app.rules.schemas import Rule
 from app.rules.validator import validate_rule_dict
 
-RULE_SET_VERSION = "ontology-1.0"
+RULE_SET_VERSION = "ontology-1.1"
 
 
 def load_rules(ontology_dir: Path) -> list[Rule]:
@@ -34,11 +35,16 @@ def load_pattern_files(ontology_dir: Path) -> list[dict[str, Any]]:
     return files
 
 
-def build_engine(ontology_dir: Path, *, allow_unvalidated: bool) -> RuleEngine:
+def build_engine(
+    ontology_dir: Path, *, allow_unvalidated: bool, minor_age: int | None = None
+) -> RuleEngine:
+    if minor_age is None:
+        minor_age = get_settings().self_consent_age
     return RuleEngine(
         load_rules(ontology_dir),
         rule_set_version=RULE_SET_VERSION,
         allow_unvalidated=allow_unvalidated,
+        minor_age=minor_age,
     )
 
 

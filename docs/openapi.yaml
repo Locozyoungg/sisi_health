@@ -881,7 +881,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConsentIn'
+              $ref: '#/components/schemas/app__api__v1__school__ConsentIn'
         required: true
       responses:
         '200':
@@ -1057,6 +1057,1163 @@ paths:
                 title: Response Reconciliation V1 Vouchers Reconciliation Get
       security:
       - HTTPBearer: []
+  /v1/corridor/consult/requests:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: My Bookings
+      operationId: my_bookings_v1_corridor_consult_requests_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response My Bookings V1 Corridor Consult Requests Get
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Book
+      operationId: book_v1_corridor_consult_requests_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Book V1 Corridor Consult Requests Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/corridor/queue:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: Queue
+      operationId: queue_v1_corridor_queue_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Queue V1 Corridor Queue Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/consults/{request_id}:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: Consult Detail
+      operationId: consult_detail_v1_corridor_consults__request_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Request Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Consult Detail V1 Corridor Consults  Request Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/consults/{request_id}/review:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Review
+      operationId: review_v1_corridor_consults__request_id__review_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Request Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Review V1 Corridor Consults  Request Id  Review Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/consults/{request_id}/schedule:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Schedule
+      operationId: schedule_v1_corridor_consults__request_id__schedule_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Request Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Schedule V1 Corridor Consults  Request Id  Schedule
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/consults/{request_id}/consents:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Record Consent
+      operationId: record_consent_v1_corridor_consults__request_id__consents_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Request Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/app__api__v1__corridor__ConsentIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Record Consent V1 Corridor Consults  Request Id  Consents
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/sessions/{session_id}/start:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Start Session
+      operationId: start_session_v1_corridor_sessions__session_id__start_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Start Session V1 Corridor Sessions  Session Id  Start
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/sessions/{session_id}/complete:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Complete Session
+      operationId: complete_session_v1_corridor_sessions__session_id__complete_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Complete Session V1 Corridor Sessions  Session Id  Complete
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/referrals:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: List Referrals
+      operationId: list_referrals_v1_corridor_referrals_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response List Referrals V1 Corridor Referrals Get
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Create Referral
+      operationId: create_referral_v1_corridor_referrals_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferralIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Referral V1 Corridor Referrals Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/corridor/referrals/{referral_id}/preview:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: Preview
+      operationId: preview_v1_corridor_referrals__referral_id__preview_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: referral_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Referral Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Preview V1 Corridor Referrals  Referral Id  Preview
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/referrals/{referral_id}/approve:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Approve
+      operationId: approve_v1_corridor_referrals__referral_id__approve_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: referral_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Referral Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Approve V1 Corridor Referrals  Referral Id  Approve
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/referrals/{referral_id}/revoke:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Revoke
+      operationId: revoke_v1_corridor_referrals__referral_id__revoke_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: referral_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Referral Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Revoke V1 Corridor Referrals  Referral Id  Revoke
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/referrals/{referral_id}/send:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Send
+      operationId: send_v1_corridor_referrals__referral_id__send_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: referral_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Referral Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Send V1 Corridor Referrals  Referral Id  Send Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/referrals/{referral_id}/pdf:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: Pdf
+      operationId: pdf_v1_corridor_referrals__referral_id__pdf_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: referral_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Referral Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/facilities:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: List Facilities
+      operationId: list_facilities_v1_corridor_facilities_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: county
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: County
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+      - name: language
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Language
+      - name: screening
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Screening
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Facilities V1 Corridor Facilities Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Create Facility
+      operationId: create_facility_v1_corridor_facilities_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacilityIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Facility V1 Corridor Facilities Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/facilities/{facility_id}:
+    put:
+      tags:
+      - corridor
+      - corridor
+      summary: Update Facility
+      operationId: update_facility_v1_corridor_facilities__facility_id__put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: facility_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Facility Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacilityIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Update Facility V1 Corridor Facilities  Facility Id  Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - corridor
+      - corridor
+      summary: Delete Facility
+      operationId: delete_facility_v1_corridor_facilities__facility_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: facility_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Facility Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Delete Facility V1 Corridor Facilities  Facility Id  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/facilities/{facility_id}/verify:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Verify Facility
+      operationId: verify_facility_v1_corridor_facilities__facility_id__verify_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: facility_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Facility Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Verify Facility V1 Corridor Facilities  Facility Id  Verify
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/surgery/cases:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: List Cases
+      operationId: list_cases_v1_corridor_surgery_cases_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response List Cases V1 Corridor Surgery Cases Get
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Create Case
+      operationId: create_case_v1_corridor_surgery_cases_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Case V1 Corridor Surgery Cases Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/corridor/surgery/cases/{case_id}/transition:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Transition Case
+      operationId: transition_case_v1_corridor_surgery_cases__case_id__transition_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Case Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitionIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Transition Case V1 Corridor Surgery Cases  Case Id  Transition
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/surgery/cases/{case_id}/outcomes:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Add Outcome
+      operationId: add_outcome_v1_corridor_surgery_cases__case_id__outcomes_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Case Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutcomeIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Add Outcome V1 Corridor Surgery Cases  Case Id  Outcomes
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/surgery/pricing-stubs:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Add Pricing
+      operationId: add_pricing_v1_corridor_surgery_pricing_stubs_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PricingIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Add Pricing V1 Corridor Surgery Pricing Stubs Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: List Pricing
+      operationId: list_pricing_v1_corridor_surgery_pricing_stubs_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: facility_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Facility Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Pricing V1 Corridor Surgery Pricing Stubs Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/tracking:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: List Trackers
+      operationId: list_trackers_v1_corridor_tracking_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Trackers V1 Corridor Tracking Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Create Tracker
+      operationId: create_tracker_v1_corridor_tracking_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackingIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Tracker V1 Corridor Tracking Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/tracking/{tracker_id}/transition:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Transition Tracker
+      operationId: transition_tracker_v1_corridor_tracking__tracker_id__transition_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: tracker_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Tracker Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitionIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Transition Tracker V1 Corridor Tracking  Tracker Id  Transition
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/tracking/me:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: My Trackers
+      operationId: my_trackers_v1_corridor_tracking_me_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response My Trackers V1 Corridor Tracking Me Get
+      security:
+      - HTTPBearer: []
+  /v1/corridor/tracking/me/{tracker_id}/sharing:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Set Sharing
+      operationId: set_sharing_v1_corridor_tracking_me__tracker_id__sharing_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: tracker_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Tracker Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharingIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Set Sharing V1 Corridor Tracking Me  Tracker Id  Sharing
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/tracking/aggregates:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: Tracker Aggregates
+      operationId: tracker_aggregates_v1_corridor_tracking_aggregates_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Tracker Aggregates V1 Corridor Tracking Aggregates
+                  Get
+      security:
+      - HTTPBearer: []
+  /v1/corridor/reminders/run:
+    post:
+      tags:
+      - corridor
+      - corridor
+      summary: Run Reminders
+      operationId: run_reminders_v1_corridor_reminders_run_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Run Reminders V1 Corridor Reminders Run Post
+      security:
+      - HTTPBearer: []
+  /v1/corridor/education:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: Education List
+      operationId: education_list_v1_corridor_education_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: language
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Language
+      - name: audience
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Audience
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Education List V1 Corridor Education Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/corridor/education/patient:
+    get:
+      tags:
+      - corridor
+      - corridor
+      summary: Education Patient
+      operationId: education_patient_v1_corridor_education_patient_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: language
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Language
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Education Patient V1 Corridor Education Patient Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     ActionIn:
@@ -1094,26 +2251,75 @@ components:
       - rule_id
       - version
       title: ActivationIn
-    ConsentIn:
+    ApproveIn:
       properties:
-        assessment_id:
-          type: string
-          format: uuid
-          title: Assessment Id
-        method:
-          type: string
-          pattern: ^(sms_link|paper|voice)$
-          title: Method
-        evidence_ref:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Evidence Ref
+        approved_sections:
+          items:
+            type: string
+          type: array
+          minItems: 1
+          title: Approved Sections
       type: object
       required:
-      - assessment_id
-      - method
-      title: ConsentIn
+      - approved_sections
+      title: ApproveIn
+    BookIn:
+      properties:
+        preferred_county:
+          anyOf:
+          - type: string
+            maxLength: 128
+          - type: 'null'
+          title: Preferred County
+        preferred_language:
+          type: string
+          pattern: ^(en|sw)$
+          title: Preferred Language
+          default: en
+        patient_note:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Patient Note
+        chaperone_requested:
+          type: boolean
+          title: Chaperone Requested
+          default: false
+      type: object
+      title: BookIn
+    CaseIn:
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+        referral_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Referral Id
+        facility_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Facility Id
+      type: object
+      required:
+      - user_id
+      title: CaseIn
+    CompleteIn:
+      properties:
+        outcome:
+          type: string
+          pattern: ^(completed|no_show)$
+          title: Outcome
+      type: object
+      required:
+      - outcome
+      title: CompleteIn
     DsrPayload:
       properties:
         type:
@@ -1129,6 +2335,92 @@ components:
       required:
       - type
       title: DsrPayload
+    FacilityIn:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Name
+        county:
+          anyOf:
+          - type: string
+            maxLength: 128
+          - type: 'null'
+          title: County
+        level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+        catchment_counties:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Catchment Counties
+        languages:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Languages
+        services:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Services
+        screening_tests:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Screening Tests
+        opening_hours:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Opening Hours
+        estimated_cost_ksh_min:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Estimated Cost Ksh Min
+        estimated_cost_ksh_max:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Estimated Cost Ksh Max
+        cost_note:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Cost Note
+        phone:
+          anyOf:
+          - type: string
+            maxLength: 32
+          - type: 'null'
+          title: Phone
+        email:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Email
+      type: object
+      title: FacilityIn
     GrantIn:
       properties:
         event_type:
@@ -1232,6 +2524,59 @@ components:
       - code
       - device_id
       title: OtpVerifyIn
+    OutcomeIn:
+      properties:
+        outcome_category:
+          type: string
+          title: Outcome Category
+        note:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Note
+      type: object
+      required:
+      - outcome_category
+      title: OutcomeIn
+    PricingIn:
+      properties:
+        procedure:
+          type: string
+          maxLength: 128
+          minLength: 1
+          title: Procedure
+        facility_id:
+          type: string
+          format: uuid
+          title: Facility Id
+        amount_ksh_min:
+          type: integer
+          minimum: 0.0
+          title: Amount Ksh Min
+        amount_ksh_max:
+          type: integer
+          minimum: 0.0
+          title: Amount Ksh Max
+        source:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Source
+        note:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Note
+      type: object
+      required:
+      - procedure
+      - facility_id
+      - amount_ksh_min
+      - amount_ksh_max
+      - source
+      title: PricingIn
     ProfilePatch:
       properties:
         language:
@@ -1271,6 +2616,22 @@ components:
       - receipt_no
       - amount_ksh
       title: RedeemIn
+    ReferralIn:
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          title: Request Id
+        facility_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Facility Id
+      type: object
+      required:
+      - request_id
+      title: ReferralIn
     RefreshIn:
       properties:
         refresh_token:
@@ -1296,6 +2657,51 @@ components:
       - assessment_id
       - reason
       title: ReidentifyIn
+    ReviewIn:
+      properties:
+        decision:
+          type: string
+          pattern: ^(approved|declined)$
+          title: Decision
+        note:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Note
+      type: object
+      required:
+      - decision
+      title: ReviewIn
+    ScheduleIn:
+      properties:
+        gynecologist_id:
+          type: string
+          format: uuid
+          title: Gynecologist Id
+        scheduled_at:
+          type: string
+          format: date-time
+          title: Scheduled At
+        modality:
+          type: string
+          pattern: ^(video|audio)$
+          title: Modality
+      type: object
+      required:
+      - gynecologist_id
+      - scheduled_at
+      - modality
+      title: ScheduleIn
+    SharingIn:
+      properties:
+        consent_to_share:
+          type: boolean
+          title: Consent To Share
+      type: object
+      required:
+      - consent_to_share
+      title: SharingIn
     StaffLoginIn:
       properties:
         email:
@@ -1372,6 +2778,37 @@ components:
       required:
       - entries
       title: SyncIn
+    TrackingIn:
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+        facility_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Facility Id
+      type: object
+      required:
+      - user_id
+      title: TrackingIn
+    TransitionIn:
+      properties:
+        to_status:
+          type: string
+          title: To Status
+        note:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Note
+      type: object
+      required:
+      - to_status
+      title: TransitionIn
     ValidationError:
       properties:
         loc:
@@ -1398,6 +2835,46 @@ components:
       - msg
       - type
       title: ValidationError
+    app__api__v1__corridor__ConsentIn:
+      properties:
+        kind:
+          type: string
+          pattern: ^(guardian_consent|minor_assent|chaperone_requested|chaperone_confirmed)$
+          title: Kind
+        method:
+          type: string
+          pattern: ^(digital|sms_link|paper|voice)$
+          title: Method
+          default: digital
+        evidence_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Ref
+      type: object
+      required:
+      - kind
+      title: ConsentIn
+    app__api__v1__school__ConsentIn:
+      properties:
+        assessment_id:
+          type: string
+          format: uuid
+          title: Assessment Id
+        method:
+          type: string
+          pattern: ^(sms_link|paper|voice)$
+          title: Method
+        evidence_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Ref
+      type: object
+      required:
+      - assessment_id
+      - method
+      title: ConsentIn
   securitySchemes:
     HTTPBearer:
       type: http

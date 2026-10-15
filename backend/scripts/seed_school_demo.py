@@ -14,10 +14,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from sqlalchemy import select
 
-from app.auth.staff import create_staff, setup_totp
+from app.auth.staff import create_staff
+from app.config import get_settings
 from app.crypto.envelope import seal_json
 from app.crypto.key_provider import DatabaseKeyProvider
-from app.config import get_settings
 from app.db import SessionLocal
 from app.models import (
     Guardian,
@@ -32,7 +32,7 @@ from app.models import (
 
 SCHOOL_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 # Fixed base32 secret ("Hello!") so Playwright can compute the TOTP in JS.
-E2E_TOTP_SECRET = "JBSWY3DPEHPK3PXP"
+E2E_TOTP_SECRET = "JBSWY3DPEHPK3PXP"  # noqa: S105 — synthetic e2e demo secret, never real
 
 
 def main() -> int:
@@ -49,10 +49,19 @@ def main() -> int:
             db.flush()
             print("[seed] school created")
 
-        for email, role in (("nurse-e2e@sisi.demo", "nurse"), ("schooladmin-e2e@sisi.demo", "school_admin")):
+        for email, role in (
+            ("nurse-e2e@sisi.demo", "nurse"),
+            ("schooladmin-e2e@sisi.demo", "school_admin"),
+        ):
             staff = db.execute(select(StaffUser).where(StaffUser.email == email)).scalars().first()
             if staff is None:
-                staff = create_staff(db, provider, email=email, password="demo-password-123", role=role)
+                staff = create_staff(
+                    db,
+                    provider,
+                    email=email,
+                    password="demo-password-123",  # noqa: S106 — demo seed only
+                    role=role,
+                )
                 # Pin the TOTP secret to the fixed e2e secret instead of a random one.
                 from app.auth.staff import _seal_totp
 

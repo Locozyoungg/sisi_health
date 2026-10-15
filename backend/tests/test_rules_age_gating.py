@@ -24,6 +24,10 @@ def _features(cyclical: float | None, dyschezia: bool, dyspareunia: bool):
         "androgenic_symptoms": False,
         "self_harm_signal": False,
         "dizziness_signal": False,
+        "postcoital_bleeding_signal": False,
+        "intermenstrual_bleeding_signal": False,
+        "postmenopausal_bleeding_signal": False,
+        "unusual_discharge_days_90d": 0,
     }
 
 

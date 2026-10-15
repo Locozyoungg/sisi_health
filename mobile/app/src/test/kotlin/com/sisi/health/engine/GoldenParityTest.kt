@@ -45,7 +45,7 @@ class GoldenParityTest {
             }
         }
         assertEquals("golden parity failures:\n" + failures.joinToString("\n"), 0, failures.size)
-        assertEquals(12, golden.cases.size)
+        assertEquals(37, golden.cases.size)
     }
 
     @Test
@@ -61,6 +61,10 @@ class GoldenParityTest {
                 "redflag-heavy-bleeding-dizziness",
                 "redflag-severe-acute-pain",
                 "redflag-self-harm",
+                "redflag-postcoital-bleeding",
+                "redflag-intermenstrual-bleeding",
+                "redflag-postmenopausal-bleeding",
+                "redflag-persistent-discharge",
             ),
             engine.ruleIds.toSet(),
         )

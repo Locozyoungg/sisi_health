@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "description": "Golden test cases for rules-engine parity. The Python engine (Phase 1) and the Kotlin engine (Phase 2) MUST produce the same band, indicators, and escalations on every case. Never edit a case without a rule-version change; expected bands follow the safety asymmetry (red flags can never lower a band).",
+  "version": "1.1.0",
+  "description": "Golden test cases for rules-engine parity. The Python engine (Phase 1) and the Kotlin engine (Phase 2) MUST produce the same band, indicators, and escalations on every case. Never edit a case without a rule-version change; expected bands follow the safety asymmetry (red flags can never lower a band). v1.1.0 adds the Phase 5 cervical red-flag rules (gc-13..gc-37).",
   "cases": [
     {
       "id": "gc-01-normal",
@@ -11,7 +11,9 @@
         "avg_bleeding_volume_90d": 1.5, "fatigue_ratio_30d": 0.2, "cycle_irregularity_90d": null,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "GREEN", "expected_indicators": [],
       "expected_escalations": {"urgent": false, "safeguarding": false}
@@ -25,7 +27,9 @@
         "avg_bleeding_volume_90d": 3.2, "fatigue_ratio_30d": 0.7, "cycle_irregularity_90d": null,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "ORANGE", "expected_indicators": ["anemia-risk-flag"],
       "expected_escalations": {"urgent": false, "safeguarding": false}
@@ -39,7 +43,9 @@
         "avg_bleeding_volume_90d": 3.5, "fatigue_ratio_30d": 0.6, "cycle_irregularity_90d": null,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": true
+        "self_harm_signal": false, "dizziness_signal": true,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "RED", "expected_indicators": ["redflag-heavy-bleeding-dizziness", "anemia-risk-flag"],
       "expected_escalations": {"urgent": true, "safeguarding": false}
@@ -53,7 +59,9 @@
         "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": null,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "RED", "expected_indicators": ["redflag-severe-acute-pain"],
       "expected_escalations": {"urgent": true, "safeguarding": false}
@@ -67,7 +75,9 @@
         "avg_bleeding_volume_90d": 1.5, "fatigue_ratio_30d": 0.3, "cycle_irregularity_90d": null,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": true, "dizziness_signal": false
+        "self_harm_signal": true, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "RED", "expected_indicators": ["redflag-self-harm"],
       "expected_escalations": {"urgent": true, "safeguarding": true}
@@ -81,7 +91,9 @@
         "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.2, "cycle_irregularity_90d": 9.0,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": true,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "ORANGE", "expected_indicators": ["pcos-indicator"],
       "expected_escalations": {"urgent": false, "safeguarding": false}
@@ -95,7 +107,9 @@
         "avg_bleeding_volume_90d": 2.0, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": null,
         "dyschezia": true, "dyspareunia": true, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "ORANGE", "expected_indicators": ["endo-indicator"],
       "expected_escalations": {"urgent": false, "safeguarding": false}
@@ -109,7 +123,9 @@
         "avg_bleeding_volume_90d": 2.0, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": null,
         "dyschezia": true, "dyspareunia": true, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "ORANGE", "expected_indicators": ["endo-indicator", "endo-indicator-adult"],
       "expected_escalations": {"urgent": false, "safeguarding": false}
@@ -123,7 +139,9 @@
         "avg_bleeding_volume_90d": 3.4, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": 2.0,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": true,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "ORANGE", "expected_indicators": ["fibroid-indicator"],
       "expected_escalations": {"urgent": false, "safeguarding": false}
@@ -137,7 +155,9 @@
         "avg_bleeding_volume_90d": 2.0, "fatigue_ratio_30d": 0.5, "cycle_irregularity_90d": null,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "NOT_ENOUGH_DATA", "expected_indicators": [],
       "expected_escalations": {"urgent": false, "safeguarding": false}
@@ -151,7 +171,9 @@
         "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "GREEN", "expected_indicators": [],
       "expected_escalations": {"urgent": false, "safeguarding": false}
@@ -165,10 +187,413 @@
         "avg_bleeding_volume_90d": 0.5, "fatigue_ratio_30d": 0.0, "cycle_irregularity_90d": null,
         "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
         "urinary_frequency": false, "androgenic_symptoms": false,
-        "self_harm_signal": false, "dizziness_signal": false
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
       },
       "expected_band": "RED", "expected_indicators": ["redflag-severe-acute-pain"],
       "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-13-postcoital-boundary-18",
+      "description": "Post-coital bleeding at exactly 18 (min_age boundary) -> see a doctor soon.",
+      "age": 18, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-postcoital-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-14-postcoital-adult",
+      "description": "Adult with post-coital bleeding -> see a doctor soon, no safeguarding.",
+      "age": 25, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-postcoital-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-15-minor-postcoital-floor",
+      "description": "Minor reporting post-coital bleeding -> safeguarding signal; band floor ORANGE without the 18+ rule matching (indicators stay empty).",
+      "age": 17, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": [],
+      "expected_escalations": {"urgent": false, "safeguarding": true}
+    },
+    {
+      "id": "gc-16-minor-postcoital-severe-pain",
+      "description": "Minor with post-coital bleeding AND severe pain -> RED via the urgent rule; safeguarding still set.",
+      "age": 15, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 9, "avg_pain_90d": 3.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "RED", "expected_indicators": ["redflag-severe-acute-pain"],
+      "expected_escalations": {"urgent": true, "safeguarding": true}
+    },
+    {
+      "id": "gc-17-intermenstrual-adult",
+      "description": "Bleeding between periods -> see a doctor soon.",
+      "age": 24, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": true,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-intermenstrual-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-18-intermenstrual-boundary-13",
+      "description": "Intermenstrual bleeding at exactly 13 (min_age boundary) -> rule applies.",
+      "age": 13, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": true,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-intermenstrual-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-19-postmenopausal-boundary-45",
+      "description": "Post-menopausal bleeding at exactly 45 (min_age boundary) -> rule applies.",
+      "age": 45, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": true, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-postmenopausal-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-20-postmenopausal-gated-at-44",
+      "description": "Post-menopausal bleeding signal at 44 -> rule age-gated off; self-care (control).",
+      "age": 44, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": true, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "GREEN", "expected_indicators": [],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-21-postmenopausal-adult",
+      "description": "Post-menopausal bleeding at 60 -> see a doctor soon.",
+      "age": 60, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": true, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-postmenopausal-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-22-discharge-boundary-5",
+      "description": "Persistent discharge at exactly 5 days (gte boundary) -> see a doctor soon.",
+      "age": 24, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 5
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-persistent-discharge"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-23-discharge-below-threshold",
+      "description": "Discharge on 4 days -> below the draft persistence threshold; no match.",
+      "age": 24, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 4
+      },
+      "expected_band": "GREEN", "expected_indicators": [],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-24-discharge-persistent",
+      "description": "Discharge on 10 days -> clearly above threshold.",
+      "age": 24, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 10
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-persistent-discharge"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-25-postcoital-plus-urgent",
+      "description": "Post-coital bleeding combined with heavy bleeding + dizziness -> existing urgent rule applies (RED, spec 5.4.1 escalation).",
+      "age": 25, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 3.5, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": true,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "RED", "expected_indicators": ["redflag-heavy-bleeding-dizziness", "redflag-postcoital-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-26-all-four-signals",
+      "description": "All four cervical signals at 50 -> all four indicators, ORANGE (max of the four ORANGE rules).",
+      "age": 50, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": true,
+        "postmenopausal_bleeding_signal": true, "unusual_discharge_days_90d": 8
+      },
+      "expected_band": "ORANGE",
+      "expected_indicators": ["redflag-intermenstrual-bleeding", "redflag-persistent-discharge", "redflag-postcoital-bleeding", "redflag-postmenopausal-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-27-minor-control",
+      "description": "Minor WITHOUT post-coital bleeding -> no safeguarding, no floor (control).",
+      "age": 17, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "GREEN", "expected_indicators": [],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-28-minor-intermenstrual-discharge",
+      "description": "Minor at 13 with intermenstrual bleeding + persistent discharge -> both indicators, no safeguarding.",
+      "age": 13, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": true,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 6
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-intermenstrual-bleeding", "redflag-persistent-discharge"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-29-postcoital-missing-input",
+      "description": "Post-coital input missing (uncertainty) -> red-flag asymmetry resolves to matched.",
+      "age": 25, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": null, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-postcoital-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-30-discharge-missing-input",
+      "description": "Discharge input missing -> red-flag asymmetry resolves to matched.",
+      "age": 25, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": null
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-persistent-discharge"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-31-postcoital-wrong-type",
+      "description": "Post-coital input of the wrong type -> red-flag asymmetry resolves to matched.",
+      "age": 25, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": "yes", "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-postcoital-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-32-minor-postcoital-self-harm",
+      "description": "Minor with post-coital bleeding AND self-harm -> RED via self-harm rule; both safeguarding paths set.",
+      "age": 17, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": true, "dizziness_signal": false,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "RED", "expected_indicators": ["redflag-self-harm"],
+      "expected_escalations": {"urgent": true, "safeguarding": true}
+    },
+    {
+      "id": "gc-33-discharge-3-control",
+      "description": "Discharge on 3 days at 18 -> no match, no floor (control).",
+      "age": 18, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 3
+      },
+      "expected_band": "GREEN", "expected_indicators": [],
+      "expected_escalations": {"urgent": false, "safeguarding": false}
+    },
+    {
+      "id": "gc-34-postcoital-plus-postmenopausal",
+      "description": "At 45 both post-coital and post-menopausal signals -> both indicators.",
+      "age": 45, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": true, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-postcoital-bleeding", "redflag-postmenopausal-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-35-intermenstrual-plus-anemia",
+      "description": "Intermenstrual bleeding plus anemia pattern -> both indicators, ORANGE.",
+      "age": 30, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 3.2, "fatigue_ratio_30d": 0.7, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": true,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["anemia-risk-flag", "redflag-intermenstrual-bleeding"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-36-minor-discharge-only",
+      "description": "Minor at 16 with persistent discharge (no post-coital signal) -> rule applies, no safeguarding.",
+      "age": 16, "diary_days": 60,
+      "features": {
+        "max_pain_90d": 3, "avg_pain_90d": 1.0, "cyclical_pain_ratio_90d": 0.2,
+        "avg_bleeding_volume_90d": 1.0, "fatigue_ratio_30d": 0.1, "cycle_irregularity_90d": null,
+        "dyschezia": false, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": false, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 5
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["redflag-persistent-discharge"],
+      "expected_escalations": {"urgent": true, "safeguarding": false}
+    },
+    {
+      "id": "gc-37-minor-postcoital-endo",
+      "description": "Minor with post-coital bleeding plus an endo pattern -> ORANGE = max(matched ORANGE, safeguarding floor); indicators stay matched-rule-only.",
+      "age": 17, "diary_days": 75,
+      "features": {
+        "max_pain_90d": 7, "avg_pain_90d": 4.0, "cyclical_pain_ratio_90d": 0.8,
+        "avg_bleeding_volume_90d": 2.0, "fatigue_ratio_30d": 0.4, "cycle_irregularity_90d": null,
+        "dyschezia": true, "dyspareunia": false, "pelvic_pressure": false,
+        "urinary_frequency": false, "androgenic_symptoms": false,
+        "self_harm_signal": false, "dizziness_signal": false,
+        "postcoital_bleeding_signal": true, "intermenstrual_bleeding_signal": false,
+        "postmenopausal_bleeding_signal": false, "unusual_discharge_days_90d": 0
+      },
+      "expected_band": "ORANGE", "expected_indicators": ["endo-indicator"],
+      "expected_escalations": {"urgent": false, "safeguarding": true}
     }
   ]
 }

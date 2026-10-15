@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sisi-health.org/ontology/schema/diary_payload.schema.json",
   "title": "SISI diary entry payload",
-  "description": "One day's symptom record, encrypted field-by-field in the diary schema. pain is the validated 0-10 NRS; bleeding_volume is 0-4 (none/spotting/light/moderate/heavy/flooding). sexual-health fields (dyspareunia) are only collected from users 18+; the server validates payload shape, the app enforces age gating at collection time.",
+  "description": "One day's symptom record, encrypted field-by-field in the diary schema. pain is the validated 0-10 NRS; bleeding_volume is 0-4 (none/spotting/light/moderate/heavy/flooding). sexual-health fields (dyspareunia, postcoital_bleeding) are only collected from users 18+ and postmenopausal_bleeding only from users 45+; the server validates payload shape, the app enforces age gating at collection time.",
   "type": "object",
   "required": ["date"],
   "additionalProperties": false,
@@ -27,7 +27,11 @@
         "fatigue": { "type": "boolean" },
         "androgenic": { "type": "boolean" },
         "mood": { "type": ["string", "null"] },
-        "self_harm": { "type": "boolean" }
+        "self_harm": { "type": "boolean" },
+        "postcoital_bleeding": { "type": "boolean" },
+        "intermenstrual_bleeding": { "type": "boolean" },
+        "postmenopausal_bleeding": { "type": "boolean" },
+        "unusual_discharge": { "type": "boolean" }
       }
     },
     "notes": { "type": ["string", "null"], "maxLength": 500 }

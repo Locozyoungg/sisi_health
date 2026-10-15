@@ -4,7 +4,7 @@ Every rule below ships `clinically_validated: false` and must be signed off
 by a licensed Kenyan clinician before the app enables it for real users
 (non-negotiable 3). Review each rule, its evidence, and its test cases.
 
-Generated: 2026-10-14T16:27:04.096575
+Generated: 2026-10-15T11:41:35.860937
 
 ## Rule: anemia-risk-flag v1.0.0
 
@@ -152,6 +152,110 @@ Reviewer name: ______________________________
 KMPDC registration no: ______________________
 Signature: ______________  Date: ____________
 
+## Rule: redflag-intermenstrual-bleeding v1.0.0
+
+- Condition indicator: `intermenstrual_bleeding`
+- Minimum age: 13
+- Red flag: True
+- Output band when matched: `ORANGE`
+- Inputs: intermenstrual_bleeding_signal
+- Logic: `{"op": "eq", "input": "intermenstrual_bleeding_signal", "value": true}`
+
+### Evidence
+
+- [clinical_guideline] Comprehensive Cervical Cancer Control: A Guide to Essential Practice — WHO (2014) https://www.who.int/publications/i/item/9789241548953
+  - Note: Bleeding between periods is a symptom that warrants clinical evaluation. Cervical screening module (spec 5.4.1): minimum band 'see a doctor soon'. DRAFT pending Kenyan clinician sign-off.
+- [health_authority] National Cancer Screening Guidelines — Kenya Ministry of Health (no URL — verify at review)
+  - Note: Abnormal vaginal bleeding is among the symptoms prompting referral under the national screening guideline. DRAFT pending Kenyan clinician sign-off and MoH confirmation.
+
+### Changelog
+
+- 1.0.0: Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off.
+
+### Sign-off
+
+Reviewer name: ______________________________
+KMPDC registration no: ______________________
+Signature: ______________  Date: ____________
+
+## Rule: redflag-persistent-discharge v1.0.0
+
+- Condition indicator: `persistent_discharge`
+- Minimum age: 13
+- Red flag: True
+- Output band when matched: `ORANGE`
+- Inputs: unusual_discharge_days_90d
+- Logic: `{"op": "gte", "input": "unusual_discharge_days_90d", "value": 5}`
+
+### Evidence
+
+- [clinical_guideline] Guidelines for the management of symptomatic sexually transmitted infections — WHO (2021) https://www.who.int/publications/i/item/9789240024168
+  - Note: Persistent abnormal vaginal discharge warrants clinical evaluation. The 5-days-in-90 persistence threshold is a DRAFT pending Kenyan clinician sign-off.
+- [health_authority] National Guidelines on Syndromic Management of Sexually Transmitted Infections — Kenya Ministry of Health (no URL — verify at review)
+  - Note: Abnormal vaginal discharge is managed under the national syndromic STI guideline. DRAFT pending Kenyan clinician sign-off and MoH confirmation.
+
+### Changelog
+
+- 1.0.0: Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off.
+
+### Sign-off
+
+Reviewer name: ______________________________
+KMPDC registration no: ______________________
+Signature: ______________  Date: ____________
+
+## Rule: redflag-postcoital-bleeding v1.0.0
+
+- Condition indicator: `postcoital_bleeding`
+- Minimum age: 18
+- Red flag: True
+- Output band when matched: `ORANGE`
+- Inputs: postcoital_bleeding_signal
+- Logic: `{"op": "eq", "input": "postcoital_bleeding_signal", "value": true}`
+
+### Evidence
+
+- [clinical_guideline] Comprehensive Cervical Cancer Control: A Guide to Essential Practice — WHO (2014) https://www.who.int/publications/i/item/9789241548953
+  - Note: Post-coital bleeding is a symptom that warrants clinical evaluation. Cervical screening module (spec 5.4.1): minimum band 'see a doctor soon'. DRAFT pending Kenyan clinician sign-off.
+- [clinical_guideline] Suspected cancer: recognition and referral (NG12) — NICE (2015) https://www.nice.org.uk/guidance/ng12
+  - Note: Unexplained post-coital bleeding in women warrants referral consideration. Threshold and band are a DRAFT pending Kenyan clinician sign-off.
+
+### Changelog
+
+- 1.0.0: Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off.
+
+### Sign-off
+
+Reviewer name: ______________________________
+KMPDC registration no: ______________________
+Signature: ______________  Date: ____________
+
+## Rule: redflag-postmenopausal-bleeding v1.0.0
+
+- Condition indicator: `postmenopausal_bleeding`
+- Minimum age: 45
+- Red flag: True
+- Output band when matched: `ORANGE`
+- Inputs: postmenopausal_bleeding_signal
+- Logic: `{"op": "eq", "input": "postmenopausal_bleeding_signal", "value": true}`
+
+### Evidence
+
+- [clinical_guideline] Suspected cancer: recognition and referral (NG12) — NICE (2015) https://www.nice.org.uk/guidance/ng12
+  - Note: Post-menopausal bleeding warrants referral consideration. The 45+ age threshold is a DRAFT pending Kenyan clinician sign-off.
+- [clinical_guideline] Comprehensive Cervical Cancer Control: A Guide to Essential Practice — WHO (2014) https://www.who.int/publications/i/item/9789241548953
+  - Note: Bleeding after menopause warrants clinical evaluation. DRAFT pending Kenyan clinician sign-off.
+
+### Changelog
+
+- 1.0.0: Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off.
+
+### Sign-off
+
+Reviewer name: ______________________________
+KMPDC registration no: ______________________
+Signature: ______________  Date: ____________
+
 ## Rule: redflag-self-harm v1.0.0
 
 - Condition indicator: `self_harm`
@@ -214,3 +318,28 @@ Signature: ______________  Date: ____________
 - `gc-10-insufficient-data` — age 24, 13 diary days → band `NOT_ENOUGH_DATA`, indicators []
 - `gc-11-boundary-14-days` — age 24, 14 diary days → band `GREEN`, indicators []
 - `gc-12-red-flag-asymmetry` — age 24, 50 diary days → band `RED`, indicators ['redflag-severe-acute-pain']
+- `gc-13-postcoital-boundary-18` — age 18, 60 diary days → band `ORANGE`, indicators ['redflag-postcoital-bleeding']
+- `gc-14-postcoital-adult` — age 25, 60 diary days → band `ORANGE`, indicators ['redflag-postcoital-bleeding']
+- `gc-15-minor-postcoital-floor` — age 17, 60 diary days → band `ORANGE`, indicators []
+- `gc-16-minor-postcoital-severe-pain` — age 15, 60 diary days → band `RED`, indicators ['redflag-severe-acute-pain']
+- `gc-17-intermenstrual-adult` — age 24, 60 diary days → band `ORANGE`, indicators ['redflag-intermenstrual-bleeding']
+- `gc-18-intermenstrual-boundary-13` — age 13, 60 diary days → band `ORANGE`, indicators ['redflag-intermenstrual-bleeding']
+- `gc-19-postmenopausal-boundary-45` — age 45, 60 diary days → band `ORANGE`, indicators ['redflag-postmenopausal-bleeding']
+- `gc-20-postmenopausal-gated-at-44` — age 44, 60 diary days → band `GREEN`, indicators []
+- `gc-21-postmenopausal-adult` — age 60, 60 diary days → band `ORANGE`, indicators ['redflag-postmenopausal-bleeding']
+- `gc-22-discharge-boundary-5` — age 24, 60 diary days → band `ORANGE`, indicators ['redflag-persistent-discharge']
+- `gc-23-discharge-below-threshold` — age 24, 60 diary days → band `GREEN`, indicators []
+- `gc-24-discharge-persistent` — age 24, 60 diary days → band `ORANGE`, indicators ['redflag-persistent-discharge']
+- `gc-25-postcoital-plus-urgent` — age 25, 60 diary days → band `RED`, indicators ['redflag-heavy-bleeding-dizziness', 'redflag-postcoital-bleeding']
+- `gc-26-all-four-signals` — age 50, 60 diary days → band `ORANGE`, indicators ['redflag-intermenstrual-bleeding', 'redflag-persistent-discharge', 'redflag-postcoital-bleeding', 'redflag-postmenopausal-bleeding']
+- `gc-27-minor-control` — age 17, 60 diary days → band `GREEN`, indicators []
+- `gc-28-minor-intermenstrual-discharge` — age 13, 60 diary days → band `ORANGE`, indicators ['redflag-intermenstrual-bleeding', 'redflag-persistent-discharge']
+- `gc-29-postcoital-missing-input` — age 25, 60 diary days → band `ORANGE`, indicators ['redflag-postcoital-bleeding']
+- `gc-30-discharge-missing-input` — age 25, 60 diary days → band `ORANGE`, indicators ['redflag-persistent-discharge']
+- `gc-31-postcoital-wrong-type` — age 25, 60 diary days → band `ORANGE`, indicators ['redflag-postcoital-bleeding']
+- `gc-32-minor-postcoital-self-harm` — age 17, 60 diary days → band `RED`, indicators ['redflag-self-harm']
+- `gc-33-discharge-3-control` — age 18, 60 diary days → band `GREEN`, indicators []
+- `gc-34-postcoital-plus-postmenopausal` — age 45, 60 diary days → band `ORANGE`, indicators ['redflag-postcoital-bleeding', 'redflag-postmenopausal-bleeding']
+- `gc-35-intermenstrual-plus-anemia` — age 30, 60 diary days → band `ORANGE`, indicators ['anemia-risk-flag', 'redflag-intermenstrual-bleeding']
+- `gc-36-minor-discharge-only` — age 16, 60 diary days → band `ORANGE`, indicators ['redflag-persistent-discharge']
+- `gc-37-minor-postcoital-endo` — age 17, 75 diary days → band `ORANGE`, indicators ['endo-indicator']

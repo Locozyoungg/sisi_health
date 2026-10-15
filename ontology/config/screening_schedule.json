@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "description": "Cervical screening + HPV vaccination schedule config (spec 5.4.1: age-based prompts are driven by this file, NEVER hard-coded). PLACEHOLDER values pending confirmation of the current Kenya Ministry of Health screening and vaccination guidelines (human task).",
+  "screening_start_age": 25,
+  "screening_interval_days": 365,
+  "reminder_intervals_days": {
+    "referred": 30,
+    "screened": 14,
+    "result_received": 7,
+    "further_assessment": 14,
+    "treatment": 30,
+    "follow_up": 90
+  },
+  "reminder_grace_days": 14,
+  "max_missed_reminders": 2,
+  "hpv_vaccine_schedule": [
+    { "dose": 1, "age_years": 10 },
+    { "dose": 2, "age_years": 11 }
+  ],
+  "source": "Kenya MoH cervical screening + HPV vaccination guidelines",
+  "verified": false,
+  "note": "PLACEHOLDER values pending MoH confirmation (human task H13). Never presented as validated clinical guidance."
+}

@@ -69,8 +69,9 @@ def test_age_gated_question_mapping():
 
 
 def test_features_mapping_is_complete_and_explicit():
-    """Every rule-schema input is present; self_harm is explicitly False (never
-    left missing — missing would trigger the red-flag asymmetry for everyone)."""
+    """Every rule-schema input is present; self_harm and the cervical signals are
+    explicitly False/0 (never left missing — missing would trigger the red-flag
+    asymmetry for everyone)."""
     features = features_from_answers(_answers(), age=24)
     expected_keys = {
         "max_pain_90d",
@@ -86,10 +87,18 @@ def test_features_mapping_is_complete_and_explicit():
         "androgenic_symptoms",
         "self_harm_signal",
         "dizziness_signal",
+        "postcoital_bleeding_signal",
+        "intermenstrual_bleeding_signal",
+        "postmenopausal_bleeding_signal",
+        "unusual_discharge_days_90d",
     }
     assert set(features.keys()) == expected_keys
     assert features["self_harm_signal"] is False
     assert features["dizziness_signal"] is False
+    assert features["postcoital_bleeding_signal"] is False
+    assert features["intermenstrual_bleeding_signal"] is False
+    assert features["postmenopausal_bleeding_signal"] is False
+    assert features["unusual_discharge_days_90d"] == 0
     assert features["max_pain_90d"] == 3.0
 
 

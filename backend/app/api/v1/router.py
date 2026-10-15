@@ -7,6 +7,7 @@ from app.api.v1 import (
     audit,
     auth,
     consent,
+    corridor,
     diary,
     dsr,
     health,
@@ -30,3 +31,4 @@ router.include_router(audit.router, prefix="/audit", tags=["audit"])
 router.include_router(admin.router, prefix="/admin", tags=["admin"])
 router.include_router(school.router, tags=["school"])
 router.include_router(vouchers.router, tags=["vouchers"])
+router.include_router(corridor.router, tags=["corridor"])

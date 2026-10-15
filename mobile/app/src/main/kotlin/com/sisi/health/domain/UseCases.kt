@@ -95,6 +95,10 @@ class EvaluateUseCase @Inject constructor(
             urinaryFrequency = bool("urinary_frequency"),
             androgenic = bool("androgenic"),
             selfHarm = bool("self_harm"),
+            postcoitalBleeding = bool("postcoital_bleeding"),
+            intermenstrualBleeding = bool("intermenstrual_bleeding"),
+            postmenopausalBleeding = bool("postmenopausal_bleeding"),
+            unusualDischarge = bool("unusual_discharge"),
         )
     }
 

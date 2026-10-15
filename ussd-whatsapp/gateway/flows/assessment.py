@@ -73,8 +73,9 @@ def question_for(index: int, age: int) -> dict[str, Any]:
 
 def features_from_answers(answers: dict[str, Any], age: int) -> dict[str, Any]:
     """Deterministic mapping to the rule-schema input names. Every key is set
-    explicitly: self_harm_signal is False because it is never asked over USSD
-    (missing would trigger the red-flag asymmetry and force RED for everyone)."""
+    explicitly: self_harm_signal and the cervical signals are False because they
+    are never asked over USSD (missing would trigger the red-flag asymmetry and
+    force RED/ORANGE for everyone)."""
     cycle = str(answers.get("cycle_regular") or "unsure")
     return {
         "max_pain_90d": float(answers["pain"]),
@@ -90,6 +91,10 @@ def features_from_answers(answers: dict[str, Any], age: int) -> dict[str, Any]:
         "androgenic_symptoms": False,
         "self_harm_signal": False,  # not asked over USSD; never left missing
         "dizziness_signal": answers.get("dizziness") is True,
+        "postcoital_bleeding_signal": False,  # not asked over USSD; never left missing
+        "intermenstrual_bleeding_signal": False,
+        "postmenopausal_bleeding_signal": False,
+        "unusual_discharge_days_90d": 0,
     }
 
 

@@ -45,3 +45,6 @@ mobile/app/src/main/assets/ontology/
 mobile/app/src/test/resources/ontology/
 *.apk
 *.aab
+
+# TypeScript build cache
+*.tsbuildinfo

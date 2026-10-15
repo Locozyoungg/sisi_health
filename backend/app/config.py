@@ -55,6 +55,12 @@ class Settings(BaseSettings):
     helpline_child: str = "116"  # UNVERIFIED — confirm before launch
     helpline_gbv: str = "1195"  # UNVERIFIED — confirm before launch
 
+    # Corridor (Phase 5)
+    jitsi_domain: str = "meet.sisi-health.local"
+    jitsi_app_id: str = "sisi"
+    jitsi_app_secret: str = "dev-only-jitsi-secret-change-me"  # noqa: S105 — dev default; prod guarded below
+    screening_config_path: Path = REPO_ROOT / "ontology" / "config" / "screening_schedule.json"
+
     @model_validator(mode="after")
     def _prod_guards(self) -> "Settings":
         if self.env in {"staging", "prod"}:
@@ -66,6 +72,8 @@ class Settings(BaseSettings):
                 raise ValueError("SISI_JWT_SECRET must be set in staging/prod")
             if self.phone_pepper == "dev-only-pepper-change-me":
                 raise ValueError("SISI_PHONE_PEPPER must be set in staging/prod")
+            if self.jitsi_app_secret == "dev-only-jitsi-secret-change-me":  # noqa: S105 — guard, not a secret
+                raise ValueError("SISI_JITSI_APP_SECRET must be set in staging/prod")
             if not self.master_key_b64:
                 raise ValueError("SISI_MASTER_KEY_B64 must be set in staging/prod")
         if (

@@ -49,3 +49,42 @@ OpenAPI spec).
 - **OpenAPI**: Phase 3 endpoints are served by the separate gateway service
   (`/ussd-whatsapp`) and documented in `docs/openapi-gateway.yaml`; the
   backend OpenAPI is unchanged.
+
+### CC-3 (2026-10-15, Phase 5) — specialist corridor + cervical screening & navigation
+
+- **Migration 0005** adds schema `corridor` (spec 5.4 + 5.4.1):
+  - consult requests/sessions/consents (`consult_requests`,
+    `consult_events`, `consult_sessions` — `recorded` CHECKed False,
+    `consult_consents`), with envelope-encrypted computed-features snapshots
+    (corridor code never opens raw diary ciphertext — non-negotiable 5)
+  - facility directory `facilities` with screening fields (`screening_tests`,
+    opening hours, cost estimates, `last_verified_at` for the 90-day staleness
+    flag)
+  - `referrals` + `sharing_approvals` (patient-approved sections, revocable)
+  - surgery navigation: `surgery_cases`, `surgery_events`, `pricing_stubs`
+    (`indicative` CHECKed True, `source` required), `outcome_logs`
+  - cervical follow-up tracker: `follow_up_tracker` (status-only; no
+    results-detail column exists), `tracker_events`, `reminders` (generic
+    message keys only, idempotent per user/kind/due date)
+- **Rule schema**: the closed `condition` enum gains `postcoital_bleeding`,
+  `intermenstrual_bleeding`, `postmenopausal_bleeding`, `persistent_discharge`
+  (4 new draft red-flag rules in `/ontology/rules`, all
+  `clinically_validated: false`, min band ORANGE).
+- **Diary payload schema**: `symptoms` gains `postcoital_bleeding`,
+  `intermenstrual_bleeding`, `postmenopausal_bleeding`, `unusual_discharge`
+  (18+/45+ collection gating per the dyspareunia precedent: server validates
+  shape, app gates collection).
+- **Engine**: `RULE_SET_VERSION` → `ontology-1.1` in both engines; golden
+  file → 1.1.0 (37 cases). New invariant in both engines: a minor
+  (`age < self_consent_age`) with `postcoital_bleeding_signal` sets
+  `safeguarding` and floors the band at ORANGE (spec 5.4.1, hazard C5). New
+  rules are `red_flag: true` with ORANGE output, so `urgent` becomes true for
+  cervical ORANGE flags (conservative, upward — documented in hazard log C2);
+  guardian alerts still key on band == RED only.
+- **RBAC**: new `corridor:*` permissions (queue, consults, referrals, surgery,
+  facilities read/write, tracking, aggregates, education:read, reminders);
+  roles extended in `docs/role-matrix.md`. MOH_VIEWER gains
+  `corridor:aggregates`.
+- **OpenAPI**: regenerated for the new `/v1/corridor/*` surface (backend
+  OpenAPI v3 frozen in `docs/openapi.yaml`).
+

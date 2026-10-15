@@ -1,0 +1,37 @@
+{
+  "slug": "hpv-vaccination-guardian-sw",
+  "version": "1.0.0",
+  "language": "sw",
+  "audience": "guardian",
+  "title": "Chanjo ya HPV kwa mtoto wako: mambo ya kujua kama mlezi",
+  "body": "Chanjo ya HPV hulinda dhidi ya virusi (human papillomavirus) vinavyosababisha saratani ya mlango wa kizazi baadaye maishani. Chanjo hii hufanya kazi vizuri zaidi ikitolewa kabla ya mtu kukutana na virusi, ndiyo sababu hutolewa katika umri wa ujana wa mapema.\n\nNi kwa nani. Chanjo hutolewa kwa wasichana, na katika programu nyingi pia kwa wavulana, kama sehemu ya afya ya kawaida ya ujana. Muulize muuguzi wa shule au kituo cha afya kilicho karibu kama chanjo hii inapatikana.\n\nWakati inatolewa. Ratiba ya dozi inayotumiwa na app hii iko kwenye faili ya ratiba ya uchunguzi (ontology/config/screening_schedule.json). Umri ulio kwenye faili hiyo ni wa PLACEHOLDER hadi Kenya Ministry of Health idhibitishe, hivyo hakikisha ratiba ya sasa na mhudumu wa afya.\n\nKinachotarajiwa. Sindano hutolewa kwenye mkono wa juu na huchukua sekunde chache. Uchungu mdogo, au homa nyepesi kwa siku moja, ni kawaida na hupita yenyewe. Athari kubwa ni nadra; mhudumu wa afya atakueleza nini cha kuangalia na nani wa kumpigia.\n\nKwa nini ni muhimu. Kinga hudumu kwa muda mrefu dozi zote zikikamilika. Dozi ikikosekana, kwa kawaida mzunguko unaendelezwa badala ya kuanza upya; mhudumu wa afya atakushauri.\n\nFaragha ya mtoto wako. Kila kinachorekodiwa kwenye app hii kimefichwa kwa usiri na hakishirikiwi na shule, mwajiri au familia isipokuwa akiidhinisha. Mlezi hasomi shajara ya dalili wala majibu ya tathmini ya mtoto.\n\nUchunguzi wa kawaida wa dalili hauchukui nafasi ya uchunguzi wa saratani ya mlango wa kizazi.\nA normal symptom check does not replace screening.",
+  "sources": [
+    {
+      "title": "Human papillomavirus vaccines: WHO position paper, May 2017",
+      "source_type": "clinical_guideline",
+      "organization": "WHO",
+      "year": 2017,
+      "url": "https://www.who.int/publications/i/item/who-wer9219",
+      "note": "Kundi lengwa la chanjo, ratiba ya dozi na usalama. Maudhui ni DRAFT hadi daktari wa Kenya aliyeidhinishwa asaini."
+    },
+    {
+      "title": "National Cancer Screening Guidelines",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2018,
+      "url": "https://www.health.go.ke/",
+      "note": "Njia ya Kenya ya chanjo ya HPV na uchunguzi kwa vijana. Umri ni PLACEHOLDER hadi MoH idhibitishe (human task H13)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": true,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Rasimu ya kwanza kutoka miongozo iliyochapishwa. clinically_validated=false hadi daktari wa Kenya asaini (human task H13)."
+    }
+  ]
+}

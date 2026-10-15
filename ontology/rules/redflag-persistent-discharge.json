@@ -1,0 +1,43 @@
+{
+  "id": "redflag-persistent-discharge",
+  "version": "1.0.0",
+  "condition": "persistent_discharge",
+  "min_age": 13,
+  "red_flag": true,
+  "priority": 92,
+  "inputs": [
+    { "name": "unusual_discharge_days_90d", "type": "numeric", "description": "Distinct days with reported unusual or foul-smelling discharge in the last 90 days." }
+  ],
+  "logic": {
+    "op": "gte",
+    "input": "unusual_discharge_days_90d",
+    "value": 5
+  },
+  "output_band": "ORANGE",
+  "evidence": [
+    {
+      "title": "Guidelines for the management of symptomatic sexually transmitted infections",
+      "source_type": "clinical_guideline",
+      "organization": "WHO",
+      "year": 2021,
+      "url": "https://www.who.int/publications/i/item/9789240024168",
+      "note": "Persistent abnormal vaginal discharge warrants clinical evaluation. The 5-days-in-90 persistence threshold is a DRAFT pending Kenyan clinician sign-off."
+    },
+    {
+      "title": "National Guidelines on Syndromic Management of Sexually Transmitted Infections",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "note": "Abnormal vaginal discharge is managed under the national syndromic STI guideline. DRAFT pending Kenyan clinician sign-off and MoH confirmation."
+    }
+  ],
+  "clinically_validated": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending Kenyan clinician sign-off."
+    }
+  ]
+}

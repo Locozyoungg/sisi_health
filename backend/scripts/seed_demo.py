@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from sqlalchemy import select
 
-from app.auth.staff import create_staff, setup_totp
+from app.auth.staff import create_staff
 from app.config import get_settings
 from app.consent.service import ensure_consent_texts, grant_consent
 from app.crypto.key_provider import DatabaseKeyProvider
@@ -20,6 +20,10 @@ from app.db import SessionLocal
 from app.diary.service import SyncEntry, sync_entries
 from app.models import DiaryEntry, StaffUser
 from app.users.service import age_of, create_user, get_by_phone
+
+# Fixed base32 secret ("Hello!") so every demo staff account opens with the
+# same authenticator entry (same convention as seed_school_demo.py).
+E2E_TOTP_SECRET = "JBSWY3DPEHPK3PXP"  # noqa: S105 — synthetic e2e demo secret, never real
 
 DEMO_PHONES = {
     "adult": "+254700000101",
@@ -78,11 +82,24 @@ def main() -> int:
                 staff = create_staff(
                     db, provider, email=email, password="demo-password-123", role=role  # noqa: S106 — demo seed only
                 )
-                uri = setup_totp(db, provider, staff)
-                db.commit()
-                print(f"[seed] staff {email} role={role} TOTP URI: {uri}")
             else:
-                print(f"[seed] staff {email} already seeded")
+                staff = existing
+            # Pin the TOTP secret to the fixed demo secret (same convention as
+            # seed_school_demo.py) so every demo staff account opens with the
+            # same authenticator entry: base32 "Hello!".
+            from app.auth.staff import _open_totp, _seal_totp
+
+            pinned = False
+            try:
+                pinned = _open_totp(provider, db, staff) == E2E_TOTP_SECRET
+            except Exception:  # noqa: BLE001 — unreadable secret means repin
+                pinned = False
+            if not pinned:
+                blob, _key_id = _seal_totp(provider, db, staff.id, E2E_TOTP_SECRET)
+                staff.totp_secret_encrypted = blob
+                staff.totp_confirmed = True
+                db.commit()
+            print(f"[seed] staff {email} role={role} pinned to the demo TOTP secret")
 
         rng = random.Random(42)  # noqa: S311 — deterministic synthetic data, not crypto
         for name, phone, birth, days in (

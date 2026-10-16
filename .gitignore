@@ -48,3 +48,6 @@ mobile/app/src/test/resources/ontology/
 
 # TypeScript build cache
 *.tsbuildinfo
+
+# Gradle Kotlin cache
+mobile/.kotlin/

@@ -5,10 +5,10 @@ PYTHON  := $(VENV)/bin/python
 PIP     := $(VENV)/bin/pip
 COMPOSE := docker compose
 
-.PHONY: help setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo clean
+.PHONY: help setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo ai-setup ai-test ai-demo ai-eval ai-compare clean
 
 help:
-	@echo "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo clean"
+	@echo "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
 
 setup:
 	$(PY) -m venv $(VENV)
@@ -46,6 +46,21 @@ phase5-demo:
 	cd backend && $(abspath $(PYTHON)) scripts/seed_school_demo.py
 	cd backend && $(abspath $(PYTHON)) scripts/seed_corridor_demo.py
 	cd web && npm run e2e
+
+ai-setup:
+	$(abspath $(PYTHON)) -m pip install -e "ai_service[dev]"
+
+ai-test:
+	cd ai_service && $(abspath $(PYTHON)) -m pytest
+
+ai-demo:
+	cd ai_service && $(abspath $(PYTHON)) scripts/demo_phase6.py
+
+ai-eval:
+	cd ai_service && $(abspath $(PYTHON)) scripts/eval_guardrails.py
+
+ai-compare:
+	cd ai_service && $(abspath $(PYTHON)) scripts/eval_compare.py
 
 openapi:
 	cd backend && $(abspath $(PYTHON)) scripts/export_openapi.py

@@ -1,0 +1,275 @@
+openapi: 3.1.0
+info:
+  title: SISI Health AI Service
+  description: 'AI conversation layer (Phase 6): education and next-step guidance
+    over approved content. The deterministic rules engine assigns every risk band
+    and red-flag routing; SISI supports you and your doctor - it does not diagnose.'
+  version: 0.1.0
+paths:
+  /v1/ai/ask:
+    post:
+      summary: Ask
+      description: 'Education / explanation / next-step guidance. Every routing decision
+        made
+
+        before the model is deterministic; the model''s answer passes the post-filter
+        or
+
+        becomes a refusal.'
+      operationId: ask_v1_ai_ask_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Ask V1 Ai Ask Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/ai/rules/evaluate:
+    post:
+      summary: Rules Evaluate
+      description: 'The backend''s deterministic engine, evaluated in-process: the
+        same bands,
+
+        indicators and escalations the app and the gateway use. The AI service never
+
+        computes, adjusts, or second-guesses a band.'
+      operationId: rules_evaluate_v1_ai_rules_evaluate_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RulesEvaluateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Rules Evaluate V1 Ai Rules Evaluate Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/ai/index:
+    post:
+      summary: Index
+      description: '(Re)index /ontology content. The audit event carries counts and
+        the mode
+
+        only — never chunk text (spec 6, non-negotiable 5).'
+      operationId: index_v1_ai_index_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Index V1 Ai Index Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /health:
+    get:
+      summary: Health
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Health Health Get
+components:
+  schemas:
+    AskRequest:
+      properties:
+        text:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Text
+        language:
+          type: string
+          enum:
+          - en
+          - sw
+          - sheng
+          title: Language
+          default: en
+        age:
+          anyOf:
+          - type: integer
+            maximum: 120.0
+            minimum: 13.0
+          - type: 'null'
+          title: Age
+        band:
+          anyOf:
+          - type: string
+            enum:
+            - GREEN
+            - YELLOW
+            - ORANGE
+            - RED
+          - type: 'null'
+          title: Band
+        indicators:
+          items:
+            type: string
+            pattern: ^[a-z0-9-]{3,64}$
+          type: array
+          title: Indicators
+        urgent:
+          type: boolean
+          title: Urgent
+          default: false
+        safeguarding:
+          type: boolean
+          title: Safeguarding
+          default: false
+      type: object
+      required:
+      - text
+      title: AskRequest
+      description: 'The /ask contract. There is deliberately no id, phone, name, or
+        email field:
+
+        the schema physically cannot carry a patient identifier into a prompt (A36).'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    IndexRequest:
+      properties:
+        language:
+          anyOf:
+          - type: string
+            enum:
+            - en
+            - sw
+            - sheng
+          - type: 'null'
+          title: Language
+      type: object
+      title: IndexRequest
+    RulesEvaluateRequest:
+      properties:
+        age:
+          type: integer
+          maximum: 120.0
+          minimum: 13.0
+          title: Age
+        features:
+          additionalProperties:
+            anyOf:
+            - type: number
+            - type: boolean
+          type: object
+          title: Features
+        mode:
+          type: string
+          enum:
+          - diary
+          - assessment
+          title: Mode
+          default: assessment
+        diary_days:
+          type: integer
+          minimum: 0.0
+          title: Diary Days
+          default: 0
+      type: object
+      required:
+      - age
+      title: RulesEvaluateRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

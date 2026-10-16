@@ -16,8 +16,8 @@ review by UNICEF's Venture Fund and deployment in real Kenyan schools.
 | 3 | USSD + WhatsApp assessment flows | ✅ **Complete** — 36 gateway tests, demo green |
 | 4 | School nurse console, dashboards, M-Pesa vouchers | ✅ **Complete** — 55 k-anon property tests + school/voucher suites, 3 Playwright e2e |
 | 5 | Specialist corridor (+ cervical screening module) | ✅ **Complete** — 423 backend tests (186 new), 4 corridor Playwright e2e, 37 golden cases on both engines |
-| 6 | AI conversation layer with RAG + guardrails | ⏳ Next |
-| 7 | Employer admin (minimal) | ⏳ |
+| 6 | AI conversation layer with RAG + guardrails | ✅ **Complete** — 260 ai-service tests, 150-case guardrail suite (100% pass, +20 cervical cases), 100% red-flag routing, 92-chunk RAG index, stub comparison report (real run = H15) |
+| 7 | Employer admin (minimal) | ⏳ Next |
 | 8 | Hardening: pen-test checklist, load test, deploy | ⏳ |
 
 ## Monorepo
@@ -30,7 +30,7 @@ review by UNICEF's Venture Fund and deployment in real Kenyan schools.
 | `/ussd-whatsapp` | USSD (`*XXX#`) + WhatsApp assessment gateway (Africa's Talking sandbox contract, resumable sessions, 160-char screen lint) |
 | `/web` | Staff console: school nurse queue, dashboards, vouchers, corridor queue, consults, referrals, surgery + follow-up trackers, facilities (React + Vite + Playwright e2e) |
 | `/docs` | SPEC, assumptions, contract changes, human tasks, role matrix, hazard log, OpenAPI (frozen), clinician review packet |
-| `/ai` | Later phase (Phase 6: LLM + RAG + guardrail harness) |
+| `/ai_service` | AI conversation layer: LLM + RULES endpoints, RAG over the CC-BY content library (pgvector with JSONB fallback), deterministic guardrails (red-flag routing, post-filter, citations), 150-case eval harness |
 
 ## Quick start — backend (Phase 1)
 
@@ -51,12 +51,26 @@ make setup db-up demo-phase1
 
 ```powershell
 .\make.ps1 db-up                     # portable PostgreSQL (idempotent)
-.\make.ps1 migrate                   # migrations 0001-0006
+.\make.ps1 migrate                   # migrations 0001-0008
 .\make.ps1 web-setup                 # npm install + Playwright chromium
 # start the backend manually on :8000, then:
 .\make.ps1 phase5-demo               # corridor seed (synthetic) + Playwright e2e:
                                      # booking→review→consult→referral flow,
                                      # patient-approval gating, facility staleness
+```
+
+## AI conversation layer demo (Phase 6)
+
+```powershell
+.\make.ps1 db-up                     # portable PostgreSQL (JSONB fallback branch)
+.\make.ps1 migrate                   # migrations 0001-0008
+.\make.ps1 ai-setup                  # pip install -e ai_service[dev]
+.\make.ps1 ai-demo                   # scripted en/sw/sheng conversation through the
+                                     # real pipeline: red-flag routing to the urgent
+                                     # script + hotlines, minor gating, citations,
+                                     # injection blocked, rules/evaluate parity
+.\make.ps1 ai-eval                   # 170-case guardrail suite (150 + 20 cervical)
+.\make.ps1 ai-compare                # hosted-vs-open-weight STUB RUN report
 ```
 
 ## Quick start — Android app (Phase 2)

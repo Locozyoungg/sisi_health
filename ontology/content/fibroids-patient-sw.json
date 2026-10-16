@@ -1,0 +1,45 @@
+{
+  "slug": "fibroids-patient-sw",
+  "version": "1.0.0",
+  "language": "sw",
+  "audience": "patient",
+  "title": "Fibroidi: hedhi nzito na mkazo tumboni",
+  "body": "Fibroidi ni vivimbe vya misuli na tishu ngumu vinavyokua ndani au kando ya kizazi. Ni vya kawaida sana — watu wengi huwa navyo wakati fulani na hawajui kamwe. Fibroidi si saratani, na hazigeuki kuwa saratani. Zinaweza kuwa ndogo kama mbegu au kubwa kama balungi, na zinaweza kukua polepole kwa miaka.\n\nDalili ambazo watu wengine huziona. Hedhi zinazokuwa nzito au ndefu kuliko mwanzo, wakati mwingine na mafigo; damu kati ya hedhi; maumivu au uzito tumboni la chini au mgongoni; tumbo linaloonekana kubwa; kukojoa mara nyingi; maumivu wakati wa kujamiiana; na kuchoka sana, kukosa pumzi au kizunguzungu, jambo ambalo linaweza kuonyesha upungufu wa madini ya chuma kutokana na damu. Watu wengi walio na fibroidi hawana dalili kabisa.\n\nKinachoweza kusababisha. Hedhi nzito au zenye maumivu zina sababu kadhaa zinazowezekana, na fibroidi ni mojawapo tu — mabadiliko ya homoni, endometriosis, matatizo ya tezi, matatizo ya kuganda kwa damu, na sababu zinazohusiana na mimba zinaweza kuonekana vivyo hivyo. Ni mhudumu wa afya anayekuchunguza peke yake anayeweza kujua chanzo cha dalili zako. Programu hii haiwezi kukuambia kama unazo fibroidi, na hakuna orodha ya dalili inayoweza.\n\nJinsi mhudumu wa afya anavyochunguza. Muuguzi au daktari atauliza kuhusu hedhi zako — unatumia pedi ngapi, damu hudumu siku ngapi, na kama unatoa mafigo — na atachunguza tumbo lako. Anaweza kupendekeza skan (ultrasound) ili kuona kizazi vizuri, na kipimo cha damu kuangalia madini ya chuma. Kuhesabu pedi zako na kuandika tarehe kwa mwezi mmoja au miwili kabla ya kikao kunasaidia sana.\n\nKinachoweza kusaidia kila siku. Kupumzika vya kutosha, vyakula vyenye madini ya chuma kama maharagwe, mboga za majani ya kijani na nyama, na joto tumboni husaidia wengi kuvumilia hedhi nzito. Upungufu wa madini ya chuma huchukua muda kurudi, hivyo kama unachoka sana au unaskia kizunguzungu usisubiri — hiyo ni sababu ya kuchunguzwa. Hizi ni njia za kusaidia, hazichukui nafasi ya matibabu.\n\nChaguo ambazo mhudumu wa afya anaweza kujadili nawe. Kutegemea jinsi damu ilivyo nyingi, jinsi fibroidi zilivyopo, umri wako na kama unataka watoto, mtaalamu anaweza kujadili nawe dawa, chaguo la homoni, taratibu ya kuondoa fibroidi, au upasuaji mwingine. Yote ni maamuzi yako na ya mhudumu wa afya aliyehitimu — programu hii haipendekezi dawa wala kipimo chake, na haiamui matibabu unayohitaji.\n\nPata matibabu siku hiyo hiyo kama unalowa pedi kila saa, unatoa mafigo makubwa, au kama unaskia kizunguzungu, unakaribia kuzimia au unakosa pumzi; kama una maumivu makali ya ghafla tumboni; au kama damu ni nyingi na haipungui. Nenda kwa kituo cha afya kilicho karibu, au mwambie nesi wa shule yako akuchunguze leo. Usisubiri kuona kama yatapungua.\n\nFaragha yako. Kila unachoandika kwenye programu hii kimefichwa kwa usiri na hakishirikiwi na shule yako, mwajiri wako au familia yako isipokuwa ukiidhinisha. Ukaguzi wa dalili hapa hauchukui nafasi ya kuchunguzwa na mhudumu wa afya, na hauwezi kusema kama kuna kivimbe au hali yoyote — unakusaidia tu kueleza unachoona na kupata mtu sahihi wa kumuona.",
+  "sources": [
+    {
+      "title": "Fibroids: information for you",
+      "source_type": "other",
+      "organization": "RCOG",
+      "year": 2021,
+      "url": "https://www.rcog.org.uk/for-the-public/browse-our-patient-information/fibroids/",
+      "note": "Orodha ya dalili kwa lugha rahisi (damu nyingi, mkazo, uchovu wa upungufu wa chuma) na chaguo ambazo mtaalamu hujadili. Maneno ni PLACEHOLDER hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    },
+    {
+      "title": "National Guidelines for Management of Common Conditions",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2016,
+      "url": "https://www.health.go.ke/",
+      "note": "Njia ya rufaa ya Kenya na maneno ya dharura ya 'ona nesi leo'. Maneno ni PLACEHOLDER hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    },
+    {
+      "title": "WHO recommendations on adolescent sexual and reproductive health and rights",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "year": 2018,
+      "url": "https://www.who.int/publications/i/item/9789241514606",
+      "note": "Huduma rafiki kwa vijana, faragha na maneno ya rufaa kwa watumiaji wadogo. Maudhui ni DRAFT hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Rasimu ya kwanza kutoka miongozo iliyochapishwa. clinically_validated=false hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    }
+  ]
+}

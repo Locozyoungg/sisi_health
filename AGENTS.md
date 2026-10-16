@@ -34,7 +34,7 @@ These Sections 1–3 restatements are non-negotiable.
 
 | Area | Decision |
 |---|---|
-| Database | PostgreSQL 16 with pgvector. Schemas: `core`, `diary` (separately encrypted), `audit` (append-only), `school`, `corridor`. |
+| Database | PostgreSQL 16 with pgvector. Schemas: `core`, `diary` (separately encrypted), `audit` (append-only), `school`, `corridor`, `ai`. |
 | Migrations | Alembic, forward-only, every migration reviewed with a rollback note. |
 | Backend | Python 3.12, FastAPI, SQLAlchemy 2, Pydantic v2, Ruff, mypy strict on the rules and consent packages. |
 | Jobs/queue | Redis + arq workers (sync, SMS, PDF, reconciliation). |

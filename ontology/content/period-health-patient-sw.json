@@ -1,0 +1,45 @@
+{
+  "slug": "period-health-patient-sw",
+  "version": "1.0.0",
+  "language": "sw",
+  "audience": "patient",
+  "title": "Hedhi: kile cha kawaida, cha kuangalia, na wakati wa kuomba msaada",
+  "body": "Hedhi hutokea wakati utando wa ndani wa kizazi unapotoka mwilini kupitia uke. Hedhi ya kwanza kwa kawaida huja kati ya umri wa miaka 9 na 16. Mzunguko huhesabiwa kutoka siku ya kwanza ya hedhi moja hadi siku ya kwanza ya inayofuata, na siku 21 hadi 45 zinaweza kuwa za kawaida mwanzoni; baadaye mizunguko ya siku 21 hadi 35 ni ya kawaida. Mizunguko inaweza kuwa isiyo ya kawaida kwa mwaka mmoja au miwili ya kwanza, na hiyo ni kawaida.\n\nKile watu wengi huhisi karibu na hedhi. Maumivu tumboni la chini, maumivu ya mgongo, kichwa kuuma, matiti kuuma, kuchoka au kulia kwa urahisi, na chunusi. Damu kwa kawaida hudumu siku mbili hadi saba, na wengi hutumia pedi chache kwa siku. Kubadilisha pedi ni kawaida; kulowa pedi yote kwa saa moja si kawaida, na kunahitaji matibabu siku hiyo hiyo.\n\nCha kuangalia na kutaja kwenye kikao chako. Hedhi zinazokoma kwa miezi mitatu au zaidi wakati huna mimba; damu kati ya hedhi au baada ya kujamiiana; damu baada ya kuacha hedhi; maumivu yanayokuzuia kwenda shule au kulala; damu iliyoongezeka sana au kudumu muda mrefu zaidi; na kuchoka sana, kizunguzungu au kukosa pumzi, jambo linaloweza kuonyesha upungufu wa madini ya chuma. Yoyote ya haya ni sababu ya kumuona mhudumu wa afya, si sababu ya kusubiri.\n\nKinachoweza kusababisha. Mabadiliko ya damu na maumivu yana sababu nyingi zinazowezekana — mabadiliko ya homoni, fibroidi, endometriosis, matatizo ya tezi, matatizo ya kuganda kwa damu, maambukizi, au mimba. Ni mhudumu wa afya anayekuchunguza peke yake anayeweza kujua chanzo cha dalili zako. Programu hii haiwezi kukuambia chanzo cha dalili zako, na hakuna orodha ya dalili inayoweza. Inaweza kukusaidia kuandika unachoona ili kikao kiwe rahisi.\n\nJinsi kuandika kunavyosaidia. Andika siku ya kwanza ya kila hedhi, inachukua siku ngapi, takriban unatumia pedi ngapi kila siku, na wakati maumivu au damu kidogo yanaonekana. Kumbukumbu za miezi miwili au mitatu zinampa mhudumu wa afya mengi zaidi ya mwezi mmoja mbaya, na zinakusaidia kuona mtindo wako mwenyewe.\n\nKinachoweza kusaidia kila siku. Joto tumboni, mazoezi mepesi, kupumzika vya kutosha na maji ya kutosha husaidia wengi. Vyakula vyenye madini ya chuma, kama maharagwe, mboga za majani ya kijani na nyama, husaidia kurudisha akiba ya madini ya chuma baada ya damu nyingi. Kubadilisha pedi au taulo mara kwa mara na kuosha kwa maji safi tu huweka eneo hilo vizuri. Hizi ni njia za kujifariji na hazichukui nafasi ya kuchunguzwa wakati kitu kinabadilika.\n\nWakati ni wa dharura. Pata matibabu LEO kama unalowa pedi kila saa, kama unaskia kizunguzungu au unakaribia kuzimia, kama una maumivu makali ya ghafla tumboni, au kama damu haipungui. Nenda kwa kituo cha afya kilicho karibu, au mwambie nesi wa shule yako akuchunguze leo, na nenda na mtu unayemwamini kama unaweza.\n\nFaragha yako. Kila unachoandika kwenye programu hii kimefichwa kwa usiri na hakishirikiwi na shule yako, mwajiri wako au familia yako isipokuwa ukiidhinisha. Ukaguzi wa dalili hapa hauchukui nafasi ya kuchunguzwa na mhudumu wa afya na hauwezi kusema kama una hali yoyote — unakusaidia tu kueleza unachoona na kupata mtu sahihi wa kumuona.",
+  "sources": [
+    {
+      "title": "Heavy menstrual bleeding: information for you",
+      "source_type": "other",
+      "organization": "RCOG",
+      "year": 2018,
+      "url": "https://www.rcog.org.uk/for-the-public/browse-our-patient-information/heavy-menstrual-bleeding/",
+      "note": "Ukweli wa mzunguko kwa lugha rahisi, mwongozo wa kuhesabu pedi na hatua ya dharura ya 'kulowa pedi kwa saa'. Maneno ni PLACEHOLDER hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    },
+    {
+      "title": "National Guidelines for Management of Common Conditions",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2016,
+      "url": "https://www.health.go.ke/",
+      "note": "Njia ya rufaa ya Kenya na maneno ya hatua inayofuata ya 'ona nesi'. Maneno ni PLACEHOLDER hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    },
+    {
+      "title": "WHO recommendations on adolescent sexual and reproductive health and rights",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "year": 2018,
+      "url": "https://www.who.int/publications/i/item/9789241514606",
+      "note": "Huduma rafiki kwa vijana, faragha na ujumbe kwamba mabadiliko ya hedhi yanahitaji uchunguzi, si ukimya. Maudhui ni DRAFT hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Rasimu ya kwanza kutoka miongozo iliyochapishwa. clinically_validated=false hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    }
+  ]
+}

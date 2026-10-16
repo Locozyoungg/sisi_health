@@ -40,7 +40,18 @@ class RedFlagMatcher(patternFiles: List<RedFlagPatternFile>) {
     data class Escalations(val urgent: Boolean, val safeguarding: Boolean)
 
     companion object {
-        val URGENT_CATEGORIES = setOf("severe_acute_pain", "heavy_bleeding_dizziness", "self_harm")
+        val URGENT_CATEGORIES =
+            setOf(
+                "severe_acute_pain",
+                "heavy_bleeding_dizziness",
+                "self_harm",
+                // Cervical-screening red flags (spec 5.4.1): parity with the backend
+                // matcher — abnormal bleeding/discharge always shows the urgent script.
+                "postcoital_bleeding",
+                "intermenstrual_bleeding",
+                "postmenopausal_bleeding",
+                "unusual_discharge",
+            )
         val SAFEGUARDING_CATEGORIES =
             setOf("self_harm", "abuse_signal", "pregnancy_concern_minor", "guardian_risk")
     }

@@ -16,6 +16,14 @@
     { "id": "sw-abuse-02", "category": "abuse_signal", "urgency": "SAFEGUARDING", "regex": "(namuogopa|namwogopa) (baba|mjomba|mlezi|babangu|mwalimu)" },
     { "id": "sw-pregnancy-minor-01", "category": "pregnancy_concern_minor", "urgency": "SAFEGUARDING", "regex": "(nafikiri|nadhani)( nina| niko na| naweza kuwa na) mimba" },
     { "id": "sw-guardian-risk-01", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "(baba|mjomba|mlezi)( yangu| wangu)? (ananipiga|ananiumiza|ananigusa)" },
-    { "id": "sw-guardian-risk-02", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "anakuja (kitandani|chumbani) (usiku|kila usiku)" }
+    { "id": "sw-guardian-risk-02", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "anakuja (kitandani|chumbani) (usiku|kila usiku)" },
+    { "id": "sw-cervical-postcoital-01", "category": "postcoital_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,25}baada ya (kujamiiana|ngono|kufanya mapenzi|kushiriki ngono)" },
+    { "id": "sw-cervical-postcoital-02", "category": "postcoital_bleeding", "urgency": "RED", "regex": "(kujamiiana|ngono|kufanya mapenzi)[^.!?]{0,25}(kutokwa na damu|damu)" },
+    { "id": "sw-cervical-intermenstrual-01", "category": "intermenstrual_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,20}kati ya hedhi" },
+    { "id": "sw-cervical-intermenstrual-02", "category": "intermenstrual_bleeding", "urgency": "RED", "regex": "(damu|kutokwa na damu)[^.!?]{0,20}(nje ya|bila ya) (siku za )?hedhi" },
+    { "id": "sw-cervical-postmenopausal-01", "category": "postmenopausal_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,25}baada ya (kuacha|kukoma) hedhi" },
+    { "id": "sw-cervical-postmenopausal-02", "category": "postmenopausal_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,25}(nilikoma|nimekoma|nilishamaliza|nimemaliza)[^.!?]{0,15}hedhi" },
+    { "id": "sw-cervical-discharge-01", "category": "unusual_discharge", "urgency": "RED", "regex": "maji ya ajabu[^.!?]{0,30}(wiki|siku)" },
+    { "id": "sw-cervical-discharge-02", "category": "unusual_discharge", "urgency": "RED", "regex": "(maji|uchafu)[^.!?]{0,20}(yananuka|harufu mbaya|harufu ya ajabu|ya uvundo)" }
   ]
 }

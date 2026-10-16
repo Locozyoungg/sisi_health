@@ -1,0 +1,45 @@
+{
+  "slug": "endometriosis-patient-sw",
+  "version": "1.0.0",
+  "language": "sw",
+  "audience": "patient",
+  "title": "Endometriosis: maumivu yasiyoisha na hedhi",
+  "body": "Endometriosis ni hali ya kawaida ambapo tishu zinazofanana na utando wa ndani wa kizazi hukua nje ya kizazi, kwa mfano kwenye ovari, nyuma ya kizazi, au kwenye utumbo. Tishu hizo zinaendelea kuitikia homoni zako za kila mwezi, hivyo zinaweza kuvimba na kutoa damu wakati wa hedhi na kuleta maumivu. Hii si maambukizi, na haikupata kwa mtu yeyote.\n\nDalili ambazo watu wengine huziona. Maumivu ya hedhi yanayokuzuia kwenda shule au kulala; maumivu yanayoendelea zaidi ya siku za damu; maumivu ya ndani wakati au baada ya kujamiiana; maumivu wakati wa kujisaidia choo au mkojo; damu nyingi au hedhi isiyo ya kawaida; tumbo kuvimba; na wakati mwingine ugumu wa kupata mimba. Kwa watu wengine maumivu yapo karibu mwezi wote, si siku za hedhi tu.\n\nKinachoweza kusababisha. Ni mhudumu wa afya anayekuchunguza peke yake anayeweza kujua kinachosababisha dalili zako. Endometriosis ni sababu mojawapo inayowezekana, na pia fibroidi, mabadiliko ya homoni na maambukizi fulani, kwa sababu yote yanaweza kuleta dalili zinazofanana. Programu hii haiwezi kukuambia kama unayo, na wala si orodha ya dalili. Kuandika wakati maumivu yanakuja na jinsi yalivyo makali kunamsaidia sana muuguzi.\n\nJinsi mhudumu wa afya anavyochunguza. Hakuna kipimo kimoja cha damu kinachothibitisha au kukanusha hili kwa peke yake. Muuguzi au daktari atauliza kuhusu hedhi zako na maumivu yako, anaweza kukuchunguza, na anaweza kupendekeza skan au kukuelekeza kwa mtaalamu. Kujua kwa uhakika kunaweza kuhitaji operesheni ndogo inayoitwa laparoscopy, inayofanywa kwa usingizi wa dawa. Mwombe mhudumu aeleze kila hatua kabla ya kufanyika, na omba mtu akae nawe kama unataka.\n\nKinachoweza kusaidia kila siku. Joto kwenye tumbo la chini, mazoezi mepesi, kupumzika maumivu yakiwa makali, na usingizi wa kutosha huwasaidia watu wengine. Wengine huona kwamba milo mipepesi na vinywaji vichache vya sukari wakati wa hedhi husaidia kidogo. Hizi ni njia za kujifariji, si tiba, na hazichukui nafasi ya kuchunguzwa na mhudumu wa afya.\n\nChaguo ambazo mhudumu wa afya anaweza kujadili nawe. Kutegemea maumivu yako, umri wako na kama unataka kupata watoto baadaye, mtaalamu anaweza kujadili nawe dawa za kupunguza maumivu, chaguo za homoni, au operesheni. Kila chaguo ni maamuzi yako na ya mhudumu wa afya aliyehitimu aliyekuchunguza — programu hii haipendekezi dawa wala kipimo chake, na haiamui matibabu unayohitaji.\n\nPata matibabu siku hiyo hiyo kama maumivu yanazidi kuwa makali ghafla, kama unalowa pedi kila saa, kama unaskia kizunguzungu au unakaribia kuzimia, au kama unavuja damu nyingi. Usisubiri kuona kama yatapungua. Nenda kwa kituo cha afya kilicho karibu, au mwambie nesi wa shule yako akuchunguze leo.\n\nFaragha yako. Kila unachoandika kwenye programu hii kimefichwa kwa usiri na hakishirikiwi na shule yako, mwajiri wako au familia yako isipokuwa ukiidhinisha. Ukaguzi wa dalili hapa hauchukui nafasi ya kuchunguzwa na mhudumu wa afya, na hauwezi kamwe kutambua hali yoyote ya afya — unakusaidia tu kueleza unachoona na kupata mtu sahihi wa kumuona.",
+  "sources": [
+    {
+      "title": "Endometriosis",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "year": 2023,
+      "url": "https://www.who.int/news-room/fact-sheets/detail/endometriosis",
+      "note": "Dalili, sababu zinazowezekana na ujumbe kwamba mhudumu wa afya peke yake anaweza kujua chanzo cha maumivu. Maudhui ni DRAFT hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    },
+    {
+      "title": "Endometriosis: information for you",
+      "source_type": "other",
+      "organization": "RCOG",
+      "year": 2022,
+      "url": "https://www.rcog.org.uk/for-the-public/browse-our-patient-information/endometriosis/",
+      "note": "Orodha ya dalili kwa lugha rahisi, jinsi hali inavyochunguzwa, na njia za kila siku zinazosaidia. Maneno ni PLACEHOLDER hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    },
+    {
+      "title": "National Guidelines for Management of Common Conditions",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2016,
+      "url": "https://www.health.go.ke/",
+      "note": "Lugha ya rufaa ya Kenya ('ona nesi', 'pelekwa kwa kituo cha afya'). Maneno ni PLACEHOLDER hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Rasimu ya kwanza kutoka miongozo iliyochapishwa. clinically_validated=false hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    }
+  ]
+}

@@ -43,12 +43,20 @@ def content_files() -> list[dict]:
 
 def test_list_content_returns_the_shipped_chunks():
     items = education.list_content()
-    assert len(items) == 4
+    assert len(items) == 12
     assert {item["slug"] for item in items} == {
         "cervical-screening-patient-en",
         "cervical-screening-patient-sw",
+        "endometriosis-patient-en",
+        "endometriosis-patient-sw",
+        "fibroids-patient-en",
+        "fibroids-patient-sw",
         "hpv-vaccination-guardian-en",
         "hpv-vaccination-guardian-sw",
+        "pcos-patient-en",
+        "pcos-patient-sw",
+        "period-health-patient-en",
+        "period-health-patient-sw",
     }
     for item in items:
         assert set(item.keys()) == PUBLIC_KEYS
@@ -58,20 +66,26 @@ def test_list_content_returns_the_shipped_chunks():
 
 def test_list_content_filters_by_language():
     assert {i["language"] for i in education.list_content(language="en")} == {"en"}
-    assert len(education.list_content(language="en")) == 2
-    assert len(education.list_content(language="sw")) == 2
+    assert len(education.list_content(language="en")) == 6
+    assert len(education.list_content(language="sw")) == 6
     assert education.list_content(language="fr") == []
 
 
 def test_list_content_filters_by_audience():
-    assert len(education.list_content(audience="patient")) == 2
+    assert len(education.list_content(audience="patient")) == 10
     assert len(education.list_content(audience="guardian")) == 2
     assert education.list_content(audience="clinician") == []
 
 
 def test_list_content_filters_combine():
     both = education.list_content(language="sw", audience="patient")
-    assert [i["slug"] for i in both] == ["cervical-screening-patient-sw"]
+    assert [i["slug"] for i in both] == [
+        "cervical-screening-patient-sw",
+        "endometriosis-patient-sw",
+        "fibroids-patient-sw",
+        "pcos-patient-sw",
+        "period-health-patient-sw",
+    ]
     assert education.list_content(language="sw", audience="guardian")[0]["slug"] == (
         "hpv-vaccination-guardian-sw"
     )
@@ -82,10 +96,13 @@ def test_list_content_filters_combine():
 
 def test_every_content_file_is_unvalidated_with_empty_signoff():
     files = content_files()
-    assert len(files) == 4
+    assert len(files) == 12
     for item in files:
         name = item["slug"]
-        assert item["has_screening_disclaimer"] is True, name
+        if name.startswith(("cervical-screening", "hpv-vaccination")):
+            assert item["has_screening_disclaimer"] is True, name
+        else:
+            assert item["has_screening_disclaimer"] is False, name
         assert item["clinically_validated"] is False, name
         assert item["reviewer_name"] is None, name
         assert item["reviewer_registration_no"] is None, name
@@ -106,10 +123,11 @@ def test_every_content_file_cites_sources():
 
 
 def test_patient_bodies_carry_the_screening_disclaimer():
+    """The mandatory disclaimer applies to SCREENING content (spec 5.4.1);
+    non-screening topics (Phase 6) ship the flag false instead."""
     for item in content_files():
-        if item["audience"] == "patient":
-            assert EN_DISCLAIMER in item["body"], item["slug"]
-    for item in content_files():
+        if not item["slug"].startswith(("cervical-screening", "hpv-vaccination")):
+            continue
         if item["language"] == "sw":
             assert SW_DISCLAIMER in item["body"], item["slug"]
         else:

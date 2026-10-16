@@ -1,0 +1,45 @@
+{
+  "slug": "pcos-patient-sw",
+  "version": "1.0.0",
+  "language": "sw",
+  "audience": "patient",
+  "title": "PCOS: hedhi zisizo za kawaida, homoni na hatua inayofuata",
+  "body": "PCOS ni jina la hali ya ovari yenye vivimbe vingi (polycystic ovary syndrome). Ni hali ya kawaida ya homoni: ovari na ishara za homoni na insulini mwilini hazifanyi kazi pamoja kama kawaida. Watu wengi walio na PCOS huonekana na vibonge vidogo vya maji kwenye ovari kwenye skan, lakini unaweza kuwa na PCOS bila hivyo, na unaweza kuwa na vibonge hivyo bila PCOS. PCOS haisababishwi na kitu ulichofanya, na si ugonjwa wa zinaa.\n\nDalili ambazo watu wengine huziona. Hedhi zinazokuja bila mpangilio, zinazokuja baada ya muda mrefu, au zinazokoma kwa miezi; chunusi inayoshinda; nywele za ziada usoni, kifuani au tumboni; nywele zinazopungua kichwani; uzito ambao ni mgumu kudhibiti kuliko kwa wengine; na ngozi nyeusi yenye mwanya shingoni au chini ya makwapa. Wengine hawana dalili hizi kabisa na hujua wanapokuwa na ugumu wa kupata mimba.\n\nKinachoweza kusababisha. Hedhi zisizo za kawaida zina sababu nyingi zinazowezekana, na PCOS ni mojawapo tu — matatizo ya tezi, mabadiliko ya uzito, msongo wa mawazo, na hali nyingine za homoni zinaweza kuleta dalili zinazofanana. Ni mhudumu wa afya peke yake anayeweza kujua kinachosababisha mabadiliko ya hedhi zako. Programu hii haiwezi kukuambia kama unayo PCOS, na hakuna orodha ya dalili inayoweza. Kuandika tarehe za hedhi zako kunasaidia sana kwenye kikao.\n\nJinsi mhudumu wa afya anavyochunguza. Muuguzi au daktari atauliza kuhusu hedhi zako, ngozi yako na historia ya uzito wako, anaweza kukuchunguza, na anaweza kuomba kipimo cha damu au skan. Hakuna kipimo kimoja kinachoamua hili peke yake; mhudumu wa afya huunganisha picha yote. Mwombe aeleze kila kipimo ni cha nini kabla ya kukubali.\n\nKinachoweza kusaidia kila siku. Mazoezi ya kawaida unayofurahia, milo yenye mboga na maharagwe mengi na vinywaji vichache vya sukari, usingizi wa kutosha na ratiba za kawaida husaidia wengi kujisikia vizuri na zinaweza kusaidia hedhi kurudi kwenye mpangilio. Mabadiliko haya ni msaada, si tiba, na si sababu ya mtu yeyote kukulaumu. Hatua ndogo unazoweza kuendelea nazo ni bora kuliko mabadiliko makubwa usiyoweza kudumisha.\n\nChaguo ambazo mhudumu wa afya anaweza kujadili nawe. Kutegemea dalili zako na kama unataka kupata mimba, mtaalamu anaweza kujadili nawe chaguo za homoni za kuweka hedhi kwenye mpangilio, matibabu ya ngozi, au msaada wa uzito na sukari ya damu. Kila chaguo ni maamuzi yako na ya mhudumu wa afya aliyehitimu aliyekuchunguza — programu hii haipendekezi dawa wala kipimo chake.\n\nPata matibabu mapema iwezekanavyo kama hedhi zako zinakoma kwa miezi kadhaa, kama damu inakuwa nyingi sana, kama unaskia kizunguzungu au unakaribia kuzimia, au kama una maumivu makali tumboni la chini. Pia muone mhudumu wa afya kama umekuwa ukijaribu kupata mimba kwa mwaka bila mafanikio, au mapema zaidi kama una wasiwasi wakati wowote.\n\nFaragha yako. Kila unachoandika kwenye programu hii kimefichwa kwa usiri na hakishirikiwi na shule yako, mwajiri wako au familia yako isipokuwa ukiidhinisha. Ukaguzi wa dalili hapa hauchukui nafasi ya kuchunguzwa na mhudumu wa afya, na hauwezi kamwe kutambua hali yoyote ya afya — watu wengi walio na PCOS wanaishi maisha kamili na yenye afya, na msaada upo.",
+  "sources": [
+    {
+      "title": "Polycystic ovary syndrome",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "year": 2023,
+      "url": "https://www.who.int/news-room/fact-sheets/detail/polycystic-ovary-syndrome",
+      "note": "Maelezo, dalili na ujumbe kwamba mhudumu wa afya huangalia picha yote. Maudhui ni DRAFT hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    },
+    {
+      "title": "Polycystic ovary syndrome (PCOS): information for you",
+      "source_type": "other",
+      "organization": "RCOG",
+      "year": 2023,
+      "url": "https://www.rcog.org.uk/for-the-public/browse-our-patient-information/polycystic-ovary-syndrome-pcos/",
+      "note": "Vipimo vinavyotumika, maneno ya msaada wa maisha ya kila siku, na maswali ya uzazi. Maneno ni PLACEHOLDER hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    },
+    {
+      "title": "National Guidelines for Management of Common Conditions",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2016,
+      "url": "https://www.health.go.ke/",
+      "note": "Njia ya rufaa ya Kenya na lugha ya 'ona nesi' na 'enda kwa kituo cha afya'. Maneno ni PLACEHOLDER hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Rasimu ya kwanza kutoka miongozo iliyochapishwa. clinically_validated=false hadi daktari wa Kenya aliyeidhinishwa asaini (H16)."
+    }
+  ]
+}

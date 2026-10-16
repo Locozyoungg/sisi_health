@@ -8,11 +8,19 @@
     { "id": "sh-severe-pain-03", "category": "severe_acute_pain", "urgency": "RED", "regex": "naskia (kama nife|nitakufa) kwa pain" },
     { "id": "sh-bleed-dizzy-01", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "(bleed|damu) (nyingi|mingi)( na)? naskia (dizzy|kizunguzungu|weak)" },
     { "id": "sh-bleed-dizzy-02", "category": "heavy_bleeding_dizziness", "urgency": "RED", "regex": "(nimefaint|nilifaint|faint) (leo|jana)" },
-    { "id": "sh-self-harm-01", "category": "self_harm", "urgency": "SAFEGUARDING", "regex": "(nataka|siwezi kuendelea)( kuishi| kuishi)" },
+    { "id": "sh-self-harm-01", "category": "self_harm", "urgency": "SAFEGUARDING", "regex": "(nataka kujiua|siwezi kuendelea kuishi)" },
     { "id": "sh-self-harm-02", "category": "self_harm", "urgency": "SAFEGUARDING", "regex": "(life yangu|maisha) (haina|yameisha)( maana)?" },
     { "id": "sh-abuse-01", "category": "abuse_signal", "urgency": "SAFEGUARDING", "regex": "ame(force|touch) (kitu|me)" },
     { "id": "sh-abuse-02", "category": "abuse_signal", "urgency": "SAFEGUARDING", "regex": "niko scared ya (baba|mjomba|mlezi|guardian)" },
     { "id": "sh-pregnancy-minor-01", "category": "pregnancy_concern_minor", "urgency": "SAFEGUARDING", "regex": "(naskia|nadhani)( niko na| nina) (mimba|preggo)" },
-    { "id": "sh-guardian-risk-01", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "(baba|mjomba|mlezi|guardian) (ananibeat|ananichapa|ananigusa)" }
+    { "id": "sh-guardian-risk-01", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "(baba|mjomba|mlezi|guardian) (ananibeat|ananichapa|ananigusa)" },
+    { "id": "sh-cervical-postcoital-01", "category": "postcoital_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,25}(after|during)[^.!?]{0,10}(sex|ngono|kujamiiana)" },
+    { "id": "sh-cervical-postcoital-02", "category": "postcoital_bleeding", "urgency": "RED", "regex": "(sex|ngono|kujamiiana)[^.!?]{0,25}(kutokwa na damu|damu)" },
+    { "id": "sh-cervical-intermenstrual-01", "category": "intermenstrual_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,25}(siko|si kwa|kando ya|nje ya)[^.!?]{0,15}(periods|hedhi)" },
+    { "id": "sh-cervical-intermenstrual-02", "category": "intermenstrual_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,25}(bila periods|nje ya periods|kando ya periods)" },
+    { "id": "sh-cervical-postmenopausal-01", "category": "postmenopausal_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,30}(nilishamaliza|nishamaliza|nimemaliza|nilikoma|nimekoma)[^.!?]{0,15}(periods|hedhi)" },
+    { "id": "sh-cervical-postmenopausal-02", "category": "postmenopausal_bleeding", "urgency": "RED", "regex": "damu[^.!?]{0,25}baada ya (kukoma|kumaliza|kuisha|kuacha) (periods|hedhi)" },
+    { "id": "sh-cervical-discharge-01", "category": "unusual_discharge", "urgency": "RED", "regex": "(discharge|maji)[^.!?]{0,20}(nanuka|inasmell|smelly|foul|harufu|smell ya)" },
+    { "id": "sh-cervical-discharge-02", "category": "unusual_discharge", "urgency": "RED", "regex": "discharge[^.!?]{0,40}(wiki (mbili|tatu|nne)|siku nyingi|for (two|three|four|\\d+) weeks|lasted)" }
   ]
 }

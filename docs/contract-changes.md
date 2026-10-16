@@ -88,3 +88,21 @@ OpenAPI spec).
 - **OpenAPI**: regenerated for the new `/v1/corridor/*` surface (backend
   OpenAPI v3 frozen in `docs/openapi.yaml`).
 
+### CC-4 (2026-10-15, Phase 6) — AI conversation layer RAG tables (conditional pgvector)
+
+- **Migration 0007** adds schema `ai`: `content_chunks` (deterministic chunk
+  ids `{slug}#{n}`, unique) and `chunk_embeddings`. The embedding column is
+  `vector(768)` + ivfflat cosine index when the pgvector extension is available
+  on the server, else JSONB (Python brute-force cosine — documented fallback).
+  The migration gates on `pg_available_extensions`; `CREATE EXTENSION IF
+  EXISTS` alone would error when the extension is unavailable.
+- **Embedding writes are raw-SQL casts only** (`CAST(:emb AS vector|jsonb)`) so
+  one code path serves both modes; the ORM models are metadata-only.
+- **CI**: the `test` job and the new `ai` job use
+  `pgvector/pgvector:pg16-alpine` (vector branch); the `gateway` job keeps
+  plain `postgres:16-alpine` (JSONB branch). Both branches are CI-covered.
+- **AGENTS.md §2** DB schemas row gains `ai` (approved with this phase).
+- **OpenAPI**: the new service exports `docs/openapi-ai.yaml` (backend
+  OpenAPI unchanged).
+
+

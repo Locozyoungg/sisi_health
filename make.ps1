@@ -15,7 +15,7 @@ function Backend-Py([string[]]$PyArgs) {
 
 switch ($Target) {
     "help" {
-        Write-Host "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase4-demo phase5-demo clean"
+        Write-Host "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase4-demo phase5-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
     }
     "setup" {
         py -3.12 -m venv (Join-Path $Backend ".venv")
@@ -70,6 +70,25 @@ switch ($Target) {
     "ussd-demo" {
         Push-Location (Join-Path $Repo "ussd-whatsapp")
         try { & (Join-Path $Repo "backend\.venv\Scripts\python.exe") scripts/demo_phase3.py } finally { Pop-Location }
+    }
+    "ai-setup" {
+        Backend-Py @("-m", "pip", "install", "-e", (Join-Path $Repo "ai_service[dev]"))
+    }
+    "ai-test" {
+        Push-Location (Join-Path $Repo "ai_service")
+        try { & (Join-Path $Repo "backend\.venv\Scripts\python.exe") -m pytest } finally { Pop-Location }
+    }
+    "ai-demo" {
+        Push-Location (Join-Path $Repo "ai_service")
+        try { & (Join-Path $Repo "backend\.venv\Scripts\python.exe") scripts/demo_phase6.py } finally { Pop-Location }
+    }
+    "ai-eval" {
+        Push-Location (Join-Path $Repo "ai_service")
+        try { & (Join-Path $Repo "backend\.venv\Scripts\python.exe") scripts/eval_guardrails.py } finally { Pop-Location }
+    }
+    "ai-compare" {
+        Push-Location (Join-Path $Repo "ai_service")
+        try { & (Join-Path $Repo "backend\.venv\Scripts\python.exe") scripts/eval_compare.py } finally { Pop-Location }
     }
     "web-setup" {
         Push-Location (Join-Path $Repo "web")

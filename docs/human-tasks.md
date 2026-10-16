@@ -19,3 +19,5 @@ faked. Status: `open` / `blocked` / `in progress` / `done`.
 | H12 | Jitsi deployment + account (self-hosted or provider API) | open | Phase 5 ships the JWT room-token contract; server provisioning before pilot (A25) |
 | H13 | Confirm current Kenya MoH cervical screening + HPV vaccination schedules (screening start age, interval, HPV doses/ages) | open | Config placeholder in /ontology/config/screening_schedule.json (A26) |
 | H14 | Partner-hospital pricing data (real quotes replacing indicative stubs) | open | Pricing stubs marked indicative + sourced (A31) |
+| H15 | Run the real hosted-vs-open-weight comparison (real hosted API key + vLLM GPU host), human-rate the Kiswahili/Sheng sample, regenerate `docs/ai-comparison-report.md` | open | Phase 6 ships stub providers + a STUB RUN report with the full procedure (A33/A34) |
+| H16 | Kenyan clinician review of the 8 new AI content files (endo/PCOS/fibroids/period health, en+sw) before `clinically_validated=true` | open | Content ships `clinically_validated: false` with DRAFT notes (A10 pattern) |

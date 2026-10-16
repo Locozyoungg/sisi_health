@@ -1,0 +1,45 @@
+{
+  "slug": "endometriosis-patient-en",
+  "version": "1.0.0",
+  "language": "en",
+  "audience": "patient",
+  "title": "Endometriosis: pain that does not settle with your period",
+  "body": "Endometriosis (say: en-doh-mee-tree-OH-sis) is a common condition in which tissue similar to the lining of the womb grows outside it, for example on the ovaries, behind the womb, or on the bowel. That tissue still reacts to your monthly hormones, so it can swell and bleed at the time of your period and cause pain. It is not an infection and it is not something you caught from anyone.\n\nSigns some people notice. Period pain that is bad enough to stop you going to school or sleeping; pain that lasts longer than the bleeding; pain deep inside during or after sex; pain when passing stool or urine; heavy or irregular bleeding; bloating; and sometimes difficulty getting pregnant. For some people the pain is there most of the month, not only during the period.\n\nWhat may be causing it. Only a health worker who examines you can find out what is causing your symptoms. Endometriosis is one possible cause, and so are fibroids, hormonal changes, and some infections, because they can all cause similar signs. This app cannot tell you whether you have it, and neither can a symptom quiz. Writing down when the pain comes and how strong it is helps the nurse a lot.\n\nHow a health worker checks. There is no single blood test that confirms or rules it out. A nurse or doctor will ask about your periods and your pain, may examine you, and may suggest a scan or refer you to a specialist. Finding out for certain can need a small operation called a laparoscopy, which is done under anaesthetic. Ask the health worker to explain each step before it happens, and ask for someone to stay with you if you want them to.\n\nWhat can help day to day. Warmth on your lower belly, gentle movement, resting when the pain is bad, and enough sleep help some people. Some find that lighter meals and fewer very sugary drinks during the period help a little. These are comfort measures, not a cure, and they never replace being seen by a health worker.\n\nOptions a health worker may discuss. Depending on your pain, your age and whether you want to have children later, a clinician may talk with you about pain-relief medicines, hormonal options, or an operation. Every one of those choices belongs to you and a qualified health worker who has examined you — this app never recommends a medicine or a dose, and it never decides what treatment you need.\n\nGet care the same day if the pain suddenly becomes much worse than usual, if you are soaking through a pad every hour, if you feel dizzy or faint, or if you are bleeding heavily. Do not wait to see whether it settles on its own. Go to the nearest health facility, or ask your school nurse to see you today.\n\nYour privacy. Anything you record in this app is encrypted and is not shared with your school, your employer or your family unless you approve it. A symptom check here does not replace being seen by a health worker, and it never decides whether you have a condition — it only helps you explain what you notice and find the right person to see.",
+  "sources": [
+    {
+      "title": "Endometriosis",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "year": 2023,
+      "url": "https://www.who.int/news-room/fact-sheets/detail/endometriosis",
+      "note": "Symptoms, possible causes and the message that only a health worker can find out what is causing the pain. Content is a DRAFT pending licensed Kenyan clinician sign-off (H16)."
+    },
+    {
+      "title": "Endometriosis: information for you",
+      "source_type": "other",
+      "organization": "RCOG",
+      "year": 2022,
+      "url": "https://www.rcog.org.uk/for-the-public/browse-our-patient-information/endometriosis/",
+      "note": "Plain-language symptom list, how the condition is checked and what day-to-day measures help. PLACEHOLDER wording pending licensed Kenyan clinician sign-off (H16)."
+    },
+    {
+      "title": "National Guidelines for Management of Common Conditions",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2016,
+      "url": "https://www.health.go.ke/",
+      "note": "Kenyan referral language ('see a nurse', 'referral to a health facility'). PLACEHOLDER wording pending licensed Kenyan clinician sign-off (H16)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending licensed Kenyan clinician sign-off (H16)."
+    }
+  ]
+}

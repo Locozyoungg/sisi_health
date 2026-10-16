@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16-alpine
+        image: pgvector/pgvector:pg16-alpine
         env:
           POSTGRES_USER: sisi
           POSTGRES_PASSWORD: sisi_dev_pw
@@ -82,6 +82,48 @@ jobs:
           SISI_MASTER_KEY_B64: dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHQ=
         working-directory: ussd-whatsapp
         run: pytest
+
+  ai:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        # pgvector image: exercises the real vector(768) branch of migration 0007
+        image: pgvector/pgvector:pg16-alpine
+        env:
+          POSTGRES_USER: sisi
+          POSTGRES_PASSWORD: sisi_dev_pw
+          POSTGRES_DB: sisi
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sisi"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install -e "backend[dev]" -e "ai_service[dev]"
+      - name: Lint + type check
+        working-directory: ai_service
+        run: |
+          ruff check ai_service tests scripts
+          mypy ai_service
+      - name: Tests (guardrails, providers, RAG, service pipeline, API)
+        env:
+          SISI_TEST_DATABASE_URL: postgresql+psycopg://sisi:sisi_dev_pw@localhost:5432/sisi_test
+          SISI_MASTER_KEY_B64: dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHQ=
+        working-directory: ai_service
+        run: pytest
+      - name: Guardrail eval gate (>=150 cases, 100% red-flag routing)
+        env:
+          SISI_TEST_DATABASE_URL: postgresql+psycopg://sisi:sisi_dev_pw@localhost:5432/sisi_test
+          SISI_MASTER_KEY_B64: dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHQ=
+        working-directory: ai_service
+        run: python scripts/eval_guardrails.py --ci
 
   android:
     runs-on: ubuntu-latest

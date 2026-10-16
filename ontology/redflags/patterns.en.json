@@ -16,6 +16,14 @@
     { "id": "en-abuse-02", "category": "abuse_signal", "urgency": "SAFEGUARDING", "regex": "(scared|afraid) of (him|my father|my uncle|my guardian|my stepfather|my teacher)" },
     { "id": "en-pregnancy-minor-01", "category": "pregnancy_concern_minor", "urgency": "SAFEGUARDING", "regex": "((am i|i think i('| a)?m|i might be|could i be) pregnant)" },
     { "id": "en-guardian-risk-01", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "my (father|uncle|stepfather|guardian) (hits|hurts|beats|touches) me" },
-    { "id": "en-guardian-risk-02", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "he (comes|creeps) (into|to) my (bed|room) (at night|at night)" }
+    { "id": "en-guardian-risk-02", "category": "guardian_risk", "urgency": "SAFEGUARDING", "regex": "he (comes|creeps) (into|to) my (bed|room) (at night|at night)" },
+    { "id": "en-cervical-postcoital-01", "category": "postcoital_bleeding", "urgency": "RED", "regex": "(bleed|bleeding|bled|blood)[^.!?]{0,20}(after|during)[^.!?]{0,10}(sex|intercourse)" },
+    { "id": "en-cervical-postcoital-02", "category": "postcoital_bleeding", "urgency": "RED", "regex": "post[- ]?coital bleeding" },
+    { "id": "en-cervical-intermenstrual-01", "category": "intermenstrual_bleeding", "urgency": "RED", "regex": "(bleed|bleeding|spotting)[^.!?]{0,20}between (my |the )?(periods|cycles)" },
+    { "id": "en-cervical-intermenstrual-02", "category": "intermenstrual_bleeding", "urgency": "RED", "regex": "(bleeding|spotting) (mid[- ]?cycle|outside (my )?periods)" },
+    { "id": "en-cervical-postmenopausal-01", "category": "postmenopausal_bleeding", "urgency": "RED", "regex": "(bleed|bleeding|bled|blood)[^.!?]{0,20}(after|since)[^.!?]{0,10}menopause" },
+    { "id": "en-cervical-postmenopausal-02", "category": "postmenopausal_bleeding", "urgency": "RED", "regex": "post[- ]?menopausal bleeding" },
+    { "id": "en-cervical-discharge-01", "category": "unusual_discharge", "urgency": "RED", "regex": "discharge[^.!?]{0,40}(lasted|lasting|for (two|three|four|\\d+) weeks?)" },
+    { "id": "en-cervical-discharge-02", "category": "unusual_discharge", "urgency": "RED", "regex": "(smelly|foul|fishy|bad[- ]?smelling) discharge" }
   ]
 }

@@ -1,0 +1,45 @@
+{
+  "slug": "period-health-patient-en",
+  "version": "1.0.0",
+  "language": "en",
+  "audience": "patient",
+  "title": "Periods: what is usual, what to watch, and when to ask for help",
+  "body": "A period happens when the lining of the womb leaves the body through the vagina. The first period usually comes between the ages of 9 and 16. Cycles are counted from the first day of one period to the first day of the next, and anywhere from about 21 to 45 days can be usual when periods first start; later on, cycles of about 21 to 35 days are common. Cycles can be irregular for the first year or two, and that is ordinary.\n\nWhat many people notice around their period. Cramping in the lower belly, backache, headaches, sore breasts, feeling tired or tearful, and spots. Bleeding usually lasts between two and seven days, and most people use a few pads or tampons a day. Changing a pad is normal; soaking through one in an hour is not, and needs care the same day.\n\nWhat to watch for and mention at your visit. Periods that stop for three months or more when you are not pregnant; bleeding between periods or after sex; bleeding after menopause; pain that stops you going to school or sleeping; bleeding that has become much heavier or lasts much longer than usual; and feeling very tired, dizzy or short of breath, which can point to low iron. Any of these is a reason to see a health worker, not a reason to wait.\n\nWhat may be causing it. Changes in bleeding and pain have many possible causes — hormonal changes, fibroids, endometriosis, thyroid problems, bleeding problems, an infection, or a pregnancy. Only a health worker who examines you can find out what is causing your symptoms. This app cannot tell you what is causing yours, and no symptom quiz can. It can help you write down what you notice so the visit is easier.\n\nHow tracking helps. Write down the first day of each period, how many days it lasts, roughly how many pads or tampons you use each day, and when pain or spotting appears. Two or three months of notes give a health worker far more to work with than a single bad month, and they help you notice patterns yourself.\n\nWhat can help day to day. Warmth on the belly, gentle movement, enough rest and enough water help many people. Foods with iron, such as beans, dark leafy vegetables and meat, help rebuild iron stores after heavy bleeding. Changing pads or tampons regularly and washing with plain water keep the area comfortable. These are comfort measures and do not replace being checked when something changes.\n\nWhen it is urgent. Get care TODAY if you are soaking through a pad every hour, if you feel dizzy or faint, if you have sudden severe pain in your belly, or if the bleeding will not slow down. Go to the nearest health facility, or ask your school nurse to see you today, and take someone you trust with you if you can.\n\nYour privacy. Anything you record in this app is encrypted and is not shared with your school, your employer or your family unless you approve it. A symptom check here does not replace being seen by a health worker and it never decides whether you have a condition — it only helps you describe what you notice and find the right person to see.",
+  "sources": [
+    {
+      "title": "Heavy menstrual bleeding: information for you",
+      "source_type": "other",
+      "organization": "RCOG",
+      "year": 2018,
+      "url": "https://www.rcog.org.uk/for-the-public/browse-our-patient-information/heavy-menstrual-bleeding/",
+      "note": "Plain-language cycle facts, pad-count guidance and the 'soaking a pad an hour' escalation. PLACEHOLDER wording pending licensed Kenyan clinician sign-off (H16)."
+    },
+    {
+      "title": "National Guidelines for Management of Common Conditions",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2016,
+      "url": "https://www.health.go.ke/",
+      "note": "Kenyan referral pathway and the 'see a nurse' next-step wording. PLACEHOLDER wording pending licensed Kenyan clinician sign-off (H16)."
+    },
+    {
+      "title": "WHO recommendations on adolescent sexual and reproductive health and rights",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "year": 2018,
+      "url": "https://www.who.int/publications/i/item/9789241514606",
+      "note": "Adolescent-friendly care, privacy and the message that menstrual changes deserve a check rather than silence. Content is a DRAFT pending licensed Kenyan clinician sign-off (H16)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending licensed Kenyan clinician sign-off (H16)."
+    }
+  ]
+}

@@ -7,7 +7,17 @@ from typing import Any
 
 from pydantic import BaseModel
 
-URGENT_CATEGORIES = {"severe_acute_pain", "heavy_bleeding_dizziness", "self_harm"}
+URGENT_CATEGORIES = {
+    "severe_acute_pain",
+    "heavy_bleeding_dizziness",
+    "self_harm",
+    # Cervical-screening red flags (spec 5.4.1): abnormal bleeding/discharge always
+    # shows the urgent-care script first, before any model or education answer.
+    "postcoital_bleeding",
+    "intermenstrual_bleeding",
+    "postmenopausal_bleeding",
+    "unusual_discharge",
+}
 SAFEGUARDING_CATEGORIES = {"self_harm", "abuse_signal", "pregnancy_concern_minor", "guardian_risk"}
 
 

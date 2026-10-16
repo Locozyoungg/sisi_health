@@ -1,0 +1,45 @@
+{
+  "slug": "pcos-patient-en",
+  "version": "1.0.0",
+  "language": "en",
+  "audience": "patient",
+  "title": "PCOS: irregular periods, hormones and what to do next",
+  "body": "PCOS stands for polycystic ovary syndrome. It is a common hormonal condition: the ovaries and the body's insulin and hormone signals do not work in the usual way together. Many people with PCOS have small fluid-filled sacs on their ovaries seen on a scan, but you can have PCOS without that, and you can have those sacs without PCOS. PCOS is not caused by anything you did, and it is not a sexually transmitted infection.\n\nSigns some people notice. Periods that come very irregularly, come far apart, or stop for months; acne that is hard to settle; extra hair on the face, chest or belly; hair thinning on the head; weight that is harder to manage than for other people; and dark velvety skin patches on the neck or under the arms. Some people notice none of these and only find out when they have trouble getting pregnant.\n\nWhat may be causing it. Irregular periods have many possible causes, and PCOS is only one of them — thyroid problems, weight change, stress, and other hormonal conditions can cause similar signs. Only a health worker can find out what is causing your periods to change. This app cannot tell you whether PCOS is the reason, and no symptom quiz can. A short note of your period dates is very useful at your visit.\n\nHow a health worker checks. The nurse or doctor will ask about your periods, your skin and your weight history, may examine you, and may ask for a blood test or an ultrasound scan. There is no single test that decides it on its own, and the health worker puts the whole picture together. Ask them to explain what each test is for before you agree to it.\n\nWhat can help day to day. Regular movement that you enjoy, meals with more vegetables and beans and fewer very sugary drinks, enough sleep, and steady routines help many people feel better and can help periods become more regular. These changes are support, not a cure, and they are not a reason for anyone to blame you. Small steps that you can keep doing are better than big changes you cannot maintain.\n\nOptions a health worker may discuss. Depending on your symptoms and whether you want to become pregnant, a clinician may talk with you about hormonal options to make periods regular, skin treatments, or support with weight and blood sugar. Every choice is a decision for you and a qualified health worker who has examined you — this app never recommends a medicine or a dose.\n\nGet care as soon as you can if your periods stop for several months, if bleeding becomes very heavy, if you feel dizzy or faint, or if you have severe pain in your lower belly. Also see a health worker if you have been trying to become pregnant for a year without success, or sooner if you are worried at any point.\n\nYour privacy. Anything you record in this app is encrypted and is not shared with your school, your employer or your family unless you approve it. A symptom check here does not replace being seen by a health worker, and it never decides whether you have a condition — many people with PCOS live full, healthy lives, and support is available.",
+  "sources": [
+    {
+      "title": "Polycystic ovary syndrome",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "year": 2023,
+      "url": "https://www.who.int/news-room/fact-sheets/detail/polycystic-ovary-syndrome",
+      "note": "Definition, symptoms and the message that a health worker assesses the whole picture. Content is a DRAFT pending licensed Kenyan clinician sign-off (H16)."
+    },
+    {
+      "title": "Polycystic ovary syndrome (PCOS): information for you",
+      "source_type": "other",
+      "organization": "RCOG",
+      "year": 2023,
+      "url": "https://www.rcog.org.uk/for-the-public/browse-our-patient-information/polycystic-ovary-syndrome-pcos/",
+      "note": "Tests used, lifestyle support wording, and the fertility questions people ask. PLACEHOLDER wording pending licensed Kenyan clinician sign-off (H16)."
+    },
+    {
+      "title": "National Guidelines for Management of Common Conditions",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2016,
+      "url": "https://www.health.go.ke/",
+      "note": "Kenyan referral pathway and language for 'see a nurse' and 'go to a health facility'. PLACEHOLDER wording pending licensed Kenyan clinician sign-off (H16)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending licensed Kenyan clinician sign-off (H16)."
+    }
+  ]
+}

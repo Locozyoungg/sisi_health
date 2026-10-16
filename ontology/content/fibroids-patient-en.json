@@ -1,0 +1,45 @@
+{
+  "slug": "fibroids-patient-en",
+  "version": "1.0.0",
+  "language": "en",
+  "audience": "patient",
+  "title": "Fibroids: heavy periods and pressure in the belly",
+  "body": "Fibroids are growths of muscle and fibrous tissue that form in or around the womb. They are very common — many people have them at some point and never know. Fibroids are not cancer, and they do not turn into cancer. They can be as small as a seed or as big as a grapefruit, and they may grow slowly over years.\n\nSigns some people notice. Periods that are much heavier or longer than before, sometimes with clots; bleeding between periods; pain or a heavy feeling in the lower belly or back; a belly that looks bigger; needing to pass urine often; pain during sex; and feeling very tired, short of breath or dizzy, which can be a sign of low iron from blood loss. Many people with fibroids have no signs at all.\n\nWhat may be causing it. Heavy or painful periods have several possible causes, and fibroids are only one of them — hormonal changes, endometriosis, thyroid problems, bleeding problems, and pregnancy-related causes can look similar. Only a health worker who examines you can find out what is causing your symptoms. This app cannot tell you whether fibroids are the cause, and no symptom quiz can.\n\nHow a health worker checks. The nurse or doctor will ask about your periods — how many pads you use, how long the bleeding lasts, and whether you pass clots — and will examine your belly. They may suggest a scan (ultrasound) to see the womb clearly, and a blood test to check for low iron. Counting your pads and writing down the dates for one or two months before the visit helps a lot.\n\nWhat can help day to day. Enough rest, iron-rich foods such as beans, dark leafy vegetables and meat, and warmth on the belly help many people cope with heavy periods. Low iron takes time to build back up, so if you feel very tired or dizzy do not wait — that is a reason to be checked. These measures support you and do not replace care.\n\nOptions a health worker may discuss. Depending on how heavy the bleeding is, how the fibroids are placed, your age and whether you want children, a clinician may talk with you about medicines, a hormonal option, a procedure to remove the fibroids, or other surgery. All of these are decisions for you and a qualified health worker — this app never recommends a medicine or a dose, and it never decides what treatment you need.\n\nGet care the same day if you are soaking through a pad every hour, passing large clots, or if you feel dizzy, faint, or short of breath; if you have sudden severe pain in your belly; or if the bleeding is heavy and does not slow down. Go to the nearest health facility, or ask your school nurse to see you today. Do not wait to see whether it settles.\n\nYour privacy. Anything you record in this app is encrypted and is not shared with your school, your employer or your family unless you approve it. A symptom check here does not replace being seen by a health worker, and it never decides whether a growth or a condition is present — it only helps you describe what you notice and find the right person to see.",
+  "sources": [
+    {
+      "title": "Fibroids: information for you",
+      "source_type": "other",
+      "organization": "RCOG",
+      "year": 2021,
+      "url": "https://www.rcog.org.uk/for-the-public/browse-our-patient-information/fibroids/",
+      "note": "Plain-language symptom list (heavy bleeding, pressure, low-iron tiredness) and the option list a clinician discusses. PLACEHOLDER wording pending licensed Kenyan clinician sign-off (H16)."
+    },
+    {
+      "title": "National Guidelines for Management of Common Conditions",
+      "source_type": "health_authority",
+      "organization": "Kenya Ministry of Health",
+      "year": 2016,
+      "url": "https://www.health.go.ke/",
+      "note": "Kenyan referral pathway and the 'see a nurse today' escalation wording. PLACEHOLDER wording pending licensed Kenyan clinician sign-off (H16)."
+    },
+    {
+      "title": "WHO recommendations on adolescent sexual and reproductive health and rights",
+      "source_type": "health_authority",
+      "organization": "WHO",
+      "year": 2018,
+      "url": "https://www.who.int/publications/i/item/9789241514606",
+      "note": "Adolescent-friendly care, privacy and referral wording for younger users. Content is a DRAFT pending licensed Kenyan clinician sign-off (H16)."
+    }
+  ],
+  "clinically_validated": false,
+  "has_screening_disclaimer": false,
+  "reviewer_name": null,
+  "reviewer_registration_no": null,
+  "signed_at": null,
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "note": "Initial draft from published guidance. clinically_validated=false pending licensed Kenyan clinician sign-off (H16)."
+    }
+  ]
+}

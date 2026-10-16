@@ -1,5 +1,6 @@
-"""SQLAlchemy models for all five schemas."""
+"""SQLAlchemy models for all six schemas."""
 
+from app.models.ai import ChunkEmbedding, ContentChunk
 from app.models.audit import AuditEvent
 from app.models.base import Base
 from app.models.consent import ConsentEvent, ConsentText, DsrRequest, ProcessingRegister
@@ -59,6 +60,7 @@ __all__ = [
     "AssessmentAction",
     "AuditEvent",
     "Base",
+    "ChunkEmbedding",
     "ConfigValue",
     "ConsentEvent",
     "ConsentText",
@@ -66,6 +68,7 @@ __all__ = [
     "ConsultEvent",
     "ConsultRequest",
     "ConsultSession",
+    "ContentChunk",
     "DataKey",
     "Device",
     "DiaryEntry",

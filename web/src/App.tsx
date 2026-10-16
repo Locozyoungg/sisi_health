@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { getToken, setToken } from "./api";
 import ConsultDetail from "./pages/ConsultDetail";
 import CorridorQueue from "./pages/CorridorQueue";
@@ -34,42 +34,45 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 function NavBar() {
   const navigate = useNavigate();
   return (
-    <nav
-      aria-label="Console"
-      style={{
-        display: "flex",
-        gap: 16,
-        alignItems: "center",
-        flexWrap: "wrap",
-        padding: "12px 24px",
-        borderBottom: "1px solid #ddd",
-      }}
-    >
-      <strong>SISI Health Console</strong>
-      {NAV_LINKS.map((link) => (
-        <Link key={link.to} to={link.to} style={{ color: "inherit" }}>
-          {link.label}
-        </Link>
-      ))}
-      <button
-        type="button"
-        style={{ marginLeft: "auto" }}
-        onClick={() => {
-          setToken(null);
-          navigate("/login");
-        }}
-      >
-        Sign out
-      </button>
-    </nav>
+    <header className="topbar">
+      <div className="topbar-inner">
+        <span className="brand">
+          <span className="brand-mark" aria-hidden="true" />
+          <strong className="wordmark">SISI Health Console</strong>
+        </span>
+        <nav className="nav" aria-label="Console">
+          {NAV_LINKS.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              className={({ isActive }) => (isActive ? "nav-link nav-link-active" : "nav-link")}
+            >
+              {link.label}
+            </NavLink>
+          ))}
+        </nav>
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm topbar-signout"
+          onClick={() => {
+            setToken(null);
+            navigate("/login");
+          }}
+        >
+          Sign out
+        </button>
+      </div>
+    </header>
   );
 }
 
 function AuthShell({ children }: { children: React.ReactElement }) {
   return (
     <RequireAuth>
-      <NavBar />
-      {children}
+      <div className="app-shell">
+        <NavBar />
+        {children}
+      </div>
     </RequireAuth>
   );
 }

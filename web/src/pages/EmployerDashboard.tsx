@@ -35,38 +35,75 @@ export default function EmployerDashboard() {
     retry: false,
   });
 
-  if (wallet.isLoading || dashboard.isLoading) return <main>Loading…</main>;
+  if (wallet.isLoading || dashboard.isLoading) {
+    return (
+      <main className="page page-narrow">
+        <p className="muted">Loading…</p>
+      </main>
+    );
+  }
   const error = wallet.error ?? dashboard.error;
   if (error) {
     // A role without employer:wallet / employer:dashboard lands here (403).
     return (
-      <main role="alert" data-testid="employer-role-alert">
-        {String(error)}
+      <main className="page page-narrow" role="alert" data-testid="employer-role-alert">
+        <header className="page-head">
+          <p className="eyebrow">Employer module</p>
+          <h1 className="page-title">Employer dashboard</h1>
+        </header>
+        <p className="alert alert-danger">{String(error)}</p>
       </main>
     );
   }
-  if (!wallet.data || !dashboard.data) return <main>Loading…</main>;
+  if (!wallet.data || !dashboard.data) {
+    return (
+      <main className="page page-narrow">
+        <p className="muted">Loading…</p>
+      </main>
+    );
+  }
 
   return (
-    <main style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
-      <h1>Employer dashboard — {dashboard.data.term}</h1>
-      <p data-testid="employer-wallet-balance">
-        Wallet balance: {wallet.data.balance_ksh.toLocaleString("en-KE")} KES
-      </p>
-      {!dashboard.data.enough_data ? (
-        <p data-testid="not-enough">Not enough data yet</p>
-      ) : (
-        <table data-testid="employer-dashboard-cells">
-          <tbody>
-            {Object.entries(dashboard.data.cells).map(([key, value]) => (
-              <tr key={key}>
-                <td>{key}</td>
-                <td>{value === null ? "—" : String(value)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <main className="page page-narrow">
+      <header className="page-head">
+        <p className="eyebrow">Employer module</p>
+        <h1 className="page-title">Employer dashboard — {dashboard.data.term}</h1>
+        <p className="page-sub muted">
+          Aggregate view only: employee-level detail never leaves the clinic.
+        </p>
+      </header>
+
+      <div className="card">
+        <p className="eyebrow">Wallet</p>
+        <p className="stat-value" data-testid="employer-wallet-balance">
+          Wallet balance:{" "}
+          <strong className="amount">{wallet.data.balance_ksh.toLocaleString("en-KE")}</strong> KES
+        </p>
+      </div>
+
+      <div className="card table-card">
+        {!dashboard.data.enough_data ? (
+          <div className="table-card-body">
+            <p className="eyebrow">Health aggregate</p>
+            <p className="notice" data-testid="not-enough">
+              Not enough data yet
+            </p>
+          </div>
+        ) : (
+          <div className="table-scroll">
+            <table className="table" data-testid="employer-dashboard-cells">
+              <tbody>
+                {Object.entries(dashboard.data.cells).map(([key, value]) => (
+                  <tr key={key}>
+                    <td>{key}</td>
+                    <td>{value === null ? "—" : String(value)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </main>
   );
 }

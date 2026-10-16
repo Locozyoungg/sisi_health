@@ -68,102 +68,141 @@ export default function Referrals() {
     URL.revokeObjectURL(url);
   }
 
-  if (isLoading) return <main>Loading…</main>;
-  if (loadError) return <main role="alert">{String(loadError)}</main>;
+  if (isLoading) {
+    return (
+      <main className="page">
+        <p className="muted">Loading…</p>
+      </main>
+    );
+  }
+  if (loadError) {
+    return (
+      <main className="page" role="alert">
+        <p className="alert alert-danger">{String(loadError)}</p>
+      </main>
+    );
+  }
 
   return (
-    <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>
-      <h1>Referrals</h1>
-      <p>Letters are shared only in the sections the patient approved.</p>
-      {error && <p role="alert">{error}</p>}
+    <main className="page">
+      <header className="page-head">
+        <p className="eyebrow">Specialist corridor</p>
+        <h1 className="page-title">Referrals</h1>
+        <p className="page-sub muted">Letters are shared only in the sections the patient approved.</p>
+      </header>
+      {error && (
+        <p className="alert alert-danger" role="alert">
+          {error}
+        </p>
+      )}
 
-      <form
-        style={{ display: "grid", gap: 12, maxWidth: 420, marginBottom: 24 }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          setError(null);
-          createReferral.mutate();
-        }}
-      >
-        <label>
-          Consult request id
-          <input
-            data-testid="referral-request-id"
-            value={requestId}
-            onChange={(e) => setRequestId(e.target.value)}
-            placeholder="request uuid"
-          />
-        </label>
-        <label>
-          Facility id (optional)
-          <input
-            data-testid="referral-facility-id"
-            value={facilityId}
-            onChange={(e) => setFacilityId(e.target.value)}
-            placeholder="facility uuid"
-          />
-        </label>
-        <button type="submit" data-testid="referral-create-btn" disabled={createReferral.isPending}>
-          Draft referral
-        </button>
-      </form>
+      <div className="card">
+        <h2 className="card-title">Draft a referral</h2>
+        <form
+          className="form-grid"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setError(null);
+            createReferral.mutate();
+          }}
+        >
+          <label className="form-field">
+            Consult request id
+            <input
+              className="input"
+              data-testid="referral-request-id"
+              value={requestId}
+              onChange={(e) => setRequestId(e.target.value)}
+              placeholder="request uuid"
+            />
+          </label>
+          <label className="form-field">
+            Facility id (optional)
+            <input
+              className="input"
+              data-testid="referral-facility-id"
+              value={facilityId}
+              onChange={(e) => setFacilityId(e.target.value)}
+              placeholder="facility uuid"
+            />
+          </label>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            data-testid="referral-create-btn"
+            disabled={createReferral.isPending}
+          >
+            Draft referral
+          </button>
+        </form>
+      </div>
 
-      <table data-testid="referral-list">
-        <thead>
-          <tr>
-            <th>Referral</th>
-            <th>Patient</th>
-            <th>Status</th>
-            <th>Sections</th>
-            <th>Approved</th>
-            <th>Letter</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(data ?? []).map((row) => (
-            <tr key={row.id} data-testid="referral-row">
-              <td>{row.id.slice(0, 8)}</td>
-              <td>{row.user_id.slice(0, 8)}</td>
-              <td>{row.status}</td>
-              <td>{row.sections.join(", ")}</td>
-              <td>
-                {row.approved_sections && row.approved_sections.length > 0
-                  ? row.approved_sections.join(", ")
-                  : "—"}
-              </td>
-              <td style={{ display: "flex", gap: 8 }}>
-                {row.status === "approved" && (
-                  <button
-                    type="button"
-                    data-testid="referral-send-btn"
-                    disabled={sendReferral.isPending}
-                    onClick={() => {
-                      setError(null);
-                      sendReferral.mutate(row.id);
-                    }}
-                  >
-                    Send
-                  </button>
-                )}
-                <button
-                  type="button"
-                  data-testid="referral-pdf-btn"
-                  onClick={() => {
-                    void downloadPdf(row.id);
-                  }}
-                >
-                  PDF
-                </button>
-              </td>
-            </tr>
-          ))}
-          {(data ?? []).length === 0 && (
-            <tr>
-              <td colSpan={6}>No referrals yet.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <div className="card table-card">
+        <div className="table-scroll">
+          <table className="table" data-testid="referral-list">
+            <thead>
+              <tr>
+                <th>Referral</th>
+                <th>Patient</th>
+                <th>Status</th>
+                <th>Sections</th>
+                <th>Approved</th>
+                <th>Letter</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(data ?? []).map((row) => (
+                <tr key={row.id} data-testid="referral-row">
+                  <td className="cell-id">{row.id.slice(0, 8)}</td>
+                  <td className="cell-id">{row.user_id.slice(0, 8)}</td>
+                  <td>
+                    <span className="badge badge-neutral">{row.status}</span>
+                  </td>
+                  <td className="muted">{row.sections.join(", ")}</td>
+                  <td>
+                    {row.approved_sections && row.approved_sections.length > 0
+                      ? row.approved_sections.join(", ")
+                      : "—"}
+                  </td>
+                  <td className="cell-actions">
+                    {row.status === "approved" && (
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        data-testid="referral-send-btn"
+                        disabled={sendReferral.isPending}
+                        onClick={() => {
+                          setError(null);
+                          sendReferral.mutate(row.id);
+                        }}
+                      >
+                        Send
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      data-testid="referral-pdf-btn"
+                      onClick={() => {
+                        void downloadPdf(row.id);
+                      }}
+                    >
+                      PDF
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {(data ?? []).length === 0 && (
+                <tr>
+                  <td colSpan={6} className="empty">
+                    No referrals yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </main>
   );
 }

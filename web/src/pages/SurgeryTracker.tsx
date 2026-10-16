@@ -108,191 +108,239 @@ export default function SurgeryTracker() {
     onError: (err) => setError(err instanceof Error ? err.message : "could not save pricing stub"),
   });
 
-  if (isLoading) return <main>Loading…</main>;
-  if (loadError) return <main role="alert">{String(loadError)}</main>;
+  if (isLoading) {
+    return (
+      <main className="page">
+        <p className="muted">Loading…</p>
+      </main>
+    );
+  }
+  if (loadError) {
+    return (
+      <main className="page" role="alert">
+        <p className="alert alert-danger">{String(loadError)}</p>
+      </main>
+    );
+  }
 
   return (
-    <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>
-      <h1>Surgery navigation</h1>
-      <p>Navigation and follow-up only — never a clinical decision.</p>
-      {error && <p role="alert">{error}</p>}
+    <main className="page">
+      <header className="page-head">
+        <p className="eyebrow">Specialist corridor</p>
+        <h1 className="page-title">Surgery navigation</h1>
+        <p className="page-sub muted">Navigation and follow-up only — never a clinical decision.</p>
+      </header>
+      {error && (
+        <p className="alert alert-danger" role="alert">
+          {error}
+        </p>
+      )}
 
-      <table data-testid="surgery-cases">
-        <thead>
-          <tr>
-            <th>Case</th>
-            <th>Patient</th>
-            <th>Facility</th>
-            <th>Status</th>
-            <th>Move to</th>
-            <th>Outcome</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(cases ?? []).map((row) => {
-            const allowed = TRANSITIONS[row.status] ?? [];
-            const draft = outcomeDraft[row.id] ?? OUTCOME_CATEGORIES[0];
-            return (
-              <tr key={row.id} data-testid="surgery-row">
-                <td>{row.id.slice(0, 8)}</td>
-                <td>{row.user_id.slice(0, 8)}</td>
-                <td>{row.facility_id ? row.facility_id.slice(0, 8) : "—"}</td>
-                <td data-testid="surgery-status">{row.status}</td>
-                <td>
-                  <select
-                    key={row.status}
-                    data-testid="surgery-transition"
-                    defaultValue=""
-                    disabled={allowed.length === 0}
-                    aria-label={`transition for ${row.id.slice(0, 8)}`}
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        setError(null);
-                        transition.mutate({ id: row.id, to_status: e.target.value });
-                      }
-                    }}
-                  >
-                    <option value="" disabled>
-                      {allowed.length === 0 ? "closed" : "select status"}
-                    </option>
-                    {allowed.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td style={{ display: "flex", gap: 8 }}>
-                  <select
-                    data-testid="surgery-outcome-select"
-                    value={draft}
-                    aria-label={`outcome for ${row.id.slice(0, 8)}`}
-                    onChange={(e) =>
-                      setOutcomeDraft((prev) => ({ ...prev, [row.id]: e.target.value }))
-                    }
-                  >
-                    {OUTCOME_CATEGORIES.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    data-testid="surgery-outcome-btn"
-                    disabled={addOutcome.isPending}
-                    onClick={() => {
-                      setError(null);
-                      addOutcome.mutate({ id: row.id, outcome_category: draft });
-                    }}
-                  >
-                    Log
-                  </button>
-                </td>
+      <div className="card table-card">
+        <div className="table-scroll">
+          <table className="table" data-testid="surgery-cases">
+            <thead>
+              <tr>
+                <th>Case</th>
+                <th>Patient</th>
+                <th>Facility</th>
+                <th>Status</th>
+                <th>Move to</th>
+                <th>Outcome</th>
               </tr>
-            );
-          })}
-          {(cases ?? []).length === 0 && (
-            <tr>
-              <td colSpan={6}>No cases tracked.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {(cases ?? []).map((row) => {
+                const allowed = TRANSITIONS[row.status] ?? [];
+                const draft = outcomeDraft[row.id] ?? OUTCOME_CATEGORIES[0];
+                return (
+                  <tr key={row.id} data-testid="surgery-row">
+                    <td className="cell-id">{row.id.slice(0, 8)}</td>
+                    <td className="cell-id">{row.user_id.slice(0, 8)}</td>
+                    <td className="cell-id">{row.facility_id ? row.facility_id.slice(0, 8) : "—"}</td>
+                    <td data-testid="surgery-status">
+                      <span className="badge badge-neutral">{row.status}</span>
+                    </td>
+                    <td>
+                      <select
+                        key={row.status}
+                        className="input input-compact"
+                        data-testid="surgery-transition"
+                        defaultValue=""
+                        disabled={allowed.length === 0}
+                        aria-label={`transition for ${row.id.slice(0, 8)}`}
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            setError(null);
+                            transition.mutate({ id: row.id, to_status: e.target.value });
+                          }
+                        }}
+                      >
+                        <option value="" disabled>
+                          {allowed.length === 0 ? "closed" : "select status"}
+                        </option>
+                        {allowed.map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="cell-actions">
+                      <select
+                        className="input input-compact"
+                        data-testid="surgery-outcome-select"
+                        value={draft}
+                        aria-label={`outcome for ${row.id.slice(0, 8)}`}
+                        onChange={(e) =>
+                          setOutcomeDraft((prev) => ({ ...prev, [row.id]: e.target.value }))
+                        }
+                      >
+                        {OUTCOME_CATEGORIES.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        data-testid="surgery-outcome-btn"
+                        disabled={addOutcome.isPending}
+                        onClick={() => {
+                          setError(null);
+                          addOutcome.mutate({ id: row.id, outcome_category: draft });
+                        }}
+                      >
+                        Log
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {(cases ?? []).length === 0 && (
+                <tr>
+                  <td colSpan={6} className="empty">
+                    No cases tracked.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      <h2>Indicative pricing stubs</h2>
-      <form
-        style={{ display: "grid", gap: 12, maxWidth: 420, marginBottom: 16 }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          setError(null);
-          addPricing.mutate();
-        }}
-      >
-        <label>
-          Procedure
-          <input
-            data-testid="pricing-procedure"
-            value={procedure}
-            onChange={(e) => setProcedure(e.target.value)}
-          />
-        </label>
-        <label>
-          Facility id
-          <input
-            data-testid="pricing-facility"
-            value={facilityId}
-            onChange={(e) => setFacilityId(e.target.value)}
-            placeholder="facility uuid"
-          />
-        </label>
-        <label>
-          Amount min (KSh)
-          <input
-            type="number"
-            data-testid="pricing-min"
-            value={amountMin}
-            min={0}
-            onChange={(e) => setAmountMin(Number(e.target.value))}
-          />
-        </label>
-        <label>
-          Amount max (KSh)
-          <input
-            type="number"
-            data-testid="pricing-max"
-            value={amountMax}
-            min={0}
-            onChange={(e) => setAmountMax(Number(e.target.value))}
-          />
-        </label>
-        <label>
-          Source (required)
-          <input
-            data-testid="pricing-source"
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            placeholder="e.g. facility price list, March 2026"
-          />
-        </label>
-        <label>
-          Note
-          <input value={note} onChange={(e) => setNote(e.target.value)} />
-        </label>
-        <button type="submit" data-testid="pricing-submit" disabled={addPricing.isPending}>
-          Save pricing stub
-        </button>
-      </form>
+      <div className="card">
+        <h2 className="card-title">Indicative pricing stubs</h2>
+        <form
+          className="form-grid form-grid-wide mb-0"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setError(null);
+            addPricing.mutate();
+          }}
+        >
+          <label className="form-field">
+            Procedure
+            <input
+              className="input"
+              data-testid="pricing-procedure"
+              value={procedure}
+              onChange={(e) => setProcedure(e.target.value)}
+            />
+          </label>
+          <label className="form-field">
+            Facility id
+            <input
+              className="input"
+              data-testid="pricing-facility"
+              value={facilityId}
+              onChange={(e) => setFacilityId(e.target.value)}
+              placeholder="facility uuid"
+            />
+          </label>
+          <label className="form-field">
+            Amount min (KSh)
+            <input
+              className="input"
+              type="number"
+              data-testid="pricing-min"
+              value={amountMin}
+              min={0}
+              onChange={(e) => setAmountMin(Number(e.target.value))}
+            />
+          </label>
+          <label className="form-field">
+            Amount max (KSh)
+            <input
+              className="input"
+              type="number"
+              data-testid="pricing-max"
+              value={amountMax}
+              min={0}
+              onChange={(e) => setAmountMax(Number(e.target.value))}
+            />
+          </label>
+          <label className="form-field">
+            Source (required)
+            <input
+              className="input"
+              data-testid="pricing-source"
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              placeholder="e.g. facility price list, March 2026"
+            />
+          </label>
+          <label className="form-field">
+            Note
+            <input className="input" value={note} onChange={(e) => setNote(e.target.value)} />
+          </label>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            data-testid="pricing-submit"
+            disabled={addPricing.isPending}
+          >
+            Save pricing stub
+          </button>
+        </form>
+      </div>
 
-      <table data-testid="pricing-list">
-        <thead>
-          <tr>
-            <th>Procedure</th>
-            <th>Facility</th>
-            <th>Range (KSh)</th>
-            <th>Source</th>
-            <th>Indicative</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(pricing ?? []).map((row) => (
-            <tr key={row.id} data-testid="pricing-row">
-              <td>{row.procedure}</td>
-              <td>{row.facility_id.slice(0, 8)}</td>
-              <td>
-                {row.amount_ksh_min}–{row.amount_ksh_max}
-              </td>
-              <td>{row.source}</td>
-              <td>{row.indicative ? "yes" : "no"}</td>
-            </tr>
-          ))}
-          {(pricing ?? []).length === 0 && (
-            <tr>
-              <td colSpan={5}>No pricing stubs recorded.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <div className="card table-card">
+        <div className="table-scroll">
+          <table className="table" data-testid="pricing-list">
+            <thead>
+              <tr>
+                <th>Procedure</th>
+                <th>Facility</th>
+                <th>Range (KSh)</th>
+                <th>Source</th>
+                <th>Indicative</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(pricing ?? []).map((row) => (
+                <tr key={row.id} data-testid="pricing-row">
+                  <td>{row.procedure}</td>
+                  <td className="cell-id">{row.facility_id.slice(0, 8)}</td>
+                  <td>
+                    {row.amount_ksh_min}–{row.amount_ksh_max}
+                  </td>
+                  <td className="muted">{row.source}</td>
+                  <td>{row.indicative ? "yes" : "no"}</td>
+                </tr>
+              ))}
+              {(pricing ?? []).length === 0 && (
+                <tr>
+                  <td colSpan={5} className="empty">
+                    No pricing stubs recorded.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </main>
   );
 }

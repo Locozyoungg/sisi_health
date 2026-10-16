@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../api";
+import { bandClass } from "../ui";
 
 interface ConsentRow {
   kind: string;
@@ -174,70 +175,103 @@ export default function ConsultDetail() {
     onError: (err) => setError(err instanceof Error ? err.message : "could not record consent"),
   });
 
-  if (isLoading) return <main>Loading…</main>;
-  if (loadError) return <main role="alert">{String(loadError)}</main>;
-  if (!data) return <main>No request loaded.</main>;
+  if (isLoading) {
+    return (
+      <main className="page page-narrow">
+        <p className="muted">Loading…</p>
+      </main>
+    );
+  }
+  if (loadError) {
+    return (
+      <main className="page page-narrow" role="alert">
+        <p className="alert alert-danger">{String(loadError)}</p>
+      </main>
+    );
+  }
+  if (!data) {
+    return (
+      <main className="page page-narrow">
+        <p className="muted">No request loaded.</p>
+      </main>
+    );
+  }
 
   const canStart = session !== null && session.status === "scheduled";
   const canComplete = session !== null && session.status === "in_progress";
 
   return (
-    <main style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
-      <h1>Consult request</h1>
-      {error && <p role="alert">{error}</p>}
+    <main className="page page-narrow">
+      <header className="page-head">
+        <p className="eyebrow">Specialist corridor</p>
+        <h1 className="page-title">Consult request</h1>
+      </header>
+      {error && (
+        <p className="alert alert-danger" role="alert">
+          {error}
+        </p>
+      )}
 
-      <section style={{ border: "1px solid #ddd", padding: 16, marginBottom: 24 }}>
-        <h2 data-testid="consult-section">Case</h2>
-        <p>
-          Client: <strong>{data.pseudonym.slice(0, 8)}</strong> · Age band: {data.age_band} ·
-          Language: {data.preferred_language}
-          {data.preferred_county ? ` · County: ${data.preferred_county}` : ""}
-        </p>
-        <p>
-          Band: <strong>{data.band}</strong> · Status:{" "}
-          <strong data-testid="consult-status">{data.status}</strong>
-        </p>
-        <p>
-          Flags: {data.urgent ? "urgent" : "not urgent"} ·{" "}
-          {data.safeguarding ? "safeguarding" : "no safeguarding flag"} ·{" "}
-          {data.chaperone_requested ? "chaperone requested" : "no chaperone request"}
-        </p>
-        <p>
-          Indicators:{" "}
-          <span data-testid="consult-indicators">
-            {data.indicators.length > 0 ? data.indicators.join(", ") : "none reported"}
-          </span>
-        </p>
+      <section className="card">
+        <h2 className="card-title" data-testid="consult-section">
+          Case
+        </h2>
+        <div className="facts">
+          <p className="fact">
+            Client: <strong className="mono">{data.pseudonym.slice(0, 8)}</strong> · Age band:{" "}
+            {data.age_band} · Language: {data.preferred_language}
+            {data.preferred_county ? ` · County: ${data.preferred_county}` : ""}
+          </p>
+          <p className="fact">
+            Band: <span className={bandClass(data.band)}>{data.band}</span> · Status:{" "}
+            <strong data-testid="consult-status">{data.status}</strong>
+          </p>
+          <p className="fact">
+            Flags: {data.urgent ? "urgent" : "not urgent"} ·{" "}
+            {data.safeguarding ? "safeguarding" : "no safeguarding flag"} ·{" "}
+            {data.chaperone_requested ? "chaperone requested" : "no chaperone request"}
+          </p>
+          <p className="fact">
+            Indicators:{" "}
+            <span data-testid="consult-indicators">
+              {data.indicators.length > 0 ? data.indicators.join(", ") : "none reported"}
+            </span>
+          </p>
+        </div>
       </section>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Feature snapshot</h2>
-        <table data-testid="consult-features">
-          <tbody>
-            {Object.entries(data.features).map(([key, value]) => (
-              <tr key={key}>
-                <td>{key}</td>
-                <td>{renderValue(value)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <section className="card table-card">
+        <h2 className="card-title">Feature snapshot</h2>
+        <div className="table-scroll">
+          <table className="table" data-testid="consult-features">
+            <tbody>
+              {Object.entries(data.features).map(([key, value]) => (
+                <tr key={key}>
+                  <td className="muted">{key}</td>
+                  <td>{renderValue(value)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Recorded consents</h2>
-        <ul data-testid="consult-consents">
+      <section className="card">
+        <h2 className="card-title">Recorded consents</h2>
+        <ul className="list" data-testid="consult-consents">
           {data.consents.map((consent, index) => (
             <li key={`${consent.kind}-${index}`}>
-              {consent.kind} · {consent.method} · {consent.captured_at}
+              {consent.kind} · {consent.method} ·{" "}
+              <span className="muted">{consent.captured_at}</span>
             </li>
           ))}
-          {data.consents.length === 0 && <li>No consents recorded.</li>}
+          {data.consents.length === 0 && <li className="muted">No consents recorded.</li>}
         </ul>
-        <div style={{ display: "grid", gap: 12, maxWidth: 420 }}>
-          <label>
+        <div className="form-grid">
+          <label className="form-field">
             Consent kind
             <select
+              className="input"
               data-testid="consent-kind"
               value={consentKind}
               onChange={(e) => setConsentKind(e.target.value)}
@@ -249,9 +283,10 @@ export default function ConsultDetail() {
               ))}
             </select>
           </label>
-          <label>
+          <label className="form-field">
             Method
             <select
+              className="input"
               data-testid="consent-method"
               value={consentMethod}
               onChange={(e) => setConsentMethod(e.target.value)}
@@ -265,6 +300,7 @@ export default function ConsultDetail() {
           </label>
           <button
             type="button"
+            className="btn btn-secondary"
             data-testid="consent-btn"
             disabled={recordConsent.isPending}
             onClick={() => {
@@ -277,11 +313,12 @@ export default function ConsultDetail() {
         </div>
       </section>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Nurse review</h2>
-        <div style={{ display: "flex", gap: 12 }}>
+      <section className="card">
+        <h2 className="card-title">Nurse review</h2>
+        <div className="actions">
           <button
             type="button"
+            className="btn btn-primary"
             data-testid="approve-btn"
             disabled={review.isPending}
             onClick={() => {
@@ -293,6 +330,7 @@ export default function ConsultDetail() {
           </button>
           <button
             type="button"
+            className="btn btn-danger"
             data-testid="decline-btn"
             disabled={review.isPending}
             onClick={() => {
@@ -305,10 +343,10 @@ export default function ConsultDetail() {
         </div>
       </section>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Schedule with a gynecologist</h2>
+      <section className="card">
+        <h2 className="card-title">Schedule with a gynecologist</h2>
         <form
-          style={{ display: "grid", gap: 12, maxWidth: 420 }}
+          className="form-grid"
           onSubmit={(e) => {
             e.preventDefault();
             setError(null);
@@ -319,27 +357,30 @@ export default function ConsultDetail() {
             schedule.mutate();
           }}
         >
-          <label>
+          <label className="form-field">
             Gynecologist id
             <input
+              className="input"
               data-testid="gynecologist-id"
               value={gynecologistId}
               onChange={(e) => setGynecologistId(e.target.value)}
               placeholder="staff uuid"
             />
           </label>
-          <label>
+          <label className="form-field">
             Scheduled at
             <input
+              className="input"
               type="datetime-local"
               data-testid="scheduled-at"
               value={scheduledAt}
               onChange={(e) => setScheduledAt(e.target.value)}
             />
           </label>
-          <label>
+          <label className="form-field">
             Modality
             <select
+              className="input"
               data-testid="modality"
               value={modality}
               onChange={(e) => setModality(e.target.value)}
@@ -348,23 +389,31 @@ export default function ConsultDetail() {
               <option value="audio">audio</option>
             </select>
           </label>
-          <button type="submit" data-testid="schedule-btn" disabled={schedule.isPending}>
+          <button type="submit" className="btn btn-primary" data-testid="schedule-btn" disabled={schedule.isPending}>
             Schedule
           </button>
         </form>
       </section>
 
       {session && (
-        <section style={{ border: "1px solid #ddd", padding: 16 }}>
-          <h2>Session</h2>
-          <p>
-            Session id: <strong data-testid="session-id">{session.sessionId}</strong> · Status:{" "}
-            <strong data-testid="session-status">{session.status}</strong>
-          </p>
-          <p>Room: {session.roomName}</p>
-          <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12 }}>
+        <section className="card">
+          <h2 className="card-title">Session</h2>
+          <div className="facts">
+            <p className="fact">
+              Session id:{" "}
+              <strong className="mono" data-testid="session-id">
+                {session.sessionId}
+              </strong>{" "}
+              · Status: <strong data-testid="session-status">{session.status}</strong>
+            </p>
+            <p className="fact">
+              Room: <span className="mono">{session.roomName}</span>
+            </p>
+          </div>
+          <div className="actions mt-4">
             <button
               type="button"
+              className="btn btn-primary"
               data-testid="session-start-btn"
               disabled={!canStart || startSession.isPending}
               onClick={() => {
@@ -376,6 +425,7 @@ export default function ConsultDetail() {
             </button>
             {session.joinUrl && (
               <a
+                className="btn btn-secondary"
                 data-testid="room-link"
                 href={session.joinUrl}
                 target="_blank"
@@ -386,14 +436,15 @@ export default function ConsultDetail() {
             )}
           </div>
           {session.token && (
-            <p data-testid="room-token" style={{ wordBreak: "break-all", fontSize: 12 }}>
+            <p className="fact mono break-all muted" data-testid="room-token">
               Room token: {session.token}
             </p>
           )}
-          <div style={{ display: "flex", gap: 12, alignItems: "end" }}>
-            <label>
+          <div className="actions actions-end mt-4">
+            <label className="form-field">
               Outcome
               <select
+                className="input input-compact"
                 data-testid="session-outcome"
                 value={outcome}
                 onChange={(e) => setOutcome(e.target.value)}
@@ -407,6 +458,7 @@ export default function ConsultDetail() {
             </label>
             <button
               type="button"
+              className="btn btn-secondary"
               data-testid="session-complete-btn"
               disabled={!canComplete || completeSession.isPending}
               onClick={() => {

@@ -30,36 +30,55 @@ export default function Login() {
   }
 
   return (
-    <main style={{ maxWidth: 420, margin: "80px auto", padding: 24 }}>
-      <h1>SISI Health Console</h1>
-      <p>SISI supports you and your doctor — it does not diagnose.</p>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
-        <label>
-          Email
-          <input value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
-        </label>
-        <label>
-          TOTP code
-          <input
-            value={totp}
-            onChange={(e) => setTotp(e.target.value)}
-            inputMode="numeric"
-            maxLength={6}
-            autoComplete="one-time-code"
-          />
-        </label>
-        <button type="submit">Sign in</button>
-        {error && <p role="alert">{error}</p>}
-      </form>
+    <main className="login-shell">
+      <div className="card login-card">
+        <div className="login-brand">
+          <span className="brand-mark" aria-hidden="true" />
+          <h1 className="login-title">SISI Health Console</h1>
+        </div>
+        <p className="login-tagline muted">SISI supports you and your doctor — it does not diagnose.</p>
+        <form className="form-grid login-form" onSubmit={onSubmit}>
+          <label className="form-field">
+            Email
+            <input
+              className="input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
+            />
+          </label>
+          <label className="form-field">
+            Password
+            <input
+              className="input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+          </label>
+          <label className="form-field">
+            TOTP code
+            <input
+              className="input"
+              value={totp}
+              onChange={(e) => setTotp(e.target.value)}
+              inputMode="numeric"
+              maxLength={6}
+              autoComplete="one-time-code"
+            />
+          </label>
+          <button type="submit" className="btn btn-primary btn-block">
+            Sign in
+          </button>
+          {error && (
+            <p className="alert alert-danger" role="alert">
+              {error}
+            </p>
+          )}
+        </form>
+        <p className="login-note muted">Staff access only — sessions lock after 15 minutes idle.</p>
+      </div>
     </main>
   );
 }

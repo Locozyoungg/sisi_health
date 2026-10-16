@@ -46,48 +46,73 @@ export default function Vouchers() {
   });
 
   return (
-    <main style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
-      <h1>Vouchers</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          issue.mutate();
-        }}
-        style={{ display: "grid", gap: 12, maxWidth: 420 }}
-      >
-        <label>
-          Category
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="sanitary">Sanitary products</option>
-            <option value="otc_pain">OTC pain relief</option>
-          </select>
-        </label>
-        <label>
-          Amount (KSh)
-          <input
-            type="number"
-            value={amount}
-            min={1}
-            max={5000}
-            onChange={(e) => setAmount(Number(e.target.value))}
-          />
-        </label>
-        <button type="submit" disabled={issue.isPending}>
-          Issue voucher
-        </button>
-      </form>
-      {lastCode && (
-        <p data-testid="issued-code">
-          Issued: <strong>{lastCode}</strong>
+    <main className="page page-narrow">
+      <header className="page-head">
+        <p className="eyebrow">School module</p>
+        <h1 className="page-title">Vouchers</h1>
+        <p className="page-sub muted">
+          Vouchers are issued against a category and reconciled nightly.
         </p>
-      )}
-      {error && <p role="alert">{error}</p>}
-      <h2>Reconciliation</h2>
-      {reconciliation && (
-        <p data-testid="recon-count">
-          Redemptions: {reconciliation.redeemed_count} · Mismatches: {reconciliation.mismatches.length}
-        </p>
-      )}
+      </header>
+
+      <div className="card">
+        <h2 className="card-title">Issue a voucher</h2>
+        <form
+          className="form-grid"
+          onSubmit={(e) => {
+            e.preventDefault();
+            issue.mutate();
+          }}
+        >
+          <label className="form-field">
+            Category
+            <select
+              className="input"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="sanitary">Sanitary products</option>
+              <option value="otc_pain">OTC pain relief</option>
+            </select>
+          </label>
+          <label className="form-field">
+            Amount (KSh)
+            <input
+              className="input"
+              type="number"
+              value={amount}
+              min={1}
+              max={5000}
+              onChange={(e) => setAmount(Number(e.target.value))}
+            />
+          </label>
+          <button type="submit" className="btn btn-primary" disabled={issue.isPending}>
+            Issue voucher
+          </button>
+        </form>
+        {lastCode && (
+          <p className="alert alert-success" data-testid="issued-code">
+            Issued: <strong className="mono">{lastCode}</strong>
+          </p>
+        )}
+        {error && (
+          <p className="alert alert-danger" role="alert">
+            {error}
+          </p>
+        )}
+      </div>
+
+      <div className="card">
+        <h2 className="card-title">Reconciliation</h2>
+        {reconciliation ? (
+          <p className="stat-value" data-testid="recon-count">
+            Redemptions: {reconciliation.redeemed_count} · Mismatches:{" "}
+            {reconciliation.mismatches.length}
+          </p>
+        ) : (
+          <p className="muted">Loading…</p>
+        )}
+      </div>
     </main>
   );
 }

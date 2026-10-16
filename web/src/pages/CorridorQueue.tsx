@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
+import { bandClass } from "../ui";
 
 interface QueueRow {
   request_id: string;
@@ -35,53 +36,79 @@ export default function CorridorQueue() {
     refetchInterval: 30_000,
   });
 
-  if (isLoading) return <main>Loading…</main>;
-  if (error) return <main role="alert">{String(error)}</main>;
+  if (isLoading) {
+    return (
+      <main className="page">
+        <p className="muted">Loading…</p>
+      </main>
+    );
+  }
+  if (error) {
+    return (
+      <main className="page" role="alert">
+        <p className="alert alert-danger">{String(error)}</p>
+      </main>
+    );
+  }
 
   return (
-    <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>
-      <h1>Corridor queue</h1>
-      <p>Corridor staff see pseudonyms, bands and flags only.</p>
-      <table data-testid="corridor-queue">
-        <thead>
-          <tr>
-            <th>Client</th>
-            <th>Band</th>
-            <th>Age band</th>
-            <th>Status</th>
-            <th>Flags</th>
-            <th>Language</th>
-            <th>Requested</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(data ?? []).map((row) => (
-            <tr
-              key={row.request_id}
-              data-testid="corridor-row"
-              tabIndex={0}
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate(`/corridor/${row.request_id}`)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") navigate(`/corridor/${row.request_id}`);
-              }}
-            >
-              <td>{row.pseudonym.slice(0, 8)}</td>
-              <td>{row.band}</td>
-              <td>{row.age_band}</td>
-              <td>{row.status}</td>
-              <td>{flags(row)}</td>
-              <td>{row.preferred_language}</td>
-              <td>{row.created_at}</td>
-            </tr>
-          ))}
-          {(data ?? []).length === 0 && (
-            <tr>
-              <td colSpan={7}>Queue is empty.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <main className="page">
+      <header className="page-head">
+        <p className="eyebrow">Specialist corridor</p>
+        <h1 className="page-title">Corridor queue</h1>
+        <p className="page-sub muted">Corridor staff see pseudonyms, bands and flags only.</p>
+      </header>
+
+      <div className="card table-card">
+        <div className="table-scroll">
+          <table className="table" data-testid="corridor-queue">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Band</th>
+                <th>Age band</th>
+                <th>Status</th>
+                <th>Flags</th>
+                <th>Language</th>
+                <th>Requested</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(data ?? []).map((row) => (
+                <tr
+                  key={row.request_id}
+                  data-testid="corridor-row"
+                  className="row-link"
+                  tabIndex={0}
+                  onClick={() => navigate(`/corridor/${row.request_id}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") navigate(`/corridor/${row.request_id}`);
+                  }}
+                >
+                  <td className="cell-id">{row.pseudonym.slice(0, 8)}</td>
+                  <td>
+                    <span className={bandClass(row.band)}>{row.band}</span>
+                  </td>
+                  <td>{row.age_band}</td>
+                  <td>
+                    <span className="badge badge-neutral">{row.status}</span>
+                  </td>
+                  <td>{flags(row)}</td>
+                  <td className="muted">{row.preferred_language}</td>
+                  <td className="muted">{row.created_at}</td>
+                </tr>
+              ))}
+              {(data ?? []).length === 0 && (
+                <tr>
+                  <td colSpan={7} className="empty">
+                    Queue is empty.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </main>
   );
 }

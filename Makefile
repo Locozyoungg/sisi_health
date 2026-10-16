@@ -5,10 +5,10 @@ PYTHON  := $(VENV)/bin/python
 PIP     := $(VENV)/bin/pip
 COMPOSE := docker compose
 
-.PHONY: help setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo ai-setup ai-test ai-demo ai-eval ai-compare clean
+.PHONY: help setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean
 
 help:
-	@echo "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
+	@echo "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
 
 setup:
 	$(PY) -m venv $(VENV)
@@ -45,6 +45,15 @@ demo-phase1: migrate seed
 phase5-demo:
 	cd backend && $(abspath $(PYTHON)) scripts/seed_school_demo.py
 	cd backend && $(abspath $(PYTHON)) scripts/seed_corridor_demo.py
+	cd web && npm run e2e
+
+# Employer demo world (Phase 7). Seeds only the employer seed (the school seeds
+# are not needed by employer.spec.ts). The backend must already be running on
+# :8000 (it is not started here).
+phase7-demo:
+	cd backend && $(abspath $(PYTHON)) scripts/seed_school_demo.py
+	cd backend && $(abspath $(PYTHON)) scripts/seed_corridor_demo.py
+	cd backend && $(abspath $(PYTHON)) scripts/seed_employer_demo.py
 	cd web && npm run e2e
 
 ai-setup:

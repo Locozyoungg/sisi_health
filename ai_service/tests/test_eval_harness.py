@@ -310,5 +310,5 @@ def test_an_empty_report_fails_every_gate() -> None:
 
 def test_the_scripts_load_the_same_suite_the_tests_do(settings: AISettings) -> None:
     cases = load_ai_cases(Path(settings.ontology_dir))
-    assert len(cases) == 150
-    assert [case.id for case in cases] == [f"ai-{number:03d}" for number in range(1, 151)]
+    assert len(cases) == 157
+    assert [case.id for case in cases] == [f"ai-{number:03d}" for number in range(1, 158)]

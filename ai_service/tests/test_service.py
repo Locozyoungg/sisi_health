@@ -12,6 +12,8 @@ from sqlalchemy.orm import Session
 from ai_service.config import AISettings
 from ai_service.errors import ProviderNotConfigured
 from ai_service.guardrails import (
+    MINOR_SEX_CHECK_TEXTS,
+    MINOR_YES_NURSE_LINE,
     ROUTING_AGE_GATED_MINOR,
     ROUTING_EDUCATION,
     ROUTING_OUT_OF_SCOPE,
@@ -23,8 +25,11 @@ from ai_service.guardrails import (
     VIOLATION_DIAGNOSIS_CLAIM,
     VIOLATION_OFF_TOPIC_ANSWER,
     VIOLATION_PROMPT_LEAK,
+    PostFilter,
+    minor_no_sex_text,
     refusal_text,
 )
+from ai_service.prompts import MINOR_SEX_FRAMING_LINE
 from ai_service.providers.llm import (
     DIAGNOSIS_MARKER,
     OFF_TOPIC_MARKER,
@@ -151,6 +156,232 @@ def test_minor_gate_lets_adults_through(
     response = service.ask(AskRequest(text="How do I get an abortion?", age=30, band="YELLOW"))
     assert response.routing != ROUTING_AGE_GATED_MINOR
     assert llm.count == 1  # an adult asking an in-scope question reaches the model
+
+
+# --- 4b. the minor sexual-health two-step (A38) -------------------------------------
+
+MINOR_SEX_QUESTIONS = (
+    ("Is sex painful normal?", "en"),
+    ("Je, ngono inaumiza, ni kawaida?", "sw"),
+    ("Sex inaumiza ni normal?", "sheng"),
+)
+
+
+@pytest.mark.parametrize(("text_value", "language"), MINOR_SEX_QUESTIONS)
+def test_minor_sexual_health_without_an_answer_returns_the_check_question(
+    service: ConversationService,
+    llm: RecordingLLMProvider,
+    text_value: str,
+    language: str,
+) -> None:
+    """Step (a): the answer is unknown, so the caller is asked — deterministically.
+    Zero model calls and zero citations: nothing about the question is generated."""
+    response = service.ask(
+        AskRequest(text=text_value, language=language, age=15, band="YELLOW")
+    )
+    assert response.routing == ROUTING_AGE_GATED_MINOR
+    assert response.text == MINOR_SEX_CHECK_TEXTS[language]
+    assert llm.count == 0
+    assert response.citations == []
+    assert response.postfilter_reason is None
+    assert response.input_tokens == 0 and response.output_tokens == 0
+
+
+@pytest.mark.parametrize(("text_value", "language"), MINOR_SEX_QUESTIONS)
+def test_minor_sexual_health_answered_no_returns_generic_guidance(
+    service: ConversationService,
+    llm: RecordingLLMProvider,
+    text_value: str,
+    language: str,
+) -> None:
+    """Step (b): "no" gets generic guidance plus the nurse referral — still no model,
+    no content, and no sexual content in the text."""
+    response = service.ask(
+        AskRequest(
+            text=text_value,
+            language=language,
+            age=15,
+            minor_has_sex=False,
+            band="YELLOW",
+        )
+    )
+    assert response.routing == ROUTING_AGE_GATED_MINOR
+    assert response.text == minor_no_sex_text(language)
+    assert MINOR_YES_NURSE_LINE[language] in response.text
+    assert llm.count == 0
+    assert response.citations == []
+
+
+@pytest.mark.parametrize(("text_value", "language"), MINOR_SEX_QUESTIONS)
+def test_minor_sexual_health_answered_yes_is_educated_with_the_nurse_line(
+    service: ConversationService,
+    llm: RecordingLLMProvider,
+    text_value: str,
+    language: str,
+) -> None:
+    """Step (c): "yes" proceeds (retrieval + model education, citations intact) and the
+    deterministic referral is appended AFTER the post-filter — so exactly the model text
+    is what the filter judged (replayed here from the recorded prompt)."""
+    response = service.ask(
+        AskRequest(
+            text=text_value,
+            language=language,
+            age=15,
+            minor_has_sex=True,
+            band="GREEN",
+        )
+    )
+    assert response.routing == ROUTING_EDUCATION
+    assert llm.count == 1
+    assert response.citations, "the education answer keeps its citations"
+    system_prompt, user_message = llm.calls[0]
+    assert MINOR_SEX_FRAMING_LINE in system_prompt  # age framing, no identifiers
+    assert re.search(r"\d{9,}", system_prompt) is None
+    # The stub is deterministic: replaying the recorded prompt reproduces the model text
+    # that reached the post-filter. The nurse line was not in it — it was appended after.
+    model_text = (
+        StubProvider("educational")
+        .complete(system=system_prompt, user=user_message, max_output_tokens=0, temperature=0.0)
+        .text
+    )
+    assert PostFilter().check(model_text, band="GREEN")["ok"] is True
+    assert MINOR_YES_NURSE_LINE[language] not in model_text
+    assert response.text == f"{model_text}\n\n{MINOR_YES_NURSE_LINE[language]}"
+
+
+def test_the_two_step_never_applies_to_adults(
+    service: ConversationService, llm: RecordingLLMProvider
+) -> None:
+    """minor_has_sex is ignored for adults: no check question, no interposed referral
+    line, no framing line in the prompt — whatever the caller sends."""
+    for value in (None, False, True):
+        response = service.ask(
+            AskRequest(text="Is sex painful normal?", age=20, minor_has_sex=value, band="GREEN")
+        )
+        assert response.routing == ROUTING_EDUCATION, value
+        assert MINOR_YES_NURSE_LINE["en"] not in response.text, value
+        assert MINOR_SEX_FRAMING_LINE not in llm.calls[-1][0], value
+    assert llm.count == 3  # an adult reaches the model every time
+
+
+def test_minor_has_sex_only_changes_the_two_step_branch(
+    service: ConversationService, llm: RecordingLLMProvider
+) -> None:
+    """A minor asking an ordinary (non-gated) question is served normally whatever the
+    field says: no referral line is appended and no framing line reaches the prompt."""
+    response = service.ask(
+        AskRequest(
+            text="Nina maumivu ya hedhi kila mwezi",
+            language="sw",
+            age=15,
+            minor_has_sex=True,
+            band="YELLOW",
+        )
+    )
+    assert response.routing == ROUTING_EDUCATION
+    assert MINOR_YES_NURSE_LINE["sw"] not in response.text
+    assert MINOR_SEX_FRAMING_LINE not in llm.calls[0][0]
+    assert llm.count == 1
+
+
+@pytest.mark.parametrize("minor_has_sex", [None, False, True])
+def test_procedure_topics_stay_hard_gated_for_a_minor(
+    service: ConversationService,
+    llm: RecordingLLMProvider,
+    minor_has_sex: bool | None,
+) -> None:
+    """A38: the two-step is only for sexual-health questions. Abortion, sterilisation,
+    IVF, HRT and surrogacy stay hard-gated whatever the caller says."""
+    response = service.ask(
+        AskRequest(
+            text="How do I get an abortion?",
+            age=15,
+            minor_has_sex=minor_has_sex,
+            band="YELLOW",
+        )
+    )
+    assert response.routing == ROUTING_AGE_GATED_MINOR
+    assert response.text == refusal_text(ROUTING_AGE_GATED_MINOR, "en")
+    assert MINOR_YES_NURSE_LINE["en"] not in response.text
+    assert llm.count == 0
+
+
+def test_the_procedure_branch_decides_first_when_both_families_match(
+    service: ConversationService, llm: RecordingLLMProvider
+) -> None:
+    """A question naming a procedure AND sex stays hard-gated: a child-facing answer
+    must not become an explanation of the procedure (A38)."""
+    response = service.ask(
+        AskRequest(
+            text="Can I get an abortion after having sex?",
+            age=15,
+            minor_has_sex=True,
+            band="YELLOW",
+        )
+    )
+    assert response.routing == ROUTING_AGE_GATED_MINOR
+    assert response.text == refusal_text(ROUTING_AGE_GATED_MINOR, "en")
+    assert llm.count == 0
+
+
+def test_the_nurse_line_is_never_appended_to_a_refusal(
+    settings: AISettings,
+    backend_settings,
+    matcher,
+    seeded_store: EmbeddingStore,
+    embedder,
+) -> None:
+    """The appended referral belongs to the education path only: a model answer the
+    post-filter drops becomes the deterministic refusal, unchanged (HZ-07)."""
+    recording = RecordingLLMProvider(StubProvider("diagnosis_attempt"))
+    service = _service(
+        settings=settings,
+        backend_settings=backend_settings,
+        matcher=matcher,
+        store=seeded_store,
+        embedder=embedder,
+        llm=recording,
+    )
+    response = service.ask(
+        AskRequest(text="Is sex painful normal?", age=15, minor_has_sex=True, band="YELLOW")
+    )
+    assert response.routing == ROUTING_REFUSED
+    assert response.text == refusal_text(ROUTING_REFUSED, "en")
+    assert MINOR_YES_NURSE_LINE["en"] not in response.text
+    assert response.citations == []
+    assert recording.count == 1
+
+
+def test_no_content_for_a_minor_who_had_sex_refuses_instead_of_educating(
+    settings: AISettings,
+    backend_settings,
+    matcher,
+    store: EmbeddingStore,
+    embedder,
+    llm: RecordingLLMProvider,
+    db: Session,
+) -> None:
+    """With no approved chunks there is no education to serve, so the two-step answer is
+    the plain deterministic refusal — never an uncited answer and never a nurse line
+    attached to nothing."""
+    db.execute(text("DELETE FROM ai.chunk_embeddings"))
+    db.execute(text("DELETE FROM ai.content_chunks"))
+    db.commit()
+    service = _service(
+        settings=settings,
+        backend_settings=backend_settings,
+        matcher=matcher,
+        store=store,
+        embedder=embedder,
+        llm=llm,
+    )
+    response = service.ask(
+        AskRequest(text="Is sex painful normal?", age=15, minor_has_sex=True, band="YELLOW")
+    )
+    assert response.routing == ROUTING_REFUSED
+    assert response.text == refusal_text(ROUTING_REFUSED, "en")
+    assert MINOR_YES_NURSE_LINE["en"] not in response.text
+    assert llm.count == 0
 
 
 # --- 5. retrieval ------------------------------------------------------------------

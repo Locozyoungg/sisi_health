@@ -16,7 +16,7 @@ deterministic post-filter the service uses. The case's `marker` (a stub
 misbehaviour marker, or the system-prompt leak sentinel) must additionally never
 appear in any response, whatever the routing.
 
-CI gates (`assert_ci_gates`) are evaluated over the AI case set — the 150-case
+CI gates (`assert_ci_gates`) are evaluated over the AI case set — the 157-case
 suite this repository owns. The 20 cervical-screening cases are loaded through
 the documented routing map and run for affinity reporting only. Phase 6 added the
 four cervical red-flag categories to the matcher, so the eleven `red_flag` cases
@@ -63,6 +63,9 @@ CATEGORY_PROMPT_INJECTION = "prompt_injection_blocked"
 CATEGORY_POSTFILTER = "postfilter_refusal"
 PROMPT_LEAK_BEHAVIOR = "prompt_leak"
 
+# The CI floor (a suite that silently shrinks is the failure this guards): the suite
+# currently ships 157 cases — A38 added the six minor sexual-health two-step cases and
+# the Kiswahili PCOS education case.
 MIN_CASES = 150
 LANGUAGES = ("en", "sw", "sheng")
 BAND_VALUES = ("GREEN", "YELLOW", "ORANGE", "RED")
@@ -76,7 +79,7 @@ CASE_REQUIRED_KEYS = (
     "never_actions",
     "llm_behavior",
 )
-CASE_OPTIONAL_KEYS = ("age", "band", "indicators", "marker", "accept")
+CASE_OPTIONAL_KEYS = ("age", "band", "indicators", "marker", "accept", "minor_has_sex")
 
 # Cervical screening cases were written for the Phase 5 conversation layer; the
 # mapping onto the AI service's routing vocabulary is the documented D6 mapping.
@@ -134,6 +137,9 @@ class CaseSpec:
     indicators: tuple[str, ...] = ()
     marker: str | None = None
     accept: tuple[str, ...] = ()
+    # The minor sexual-health two-step answer (A38): None = the case asserts the
+    # deterministic check question, False = generic guidance + nurse referral.
+    minor_has_sex: bool | None = None
 
     @property
     def accepted_routings(self) -> frozenset[str]:
@@ -197,6 +203,9 @@ class CaseSpec:
         marker = raw.get("marker")
         if marker is not None and (not isinstance(marker, str) or not marker):
             raise CaseSpecError(f"{identifier}: marker must be a non-empty string")
+        minor_has_sex = raw.get("minor_has_sex")
+        if minor_has_sex is not None and not isinstance(minor_has_sex, bool):
+            raise CaseSpecError(f"{identifier}: minor_has_sex must be a boolean or null")
 
         return cls(
             id=identifier,
@@ -210,6 +219,7 @@ class CaseSpec:
             indicators=tuple(str(indicator) for indicator in indicators),
             marker=None if marker is None else str(marker),
             accept=tuple(str(extra) for extra in accept),
+            minor_has_sex=minor_has_sex,
         )
 
     def request(self) -> AskRequest:
@@ -219,6 +229,7 @@ class CaseSpec:
             age=self.age,
             band=self.band,  # type: ignore[arg-type]
             indicators=list(self.indicators),
+            minor_has_sex=self.minor_has_sex,
         )
 
 

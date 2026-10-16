@@ -16,15 +16,15 @@ review by UNICEF's Venture Fund and deployment in real Kenyan schools.
 | 3 | USSD + WhatsApp assessment flows | ✅ **Complete** — 36 gateway tests, demo green |
 | 4 | School nurse console, dashboards, M-Pesa vouchers | ✅ **Complete** — 55 k-anon property tests + school/voucher suites, 3 Playwright e2e |
 | 5 | Specialist corridor (+ cervical screening module) | ✅ **Complete** — 423 backend tests (186 new), 4 corridor Playwright e2e, 37 golden cases on both engines |
-| 6 | AI conversation layer with RAG + guardrails | ✅ **Complete** — 260 ai-service tests, 150-case guardrail suite (100% pass, +20 cervical cases), 100% red-flag routing, 92-chunk RAG index, stub comparison report (real run = H15) |
-| 7 | Employer admin (minimal) | ⏳ Next |
+| 6 | AI conversation layer with RAG + guardrails | ✅ **Complete** — 292 ai-service tests, 157-case guardrail suite (100% pass, +20 cervical cases), 100% red-flag routing, 92-chunk RAG index, minor two-step flow, stub comparison report (real run = H15) |
+| 7 | Employer admin (minimal) | ✅ **Complete** — employer wallet + ledger invariants + k-anon dashboard, 467 backend tests, 9 Playwright e2e |
 | 8 | Hardening: pen-test checklist, load test, deploy | ⏳ |
 
 ## Monorepo
 
 | Path | Purpose |
 |---|---|
-| `/backend` | FastAPI API, deterministic rules engine, hash-chained audit trail, consent/erasure, DSR, school module, specialist corridor + cervical screening (Python 3.12, PostgreSQL 16) |
+| `/backend` | FastAPI API, deterministic rules engine, hash-chained audit trail, consent/erasure, DSR, school module, specialist corridor + cervical screening, employer module (wallet + k-anonymized dashboard) (Python 3.12, PostgreSQL 16) |
 | `/ontology` | Open-source symptom ontology: rule JSON, red-flag patterns (en/sw/sheng), golden parity cases, screening schedule config, education content, cervical guardrail cases (CC-BY 4.0) |
 | `/mobile` | Android app: offline-first diary (Room + SQLCipher), Kotlin engine (same JSON rules as the server), privacy vault, discreet alias |
 | `/ussd-whatsapp` | USSD (`*XXX#`) + WhatsApp assessment gateway (Africa's Talking sandbox contract, resumable sessions, 160-char screen lint) |
@@ -72,6 +72,26 @@ make setup db-up demo-phase1
 .\make.ps1 ai-eval                   # 170-case guardrail suite (150 + 20 cervical)
 .\make.ps1 ai-compare                # hosted-vs-open-weight STUB RUN report
 ```
+
+## Employer console demo (Phase 7)
+
+```powershell
+.\make.ps1 db-up                     # portable PostgreSQL (idempotent)
+.\make.ps1 migrate                   # migrations 0001-0009 (CC-5)
+.\make.ps1 web-setup                 # npm install + Playwright chromium
+# start the backend manually on :8000, then:
+.\make.ps1 phase7-demo               # employer seed (synthetic) + Playwright e2e:
+                                     # wallet balance + ledger, k-anonymized cells
+                                     # (small cells suppressed as "—"), and the
+                                     # role alert for a non-employer role
+```
+
+The employer module is deliberately minimal: a wallet (the Phase 4
+`school.wallets` / `school.wallet_ledger` tables with `owner_type='employer'`)
+and an aggregate dashboard that counts the linked employees' evaluations through
+the same shared k-anonymity module as the school dashboard — band cells and a
+total only, never employee-level data. `core.users.employer_id` is an audited
+admin-action opt-in (contract note CC-5).
 
 ## Quick start — Android app (Phase 2)
 

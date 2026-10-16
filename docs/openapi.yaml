@@ -2214,6 +2214,254 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /v1/employers:
+    post:
+      tags:
+      - employer
+      - employer
+      summary: Create Employer
+      operationId: create_employer_v1_employers_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Employer V1 Employers Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /v1/employers/{employer_id}/staff:
+    post:
+      tags:
+      - employer
+      - employer
+      summary: Bind Staff
+      operationId: bind_staff_v1_employers__employer_id__staff_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: employer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Employer Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BindIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Bind Staff V1 Employers  Employer Id  Staff Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/employers/{employer_id}/fund:
+    post:
+      tags:
+      - employer
+      - employer
+      summary: Fund
+      operationId: fund_v1_employers__employer_id__fund_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: employer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Employer Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FundIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Fund V1 Employers  Employer Id  Fund Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/employers/{employer_id}/employees:
+    post:
+      tags:
+      - employer
+      - employer
+      summary: Link Employee
+      operationId: link_employee_v1_employers__employer_id__employees_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: employer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Employer Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Link Employee V1 Employers  Employer Id  Employees
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/employers/{employer_id}/wallet:
+    get:
+      tags:
+      - employer
+      - employer
+      summary: Wallet
+      operationId: wallet_v1_employers__employer_id__wallet_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: employer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Employer Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Wallet V1 Employers  Employer Id  Wallet Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/employers/{employer_id}/ledger:
+    get:
+      tags:
+      - employer
+      - employer
+      summary: Ledger
+      operationId: ledger_v1_employers__employer_id__ledger_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: employer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Employer Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Ledger V1 Employers  Employer Id  Ledger Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/employers/{employer_id}/dashboard:
+    get:
+      tags:
+      - employer
+      - employer
+      summary: Dashboard
+      operationId: dashboard_v1_employers__employer_id__dashboard_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: employer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Employer Id
+      - name: term
+        in: query
+        required: false
+        schema:
+          type: string
+          default: 2026-T1
+          title: Term
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Dashboard V1 Employers  Employer Id  Dashboard Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     ActionIn:
@@ -2263,6 +2511,21 @@ components:
       required:
       - approved_sections
       title: ApproveIn
+    BindIn:
+      properties:
+        staff_id:
+          type: string
+          format: uuid
+          title: Staff Id
+        role_within:
+          type: string
+          pattern: ^employer_admin$
+          title: Role Within
+          default: employer_admin
+      type: object
+      required:
+      - staff_id
+      title: BindIn
     BookIn:
       properties:
         preferred_county:
@@ -2320,6 +2583,23 @@ components:
       required:
       - outcome
       title: CompleteIn
+    CreateIn:
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          minLength: 2
+          title: Name
+        county:
+          anyOf:
+          - type: string
+            maxLength: 128
+          - type: 'null'
+          title: County
+      type: object
+      required:
+      - name
+      title: CreateIn
     DsrPayload:
       properties:
         type:
@@ -2421,6 +2701,15 @@ components:
           title: Email
       type: object
       title: FacilityIn
+    FundIn:
+      properties:
+        amount_ksh:
+          type: integer
+          title: Amount Ksh
+      type: object
+      required:
+      - amount_ksh
+      title: FundIn
     GrantIn:
       properties:
         event_type:
@@ -2483,6 +2772,16 @@ components:
       - category
       - amount_ksh
       title: IssueIn
+    LinkIn:
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+      type: object
+      required:
+      - user_id
+      title: LinkIn
     OtpRequestIn:
       properties:
         phone:

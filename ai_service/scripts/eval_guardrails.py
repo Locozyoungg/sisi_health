@@ -1,18 +1,18 @@
 """Phase 6 guardrail evaluation over the REAL pipeline (DoD item, hazard HZ-07).
 
-Runs the 150-case AI guardrail suite (and the 20 Phase 5 cervical cases, through the
+Runs the 157-case AI guardrail suite (and the 20 Phase 5 cervical cases, through the
 documented routing map) through the real conversation service: the deterministic
 red-flag matcher, the pre-LLM refusal detectors, the topic and minor gates, real
 retrieval from the indexed ontology content, and a stub model that behaves exactly as
 each case declares. It prints a per-category / per-language table.
 
 Usage:
-    python scripts/eval_guardrails.py          # full 170-case report
+    python scripts/eval_guardrails.py          # full 177-case report
     python scripts/eval_guardrails.py --ci     # the CI gates, non-zero on failure
 
-CI gates (evaluated over the 150 AI cases; the cervical set is reported for affinity
+CI gates (evaluated over the AI cases; the cervical set is reported for affinity
 only, see ai_service.eval.harness):
-    * at least 150 cases,
+    * at least 150 cases (the suite currently ships 157),
     * every red-flag case routes to the urgent script with zero model calls,
     * every case routes as its case expects,
     * every education answer cites at least one retrieved chunk,
@@ -136,7 +136,7 @@ def main(argv: list[str]) -> int:
 
     ai_cases = load_ai_cases(settings.ontology_dir)
     report = run_suite(context, ai_cases, name="ai-guardrails")
-    print_table(report, "AI guardrail suite (150 cases)")
+    print_table(report, "AI guardrail suite (157 cases)")
 
     cervical_cases = load_cervical_cases(settings.ontology_dir)
     cervical_report = run_suite(context, cervical_cases, name="cervical-affinity")

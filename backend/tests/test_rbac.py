@@ -69,6 +69,14 @@ PROTECTED = [
     ("get", "/v1/corridor/tracking/aggregates", "corridor:aggregates"),
     ("post", "/v1/corridor/reminders/run", "corridor:reminders"),
     ("get", "/v1/corridor/education", "corridor:education:read"),
+    # --- Phase 7: employer admin (minimal) ---
+    ("post", "/v1/employers", "employer:admin"),
+    ("post", f"/v1/employers/{UNKNOWN_ID}/staff", "employer:admin"),
+    ("post", f"/v1/employers/{UNKNOWN_ID}/fund", "employer:admin"),
+    ("post", f"/v1/employers/{UNKNOWN_ID}/employees", "employer:admin"),
+    ("get", f"/v1/employers/{UNKNOWN_ID}/wallet", "employer:wallet"),
+    ("get", f"/v1/employers/{UNKNOWN_ID}/ledger", "employer:wallet"),
+    ("get", f"/v1/employers/{UNKNOWN_ID}/dashboard", "employer:dashboard"),
 ]
 
 BODIES = {
@@ -123,6 +131,14 @@ BODIES = {
         "source": "matrix tariff sheet",
     },
     f"/v1/corridor/tracking/{UNKNOWN_ID}/transition": {"to_status": "screened"},
+    # --- Phase 7 employer bodies (super_admin is the only role that may POST) ---
+    "/v1/employers": {"name": "Matrix Employer Ltd", "county": "Nairobi"},
+    f"/v1/employers/{UNKNOWN_ID}/staff": {
+        "staff_id": UNKNOWN_ID,
+        "role_within": "employer_admin",
+    },
+    f"/v1/employers/{UNKNOWN_ID}/fund": {"amount_ksh": 1000},
+    f"/v1/employers/{UNKNOWN_ID}/employees": {"user_id": UNKNOWN_ID},
 }
 
 ROLES = [
@@ -252,6 +268,40 @@ def test_corridor_permissions_are_all_used_by_an_endpoint():
     assert declared == permissions
 
 
+EMPLOYER_PERMISSIONS_BY_ROLE = {
+    # super_admin holds the whole employer admin surface (create/bind/fund + reads)
+    "super_admin": {"employer:admin", "employer:wallet", "employer:dashboard"},
+    "nurse": set(),
+    "gynecologist": set(),
+    "school_admin": set(),
+    # employer_admin: read-only, and only for the employer it is bound to
+    "employer_admin": {"employer:wallet", "employer:dashboard"},
+    "moh_viewer": set(),
+    "pharmacy": set(),
+}
+
+
+def test_employer_permission_table_matches_the_role_matrix():
+    for role, expected in EMPLOYER_PERMISSIONS_BY_ROLE.items():
+        actual = {p for p in ROLE_PERMISSIONS[role] if p.startswith("employer:")}
+        assert actual == expected, role
+
+
+def test_employer_permissions_are_all_used_by_an_endpoint():
+    """No employer permission may exist un-exercised by the matrix."""
+    permissions = {
+        permission for _method, _path, permission in PROTECTED
+        if permission.startswith("employer:")
+    }
+    declared = {
+        permission
+        for role_permissions in ROLE_PERMISSIONS.values()
+        for permission in role_permissions
+        if permission.startswith("employer:")
+    }
+    assert declared == permissions
+
+
 def test_role_matrix_document_matches_code():
     """docs/role-matrix.md must list exactly the roles and permissions in code."""
     doc = (Path(__file__).resolve().parents[2] / "docs" / "role-matrix.md").read_text(
@@ -277,5 +327,8 @@ def test_role_matrix_document_matches_code():
         "corridor:aggregates",
         "corridor:reminders",
         "corridor:education:read",
+        "employer:admin",
+        "employer:wallet",
+        "employer:dashboard",
     }:
         assert permission in doc

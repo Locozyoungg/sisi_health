@@ -105,4 +105,29 @@ OpenAPI spec).
 - **OpenAPI**: the new service exports `docs/openapi-ai.yaml` (backend
   OpenAPI unchanged).
 
+### CC-5 (2026-10-16, Phase 7) — employer admin (minimal): wallet + aggregate dashboard
+
+- **Migration 0009** adds (spec build order item 7 — "employer admin (future
+  revenue) — minimal: wallet + aggregate dashboard"):
+  - `core.employers` (name, county, status)
+  - `core.employer_staff` (staff → employer binding, unique per pair) — the
+    own-scoping surface an `employer_admin` is limited to
+  - `core.users.employer_id` — nullable FK (`ON DELETE SET NULL`): the
+    admin-action opt-in link that lets the dashboard count a sponsor's own
+    employees; set explicitly by a super_admin and audited.
+- **No new wallet schema**: employer wallets reuse the Phase 4
+  `school.wallets` / `school.wallet_ledger` with `owner_type='employer'` (CC-2),
+  through `app.school.service.fund_wallet`. The ledger stays append-only.
+- **Aggregates**: the employer dashboard passes through the same shared
+  `app/k_anon.py` module as the school dashboard (cells < 5 suppressed with
+  complementary suppression; below 20 linked employees the answer is
+  `not_enough_data`, never a zero). It publishes band cells and a total only —
+  never employee-level data.
+- **RBAC**: `EMPLOYER_ADMIN` is activated with exactly
+  `employer:wallet` + `employer:dashboard`; `SUPER_ADMIN` gains
+  `employer:admin` (create employer, bind staff, fund) plus the two reads.
+  Role matrix doc updated with the permission rows + the Phase 7 data classes.
+- **OpenAPI**: regenerated for the new `/v1/employers/*` surface (backend
+  OpenAPI v4 frozen in `docs/openapi.yaml`).
+
 

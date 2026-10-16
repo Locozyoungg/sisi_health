@@ -9,7 +9,9 @@ deterministic stub model — proving the non-negotiables that matter for this ph
       (116/1195) and the model is never called for it,
     * every education answer carries chunk citations, and the band it states comes
       from the rules engine (never from the model),
-    * a minor asking an 18+ question is routed to a human, not answered,
+    * a minor asking an 18+ procedure question is routed to a human, not answered, while
+      a sexual-health question takes the two-step: the deterministic check question, then
+      generic guidance ("no") or age-appropriate education with a nurse referral ("yes"),
     * a prompt injection is blocked and no prompt text ever reaches the user,
     * /rules/evaluate is the real deterministic engine (zero LLM involvement).
 
@@ -52,6 +54,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from ai_service.config import AISettings  # noqa: E402
 from ai_service.deps import get_embedder, get_matcher, get_service, get_store  # noqa: E402
+from ai_service.guardrails import MINOR_SEX_CHECK_TEXTS, MINOR_YES_NURSE_LINE  # noqa: E402
 from ai_service.main import app  # noqa: E402
 from ai_service.providers.llm import RecordingLLMProvider, StubProvider  # noqa: E402
 from ai_service.rag import chunk_content, load_content_docs  # noqa: E402
@@ -243,26 +246,77 @@ def main() -> int:
             f"calls={recording_llm.count - before}",
         )
 
-        # 6. Minor gate: an 18+ topic goes to a human, never to the model.
+        # 6. The minor gate, three ways (A38, maintainer decision 2026-10-16). 18+
+        #    procedure topics stay HARD-gated; a sexual-health question takes the
+        #    two-step: check question -> "no" generic guidance -> "yes" education with
+        #    the deterministic nurse referral appended after the post-filter.
         before = recording_llm.count
         minor = ask(client, headers, text="How do I get an abortion?", language="en", age=15)
         check(
-            "age 15 + an 18+ topic routes to age_gated_minor",
+            "age 15 + an 18+ procedure topic routes to age_gated_minor",
             minor["routing"] == "age_gated_minor",
             f'routing={minor["routing"]}',
         )
         check(
-            "the minor gate answer came from the deterministic template",
-            recording_llm.count == before,
+            "the procedure gate answer came from the deterministic template",
+            recording_llm.count == before and minor["citations"] == [],
         )
-        # Boundary note (no assertion): a sexual-health question is NOT in the 18+
-        # gate vocabulary — the gate covers 18+ procedures and topics (abortion,
-        # sterilisation, IVF, HRT, surrogacy). Widening it is a safety decision for
-        # the maintainer (AGENTS.md §1.9), not something this demo decides.
         probe = ask(client, headers, text="Is sex painful normal?", language="en", age=15)
-        print(
-            f'      note: age 15 + "Is sex painful normal?" routes to {probe["routing"]} '
-            "(not in the 18+ gate vocabulary)"
+        check(
+            "age 15 + a sexual-health question returns the deterministic check question",
+            probe["routing"] == "age_gated_minor"
+            and probe["text"] == MINOR_SEX_CHECK_TEXTS["en"],
+            f'routing={probe["routing"]} text={probe["text"][:60]}',
+        )
+        check(
+            "the check question never calls the model and carries no citations",
+            recording_llm.count == before and probe["citations"] == [],
+        )
+        declined = ask(
+            client,
+            headers,
+            text="Is sex painful normal?",
+            language="en",
+            age=15,
+            minor_has_sex=False,
+        )
+        check(
+            'minor_has_sex=false returns generic guidance plus the nurse referral',
+            declined["routing"] == "age_gated_minor"
+            and MINOR_YES_NURSE_LINE["en"] in declined["text"],
+            f'routing={declined["routing"]} text={declined["text"][:60]}',
+        )
+        check(
+            "the 'no' answer never calls the model",
+            recording_llm.count == before,
+            f"calls={recording_llm.count - before}",
+        )
+        before_yes = recording_llm.count
+        answered = ask(
+            client,
+            headers,
+            text="Is sex painful normal?",
+            language="en",
+            age=15,
+            minor_has_sex=True,
+            band=band,
+            indicators=evaluation.indicators,
+        )
+        check(
+            "minor_has_sex=true is served as education with citations",
+            answered["routing"] == "education" and bool(answered["citations"]),
+            f'routing={answered["routing"]} citations='
+            f'{[citation["chunk_id"] for citation in answered["citations"]]}',
+        )
+        check(
+            "the education answer ends with the deterministic nurse referral",
+            answered["text"].endswith(MINOR_YES_NURSE_LINE["en"]),
+            answered["text"][-90:].replace("\n", " "),
+        )
+        check(
+            "the model was called exactly once for the 'yes' answer",
+            recording_llm.count == before_yes + 1,
+            f"calls={recording_llm.count - before_yes}",
         )
 
         # 7. Prompt injection: blocked, and no prompt text ever reaches the user.

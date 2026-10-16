@@ -4,7 +4,16 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, LargeBinary, String
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.ids import uuid7
@@ -25,6 +34,11 @@ class User(Base):
     language: Mapped[str] = mapped_column(String(8), default="en")
     status: Mapped[str] = mapped_column(String(16), default="active")  # active | erased
     processing_restricted: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Employer linkage (CC-5, Phase 7): an admin-action opt-in, set explicitly by
+    # a super_admin and audited. NULL = sponsored by nobody.
+    employer_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("core.employers.id", ondelete="SET NULL")
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
     erased_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
@@ -84,6 +98,43 @@ class StaffUser(Base):
     role: Mapped[str] = mapped_column(String(32))
     disabled: Mapped[bool] = mapped_column(Boolean, default=False)
     last_active_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
+
+
+class Employer(Base):
+    """Sponsoring employer (Phase 7, CC-5). Minimal admin surface: an employer has
+    a wallet (`school.wallets`, owner_type='employer') and an aggregate,
+    k-anonymized dashboard. No employee-level data is ever exposed."""
+
+    __tablename__ = "employers"
+    __table_args__ = {"schema": "core"}
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
+    name: Mapped[str] = mapped_column(String(255))
+    county: Mapped[str | None] = mapped_column(String(128))
+    status: Mapped[str] = mapped_column(String(16), default="active")  # active | suspended
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
+
+
+class EmployerStaff(Base):
+    """Staff -> employer binding. An `employer_admin` may only reach the employer
+    id it is bound to; a `super_admin` may reach any (spec 3.1 own-scoping
+    pattern, mirrored from school_staff)."""
+
+    __tablename__ = "employer_staff"
+    __table_args__ = (
+        UniqueConstraint("staff_id", "employer_id", name="uq_employer_staff_staff_employer"),
+        {"schema": "core"},
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
+    staff_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("core.staff_users.id", ondelete="CASCADE")
+    )
+    employer_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("core.employers.id", ondelete="CASCADE")
+    )
+    role_within: Mapped[str] = mapped_column(String(16), default="employer_admin")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
 
 

@@ -49,6 +49,14 @@ CONTENT CHUNKS (cite by id):
 """
 )
 
+# Appended to the system prompt when the two-step let a minor through (A38: the caller
+# answered that the minor has had sex). Age framing only — no identifier, no condition,
+# no medicine; it adds one line to the assembled prompt and never changes the template.
+MINOR_SEX_FRAMING_LINE = (
+    "The user is a minor who has had sex. Keep the answer age-appropriate, factual "
+    "and brief; never suggest diagnosis or medication."
+)
+
 LANGUAGE_INSTRUCTIONS: dict[str, str] = {
     "en": "Answer in English.",
     "sw": "Jibu kwa Kiswahili rahisi (sentensi fupi, maneno ya kila siku).",
@@ -103,12 +111,18 @@ def build_system_prompt(
     band: str | None,
     indicators: Sequence[str],
     hits: Sequence[SearchHit],
+    minor_has_sex: bool = False,
 ) -> str:
-    """Assemble the system prompt from engine values and retrieved chunks only."""
-    return SYSTEM_PROMPT_TEMPLATE.format(
+    """Assemble the system prompt from engine values and retrieved chunks only. The
+    optional `minor_has_sex` framing (A38) appends one line, appended after the
+    assembled template so SYSTEM_PROMPT_TEMPLATE and its leak sentinel never change."""
+    prompt = SYSTEM_PROMPT_TEMPLATE.format(
         language_instruction=language_instruction(language),
         band=band or NO_BAND_TOKEN,
         band_label=band_label(band),
         indicators=", ".join(indicators) if indicators else "(none)",
         chunks_block=format_chunks_block(hits),
     )
+    if minor_has_sex:
+        prompt = f"{prompt}\n{MINOR_SEX_FRAMING_LINE}\n"
+    return prompt

@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from ai_service.config import AISettings
 from ai_service.deps import get_service
 from ai_service.errors import GuardrailRefused
+from ai_service.guardrails import MINOR_SEX_CHECK_TEXTS, MINOR_YES_NURSE_LINE
 from ai_service.providers.llm import HostedProvider, RecordingLLMProvider
 from ai_service.rag import EmbeddingStore
 from ai_service.service import ConversationService
@@ -105,6 +106,68 @@ def test_ask_rejects_identifier_fields_the_schema_does_not_have(client: TestClie
         headers=auth_headers(),
     )
     assert response.status_code == 200
+
+
+@pytest.mark.parametrize("value", ["maybe", [], {}])
+def test_ask_rejects_a_minor_has_sex_that_is_not_a_boolean(client: TestClient, value) -> None:
+    response = client.post(
+        "/v1/ai/ask",
+        json={"text": "Is sex painful normal?", "age": 15, "minor_has_sex": value},
+        headers=auth_headers(),
+    )
+    assert response.status_code == 422
+
+
+def test_ask_minor_sexual_health_two_step_over_http(
+    client: TestClient, llm: RecordingLLMProvider
+) -> None:
+    """The tri-state field drives the two-step end to end: null asks the check question,
+    false returns generic guidance, true is served as education with the nurse line."""
+    def ask(**extra: object) -> dict:
+        payload: dict[str, object] = {"text": "Is sex painful normal?", "age": 15}
+        payload.update(extra)
+        response = client.post("/v1/ai/ask", json=payload, headers=auth_headers())
+        assert response.status_code == 200
+        return response.json()["data"]
+
+    unknown = ask()
+    assert unknown["routing"] == "age_gated_minor"
+    assert unknown["text"] == MINOR_SEX_CHECK_TEXTS["en"]
+    assert unknown["citations"] == []
+    assert llm.count == 0
+
+    declined = ask(minor_has_sex=None)
+    assert declined["text"] == unknown["text"]
+    assert llm.count == 0
+
+    no = ask(minor_has_sex=False)
+    assert no["routing"] == "age_gated_minor"
+    assert MINOR_YES_NURSE_LINE["en"] in no["text"]
+    assert llm.count == 0
+
+    yes = ask(minor_has_sex=True, band="GREEN")
+    assert yes["routing"] == "education"
+    assert yes["citations"]
+    assert yes["text"].endswith(MINOR_YES_NURSE_LINE["en"])
+    assert llm.count == 1
+
+
+def test_ask_ignores_minor_has_sex_for_adults(
+    client: TestClient, llm: RecordingLLMProvider
+) -> None:
+    response = client.post(
+        "/v1/ai/ask",
+        json={
+            "text": "Tell me about period pain",
+            "age": 30,
+            "minor_has_sex": True,
+            "band": "GREEN",
+        },
+        headers=auth_headers(),
+    )
+    data = response.json()["data"]
+    assert data["routing"] == "education"
+    assert MINOR_YES_NURSE_LINE["en"] not in data["text"]
 
 
 def test_rules_evaluate_matches_the_backend_engine(client: TestClient, backend_settings) -> None:

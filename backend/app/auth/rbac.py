@@ -30,6 +30,9 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "corridor:aggregates",
         "corridor:reminders",
         "corridor:education:read",
+        "employer:admin",
+        "employer:wallet",
+        "employer:dashboard",
     },
     "nurse": {
         "rules:read",
@@ -65,7 +68,7 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "vouchers:reconcile",
         "corridor:education:read",
     },
-    "employer_admin": set(),
+    "employer_admin": {"employer:wallet", "employer:dashboard"},
     "moh_viewer": {"rules:read", "corridor:aggregates"},
     "pharmacy": {"vouchers:redeem"},
 }

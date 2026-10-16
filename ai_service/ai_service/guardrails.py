@@ -172,6 +172,9 @@ TOPIC_KEYWORDS: dict[str, tuple[str, ...]] = {
         "tumbo la uzazi",
         "shingo ya kizazi",
         "ovari",
+        "pcos",
+        "ovari zenye uvimbe",
+        "ugonjwa wa ovari zenye uvimbe",
         "endometriosis",
         "fibroidi",
         "homoni",
@@ -216,6 +219,7 @@ TOPIC_KEYWORDS: dict[str, tuple[str, ...]] = {
         "ball",
         "mimba",
         "preggo",
+        "pcos",
         "screening",
         "cancer",
         "pain",
@@ -226,7 +230,19 @@ TOPIC_KEYWORDS: dict[str, tuple[str, ...]] = {
 
 # 18+ topics: a minor (age unknown or < 18) is routed to a nurse instead of served
 # (spec 3.2/3.3 — age-appropriate wording; never a dead end, always a human).
-MINOR_GATED_KEYWORDS: tuple[str, ...] = (
+#
+# The vocabulary has two families with different consequences (A38, maintainer decision
+# 2026-10-16):
+#   * procedures — decisions no child can take and no child-facing surface explains.
+#     HARD-gated: generic nurse referral, zero model calls, zero content, whatever the
+#     two-step answer says.
+#   * sexual-health questions (sex, painful sex, intercourse, body questions about sex)
+#     — a teenager may genuinely have them. These take the TWO-STEP instead: an unknown
+#     answer returns the deterministic per-language check question, "no" returns generic
+#     guidance plus the nurse referral, and "yes" is served as age-appropriate education
+#     with the same referral appended after the post-filter. Teenage pregnancy is real: a
+#     minor who has had sex gets education plus a human, never a dead end.
+MINOR_PROCEDURE_KEYWORDS: tuple[str, ...] = (
     "abortion",
     "abort",
     "terminate the pregnancy",
@@ -255,6 +271,25 @@ MINOR_GATED_KEYWORDS: tuple[str, ...] = (
     "surrogacy",
     "18+",
 )
+
+MINOR_SEXUAL_HEALTH_KEYWORDS: tuple[str, ...] = (
+    "sex",
+    "sexual",
+    "sexually",
+    "intercourse",
+    "penetration",
+    "ngono",
+    "kujamiiana",
+    "kufanya mapenzi",
+    "kushiriki ngono",
+    "zinaa",
+    "ugonjwa wa zinaa",
+    "kutombana",
+)
+
+# The full minor-gated vocabulary (both families): the language-blind union answers the
+# single "is this text minor-gated at all?" question.
+MINOR_GATED_KEYWORDS: tuple[str, ...] = MINOR_PROCEDURE_KEYWORDS + MINOR_SEXUAL_HEALTH_KEYWORDS
 
 # "Do I have X / am I at risk" — a risk statement belongs to the engine, so an
 # explicit diagnosis or risk question is answered with a refusal, never by the model.
@@ -479,6 +514,49 @@ REFUSAL_TEXTS: dict[str, dict[str, str]] = {
     },
 }
 
+# The minor sexual-health two-step (A38, maintainer decision 2026-10-16). All three
+# templates are per language, deterministic, and generic: no condition name, no band,
+# no medicine, no digits — and each must survive the post-filter it is served beside
+# (test_guardrails.py). The "no" and "yes" paths share ONE referral sentence so the two
+# cannot drift apart.
+MINOR_SEX_CHECK_TEXTS: dict[str, str] = {
+    "en": (
+        "Have you ever had sex? Reply yes or no — I want to give you the right guidance."
+    ),
+    "sw": (
+        "Je, umewahi kufanya ngono? Jibu ndiyo au hapana — nataka kukupa mwongozo "
+        "unaofaa."
+    ),
+    "sheng": (
+        "Umewahi kufanya sex? Reply yes or no — nataka kukupa mwongozo unaofaa."
+    ),
+}
+
+# Generic guidance WITHOUT sexual content, served when the minor answered "no".
+MINOR_NO_SEX_TEXTS: dict[str, str] = {
+    "en": (
+        "Period and body questions are best discussed with your school nurse or a "
+        "trusted adult at the clinic."
+    ),
+    "sw": (
+        "Maswali kuhusu hedhi na mwili wako ni bora kuyajadili na nesi wa shule yako au "
+        "mtu mzima unayemwamini kwenye kituo cha afya."
+    ),
+    "sheng": (
+        "Maswali kuhusu periods na body yako ni bora kuongea na nurse wa school ama "
+        "mtu mzima unamtrust kwenye clinic."
+    ),
+}
+
+# The deterministic nurse-referral sentence: appended to the generic "no" guidance, and
+# appended to the model's education answer AFTER the post-filter for a minor who
+# answered "yes" (the filter only ever judges model text).
+MINOR_YES_NURSE_LINE: dict[str, str] = {
+    "en": "Please talk to your school nurse or visit a clinic.",
+    "sw": "Tafadhali ongea na nesi wa shule yako au tembelea kituo cha afya.",
+    "sheng": "Tafadhali ongea na nurse wa school ama enda clinic.",
+}
+
 URGENT_SCRIPTS: dict[str, str] = {
     "en": (
         "This needs care TODAY. Do not wait to see whether it gets better.\n\n"
@@ -562,6 +640,8 @@ _TOPIC_PATTERNS: dict[str, re.Pattern[str]] = {
     "sheng": _compile_keywords(_keywords_for("sheng")),
 }
 _MINOR_PATTERN = _compile_keywords(MINOR_GATED_KEYWORDS)
+_MINOR_PROCEDURE_PATTERN = _compile_keywords(MINOR_PROCEDURE_KEYWORDS)
+_MINOR_SEX_PATTERN = _compile_keywords(MINOR_SEXUAL_HEALTH_KEYWORDS)
 
 _DIAGNOSIS_ASK_PATTERNS = _compile(DIAGNOSIS_ASK_PATTERNS)
 _PRESCRIPTION_ASK_PATTERNS = _compile(PRESCRIPTION_ASK_PATTERNS)
@@ -596,11 +676,23 @@ class TopicFilter:
 
 class MinorTopicGate:
     """Age gate for 18+ topics. An unknown age is treated as a minor (safety
-    asymmetry: the protective branch is the default). The keyword list is a single
-    union across en/sw/sheng — the gate is deliberately language-blind."""
+    asymmetry: the protective branch is the default). The keyword lists are single
+    unions across en/sw/sheng — the gate is deliberately language-blind.
+
+    Two families (A38): `is_procedure_gated` is the hard gate (generic referral, no
+    model, whatever the two-step answer); `is_sexual_health_gated` is the two-step
+    family. A text matching both is hard-gated — the procedure branch decides first.
+    """
 
     def is_minor_gated(self, text_value: str, language: str = "en") -> bool:
+        """Both families: "is this text minor-gated at all?" (the union)."""
         return bool(_MINOR_PATTERN.search(text_value))
+
+    def is_procedure_gated(self, text_value: str, language: str = "en") -> bool:
+        return bool(_MINOR_PROCEDURE_PATTERN.search(text_value))
+
+    def is_sexual_health_gated(self, text_value: str, language: str = "en") -> bool:
+        return bool(_MINOR_SEX_PATTERN.search(text_value))
 
     @staticmethod
     def applies(age: int | None) -> bool:
@@ -689,6 +781,23 @@ def build_urgent_script(
 def refusal_text(routing: str, language: str = "en") -> str:
     texts = REFUSAL_TEXTS.get(language, REFUSAL_TEXTS["en"])
     return texts.get(routing, texts[ROUTING_REFUSED])
+
+
+def minor_sex_check_text(language: str = "en") -> str:
+    """The discreet two-step check question (deterministic; zero model calls)."""
+    return MINOR_SEX_CHECK_TEXTS.get(language, MINOR_SEX_CHECK_TEXTS["en"])
+
+
+def minor_no_sex_text(language: str = "en") -> str:
+    """Generic guidance (no sexual content) + the nurse-referral sentence."""
+    guidance = MINOR_NO_SEX_TEXTS.get(language, MINOR_NO_SEX_TEXTS["en"])
+    return f"{guidance} {minor_nurse_line(language)}"
+
+
+def minor_nurse_line(language: str = "en") -> str:
+    """The deterministic nurse-referral sentence: part of the "no" guidance and
+    appended (post-filter) to the education answer of a minor who answered "yes"."""
+    return MINOR_YES_NURSE_LINE.get(language, MINOR_YES_NURSE_LINE["en"])
 
 
 def citations_for(answer_text: str, hits: Sequence[SearchHit]) -> list[SearchHit]:

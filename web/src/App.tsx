@@ -4,6 +4,7 @@ import { getToken, setToken } from "./api";
 import ConsultDetail from "./pages/ConsultDetail";
 import CorridorQueue from "./pages/CorridorQueue";
 import Dashboard from "./pages/Dashboard";
+import EmployerDashboard from "./pages/EmployerDashboard";
 import Facilities from "./pages/Facilities";
 import FollowUpTracker from "./pages/FollowUpTracker";
 import Login from "./pages/Login";
@@ -22,6 +23,7 @@ const NAV_LINKS = [
   { to: "/tracking", label: "Tracking" },
   { to: "/facilities", label: "Facilities" },
   { to: "/dashboard", label: "Dashboard" },
+  { to: "/employer", label: "Employer" },
   { to: "/vouchers", label: "Vouchers" },
 ];
 
@@ -80,6 +82,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/queue" element={<AuthShell><Queue /></AuthShell>} />
           <Route path="/dashboard" element={<AuthShell><Dashboard /></AuthShell>} />
+          <Route path="/employer" element={<AuthShell><EmployerDashboard /></AuthShell>} />
           <Route path="/vouchers" element={<AuthShell><Vouchers /></AuthShell>} />
           <Route path="/corridor" element={<AuthShell><CorridorQueue /></AuthShell>} />
           <Route path="/corridor/:id" element={<AuthShell><ConsultDetail /></AuthShell>} />

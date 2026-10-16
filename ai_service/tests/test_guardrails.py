@@ -3,12 +3,17 @@ refusal detectors, and every post-filter rule — including the negated-diagnosi
 control ("you do not have…" is still a diagnosis statement) and band mismatch,
 which is how a model is stopped from becoming a second band authority (A36)."""
 
+import re
+
 import pytest
 from app.config import get_settings as get_backend_settings
 from app.rules.loader import build_matcher
 
 from ai_service.guardrails import (
     LANGUAGES,
+    MINOR_NO_SEX_TEXTS,
+    MINOR_SEX_CHECK_TEXTS,
+    MINOR_YES_NURSE_LINE,
     REFUSAL_TEXTS,
     ROUTING_AGE_GATED_MINOR,
     ROUTING_OUT_OF_SCOPE,
@@ -32,8 +37,10 @@ from ai_service.guardrails import (
     TopicFilter,
     build_urgent_script,
     citations_for,
+    minor_no_sex_text,
     refusal_text,
 )
+from ai_service.prompts import MINOR_SEX_FRAMING_LINE
 from ai_service.providers.llm import (
     BAND_CONTRADICTION_MARKER,
     DIAGNOSIS_MARKER,
@@ -107,6 +114,17 @@ def test_sw_topic_filter_accepts_a_code_switched_endometriosis_question() -> Non
     assert "endometrios" not in TOPIC_KEYWORDS["sw"]
 
 
+def test_sw_topic_filter_accepts_a_kiswahili_pcos_question() -> None:
+    """Regression (A38 companion): the sw list carried no PCOS keyword at all — the
+    en/sw union applies only to sheng — so a Kiswahili "PCOS ni nini?" was refused as
+    out of scope. The full Kiswahili form is the maintainer's wording."""
+    assert TopicFilter().is_womens_health("PCOS ni nini?", "sw")
+    for keyword in ("pcos", "ovari zenye uvimbe", "ugonjwa wa ovari zenye uvimbe"):
+        assert keyword in TOPIC_KEYWORDS["sw"], keyword
+    assert "pcos" in TOPIC_KEYWORDS["en"]
+    assert "pcos" in TOPIC_KEYWORDS["sheng"]  # explicit, not only via the en union
+
+
 def test_topic_keyword_lists_carry_no_truncated_terms() -> None:
     """A keyword that is a strict prefix of a full clinical term only works when the
     full term is listed alongside it (e.g. "fibroid" and "fibroids"). A prefix that
@@ -166,6 +184,32 @@ def test_minor_gate_treats_unknown_age_as_a_minor() -> None:
     assert gate.applies(17)
     assert not gate.applies(18)
     assert not gate.applies(30)
+
+
+def test_minor_gate_splits_procedures_from_sexual_health_questions() -> None:
+    """A38: procedures are hard-gated for every minor; sexual-health questions take the
+    two-step. A text matching both families belongs to the hard gate (the service checks
+    the procedure branch first)."""
+    gate = MinorTopicGate()
+    for text in (
+        "How do I get an abortion?",
+        "Tell me about IVF treatment",
+        "Nataka kufunga uzazi",
+        "Advise me kuhusu kupasua kizazi.",
+    ):
+        assert gate.is_procedure_gated(text, "en"), text
+        assert not gate.is_sexual_health_gated(text, "en"), text
+        assert gate.is_minor_gated(text, "en"), text
+    for text in (
+        "Is sex painful normal?",
+        "Je, ngono inaumiza, ni kawaida?",
+        "Sex inaumiza ni normal?",
+    ):
+        assert gate.is_sexual_health_gated(text), text
+        assert gate.is_minor_gated(text), text
+        assert not gate.is_procedure_gated(text), text
+    mixed = "Can I get an abortion after having sex?"
+    assert gate.is_procedure_gated(mixed) and gate.is_sexual_health_gated(mixed)
 
 
 # --- pre-LLM refusal detectors -----------------------------------------------------
@@ -402,6 +446,63 @@ def test_sw_diagnosis_refusal_never_uses_the_diagnosis_claim_phrase() -> None:
     assert verdict["violations"] == []
 
 
+def _two_step_texts(language: str) -> list[str]:
+    """Every deterministic text the two-step can serve in one language."""
+    return [
+        MINOR_SEX_CHECK_TEXTS[language],
+        MINOR_NO_SEX_TEXTS[language],
+        MINOR_YES_NURSE_LINE[language],
+        minor_no_sex_text(language),  # the composed "no" answer (guidance + referral)
+    ]
+
+
+@pytest.mark.parametrize("language", LANGUAGES)
+def test_minor_two_step_texts_survive_their_own_post_filter(language: str) -> None:
+    """The two-step texts are deterministic templates served beside the post-filter, so
+    they can never be rejected by it (the same invariant as the refusal texts). The
+    nurse-referral sentence is checked standalone because the "yes" branch appends it to
+    a post-filtered education answer, where the harness re-checks the whole response."""
+    postfilter = PostFilter()
+    for text in _two_step_texts(language):
+        verdict = postfilter.check(f"{text} [period-health-patient-en#1]", band=None)
+        assert verdict["ok"] is True, (language, text, verdict["violations"])
+
+
+@pytest.mark.parametrize("language", LANGUAGES)
+def test_minor_two_step_texts_are_generic(language: str) -> None:
+    """No condition name, no band, no medicine, no digits anywhere in the two-step texts
+    or the prompt framing line (A38 / non-negotiable 4). The Kiswahili variant must also
+    avoid "una ugonjwa" — the post-filter's own diagnosis-claim phrase (the earlier fix).
+    """
+    forbidden = (
+        "pcos",
+        "polycystic",
+        "endometriosis",
+        "fibroid",
+        "cancer",
+        "saratani",
+        "kansa",
+        "infection",
+        "maambukizi",
+        "hiv",
+        "ugonjwa wa zinaa",
+        "una ugonjwa",
+        "medicine",
+        "dawa",
+        "dose",
+        "mg",
+        "GREEN",
+        "YELLOW",
+        "ORANGE",
+        "RED",
+    )
+    for text in [*_two_step_texts(language), MINOR_SEX_FRAMING_LINE]:
+        lowered = text.lower()
+        for token in forbidden:
+            assert token.lower() not in lowered, (language, token, text)
+        assert re.search(r"\d", text) is None, (language, text)
+
+
 def test_refusal_texts_exist_for_every_routing_and_language() -> None:
     for language in LANGUAGES:
         for routing in (
@@ -424,6 +525,10 @@ def test_every_guardrail_vocabulary_covers_every_language() -> None:
     assert set(URGENT_SCRIPTS) == set(LANGUAGES)
     assert set(SAFEGUARDING_LINES) == set(LANGUAGES)
     assert set(TOPIC_KEYWORDS) == set(LANGUAGES)
+    assert set(MINOR_SEX_CHECK_TEXTS) == set(LANGUAGES)
+    assert set(MINOR_NO_SEX_TEXTS) == set(LANGUAGES)
+    assert set(MINOR_YES_NURSE_LINE) == set(LANGUAGES)
+    assert MINOR_SEX_FRAMING_LINE
     for language in LANGUAGES:
         assert TOPIC_KEYWORDS[language], language
 

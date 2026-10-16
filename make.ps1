@@ -15,7 +15,7 @@ function Backend-Py([string[]]$PyArgs) {
 
 switch ($Target) {
     "help" {
-        Write-Host "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase4-demo phase5-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
+        Write-Host "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase4-demo phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
     }
     "setup" {
         py -3.12 -m venv (Join-Path $Backend ".venv")
@@ -109,6 +109,17 @@ switch ($Target) {
         # The backend must already be running on :8000 (not started here).
         Backend-Py @("scripts/seed_school_demo.py")
         Backend-Py @("scripts/seed_corridor_demo.py")
+        Push-Location (Join-Path $Repo "web")
+        try { npm run e2e } finally { Pop-Location }
+    }
+    "phase7-demo" {
+        # Employer demo world (Phase 7). npm run e2e drives the WHOLE web suite
+        # (console + corridor + employer specs), so all three seeds must run,
+        # exactly like phase5-demo plus the employer seed. The backend must
+        # already be running on :8000 (not started here).
+        Backend-Py @("scripts/seed_school_demo.py")
+        Backend-Py @("scripts/seed_corridor_demo.py")
+        Backend-Py @("scripts/seed_employer_demo.py")
         Push-Location (Join-Path $Repo "web")
         try { npm run e2e } finally { Pop-Location }
     }

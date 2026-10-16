@@ -8,8 +8,9 @@ Roles active in Phase 1: `SUPER_ADMIN`, `NURSE`, `GYNECOLOGIST`, and patients
 `PHARMACY` (voucher redemption). Phase 5 activates the specialist corridor for
 `NURSE` (triage, tracker, reminders), `GYNECOLOGIST` (consults, referrals,
 surgery navigation) and `MOH_VIEWER` (k-anonymized aggregates only).
-`EMPLOYER_ADMIN` is defined in the permission table now and becomes usable with
-its module (Phase 7); the matrix is updated then via contract notes.
+Phase 7 activates `EMPLOYER_ADMIN` (CC-5): wallet read and the aggregate,
+k-anonymized dashboard for the employer it is bound to — nothing else. A staff
+account bound to no employer can read neither.
 
 ## Permissions
 
@@ -44,6 +45,9 @@ its module (Phase 7); the matrix is updated then via contract notes.
 | `corridor:reminders` | run the screening / follow-up reminder sweep |
 | `corridor:aggregates` | read k-anonymized corridor aggregates only |
 | `corridor:education:read` | read the education content library |
+| `employer:admin` | create employers, bind staff to them, fund employer wallets (super-admin action) |
+| `employer:wallet` | read the bound employer's wallet balance and ledger |
+| `employer:dashboard` | read the bound employer's k-anonymized dashboard |
 
 ## Role → permissions
 
@@ -78,6 +82,9 @@ its module (Phase 7); the matrix is updated then via contract notes.
 | `corridor:reminders` | ✓ | ✓ | — | — | — | — | — |
 | `corridor:aggregates` | ✓ | — | — | — | — | ✓ | — |
 | `corridor:education:read` | ✓ | ✓ | ✓ | ✓ | — | — | — |
+| `employer:admin` | ✓ | — | — | — | — | — | — |
+| `employer:wallet` | ✓ | — | — | — | ✓ | — | — |
+| `employer:dashboard` | ✓ | — | — | — | ✓ | — | — |
 
 Patients (USER scope) hold `diary:self`, `rules:evaluate`, `consent:self`,
 `dsr:self` implicitly — they are a token scope, not staff roles.
@@ -123,3 +130,23 @@ Notes:
   revocation writes a `sharing_approvals` row.
 - `MOH_VIEWER` can only ever see k-anonymized cells; below 20 tracker rows the
   response is `not_enough_data`, never a small or zero count.
+
+## Data classes per role (Phase 7 additions)
+
+| Data class | SUPER_ADMIN | EMPLOYER_ADMIN |
+|---|---|---|
+| Employer wallet balance + ledger | read, fund (admin action) | read (own employer only) |
+| Employer dashboard cells (k-anonymized band counts) | read | read (own employer only) |
+| Employee-level data (who a band belongs to, any diary payload) | **never through this module** | **never through this module** |
+| Staff↔employer binding | write (create/bind) | read (own binding only) |
+
+Notes:
+
+- The employer module is aggregate-only: the dashboard returns band cells and a
+  total, and it runs through the same `app/k_anon.py` module as the school
+  dashboard, so cells below 5 are suppressed (with complementary suppression)
+  and below 20 linked employees nothing is published.
+- The `users.employer_id` linkage is an admin-action opt-in (super_admin only)
+  and every create/bind/fund writes an audit event.
+- Wallet and ledger tables are shared with the school module — Phase 7 adds no
+  new wallet schema (contract note CC-5).

@@ -10,6 +10,7 @@ from app.api.v1 import (
     corridor,
     diary,
     dsr,
+    employer,
     health,
     rules,
     school,
@@ -32,3 +33,4 @@ router.include_router(admin.router, prefix="/admin", tags=["admin"])
 router.include_router(school.router, tags=["school"])
 router.include_router(vouchers.router, tags=["vouchers"])
 router.include_router(corridor.router, tags=["corridor"])
+router.include_router(employer.router, tags=["employer"])

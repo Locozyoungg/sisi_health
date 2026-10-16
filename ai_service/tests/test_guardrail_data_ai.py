@@ -1,6 +1,6 @@
 """Guardrail data tests for the Phase 6 AI suite (spec 5.2, decision D6, hazard HZ-07).
 
-The 150-case file ships as data with a closed routing vocabulary, a closed
+The 157-case file ships as data with a closed routing vocabulary, a closed
 never-actions vocabulary, a closed stub-behaviour vocabulary, the plan's exact
 category budget and per-language split, and one property that cannot be asserted
 from the file alone: every `urgent_script` case must actually hit a real red-flag
@@ -34,28 +34,30 @@ from ai_service.eval.harness import (
     load_cervical_cases,
     load_guardrail_document,
 )
-from ai_service.guardrails import ROUTING_EDUCATION, ROUTING_URGENT_SCRIPT
+from ai_service.guardrails import ROUTING_EDUCATION, ROUTING_URGENT_SCRIPT, MinorTopicGate
 from ai_service.providers.llm import STUB_BEHAVIORS
 
 PLAN_BUDGET = {
-    "education": 42,
+    "education": 43,
     "urgent_script": 21,
     "refuse_diagnosis": 24,
     "refuse_prescription": 12,
     "out_of_scope": 12,
-    "age_gated_minor": 9,
+    "age_gated_minor": 15,
     "prompt_injection_blocked": 18,
     "postfilter_refusal": 12,
 }
+# Per-language split. Education is deliberately NOT uniform: the Kiswahili PCOS case
+# (ai-157) is a single-language addition, so sw carries one more than en/sheng.
 PLAN_PER_LANGUAGE = {
-    "education": 14,
-    "urgent_script": 7,
-    "refuse_diagnosis": 8,
-    "refuse_prescription": 4,
-    "out_of_scope": 4,
-    "age_gated_minor": 3,
-    "prompt_injection_blocked": 6,
-    "postfilter_refusal": 4,
+    "education": {"en": 14, "sw": 15, "sheng": 14},
+    "urgent_script": {"en": 7, "sw": 7, "sheng": 7},
+    "refuse_diagnosis": {"en": 8, "sw": 8, "sheng": 8},
+    "refuse_prescription": {"en": 4, "sw": 4, "sheng": 4},
+    "out_of_scope": {"en": 4, "sw": 4, "sheng": 4},
+    "age_gated_minor": {"en": 5, "sw": 5, "sheng": 5},
+    "prompt_injection_blocked": {"en": 6, "sw": 6, "sheng": 6},
+    "postfilter_refusal": {"en": 4, "sw": 4, "sheng": 4},
 }
 DROP_BEHAVIORS = {
     "diagnosis_attempt",
@@ -115,10 +117,10 @@ def test_guardrail_cases_are_unvalidated_with_empty_signoff(raw_document: dict) 
     assert raw_document["signed_at"] is None
 
 
-def test_exactly_one_hundred_and_fifty_sequential_unique_ids(cases: list[CaseSpec]) -> None:
-    assert len(cases) == 150
-    assert [case.id for case in cases] == [f"ai-{number:03d}" for number in range(1, 151)]
-    assert len({case.id for case in cases}) == 150
+def test_exactly_one_hundred_and_fifty_seven_sequential_unique_ids(cases: list[CaseSpec]) -> None:
+    assert len(cases) == 157
+    assert [case.id for case in cases] == [f"ai-{number:03d}" for number in range(1, 158)]
+    assert len({case.id for case in cases}) == 157
 
 
 def test_every_case_carries_only_the_documented_keys(raw_document: dict) -> None:
@@ -151,7 +153,10 @@ def test_every_category_covers_every_language(cases: list[CaseSpec], category: s
     languages = [case.language for case in cases if case.category == category]
     assert len(languages) == PLAN_BUDGET[category]
     for language in LANGUAGES:
-        assert languages.count(language) == PLAN_PER_LANGUAGE[category], (category, language)
+        assert languages.count(language) == PLAN_PER_LANGUAGE[category][language], (
+            category,
+            language,
+        )
 
 
 def test_derived_category_matches_the_stored_expectations(cases: list[CaseSpec]) -> None:
@@ -220,6 +225,25 @@ def test_age_gated_cases_are_minors_on_adult_topics(cases: list[CaseSpec]) -> No
     for case in gated:
         assert case.age == 15, case.id
         assert case.band is None, case.id
+
+
+def test_minor_sexual_health_cases_encode_the_two_step(cases: list[CaseSpec]) -> None:
+    """The six sexual-health age_gated_minor cases exercise the two-step (A38): three
+    with the answer unknown (minor_has_sex null) and three with "no". The nine procedure
+    cases leave the field unset — the hard gate never reads it."""
+    gate = MinorTopicGate()
+    gated = [case for case in cases if case.expected_routing == "age_gated_minor"]
+    procedures = [case for case in gated if gate.is_procedure_gated(case.input)]
+    sexual = [case for case in gated if gate.is_sexual_health_gated(case.input)]
+    assert len(procedures) == 9
+    assert len(sexual) == 6
+    assert all(case.minor_has_sex is None for case in procedures), "the hard gate ignores it"
+    assert sum(1 for case in sexual if case.minor_has_sex is None) == 3
+    assert sum(1 for case in sexual if case.minor_has_sex is False) == 3
+    assert all(case.minor_has_sex is not True for case in gated), "the yes branch is a service test"
+    for case in gated:
+        assert "llm_called" in case.never_actions, case.id
+    assert {case.language for case in sexual} == set(LANGUAGES)
 
 
 def test_prompt_injection_cases_name_the_leak_marker(cases: list[CaseSpec]) -> None:
@@ -307,6 +331,7 @@ def test_every_cervical_red_flag_case_hits_the_real_matcher(
         {"indicators": ["Bad Id"]},
         {"accept": ["diagnose"]},
         {"marker": ""},
+        {"minor_has_sex": "maybe"},
     ],
 )
 def test_case_spec_rejects_malformed_cases(mutation: dict) -> None:

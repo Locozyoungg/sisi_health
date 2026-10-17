@@ -5,10 +5,10 @@ PYTHON  := $(VENV)/bin/python
 PIP     := $(VENV)/bin/pip
 COMPOSE := docker compose
 
-.PHONY: help setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean
+.PHONY: help setup db-up db-down migrate seed test coverage coverage-rules demo-phase1 openapi audit-verify purge-retention backup restore lint typecheck phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean
 
 help:
-	@echo "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
+	@echo "Targets: setup db-up db-down migrate seed test coverage coverage-rules demo-phase1 openapi audit-verify purge-retention backup restore lint typecheck phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
 
 setup:
 	$(PY) -m venv $(VENV)
@@ -35,6 +35,10 @@ test:
 
 coverage:
 	cd backend && $(abspath $(PYTHON)) -m pytest --cov=app --cov-report=term-missing --cov-fail-under=70
+
+# Rules coverage gate (plan §5): app/rules >= 80%; engine/bands/redflags 100%.
+coverage-rules:
+	cd backend && $(abspath $(PYTHON)) scripts/check_coverage.py
 
 demo-phase1: migrate seed
 	cd backend && $(abspath $(PYTHON)) scripts/demo_phase1.py
@@ -76,6 +80,23 @@ openapi:
 
 audit-verify:
 	cd backend && $(abspath $(PYTHON)) scripts/verify_audit_chain.py
+
+# Retention purge (spec 6, A3): diary data past SISI_RETENTION_DIARY_DAYS and
+# lapsed vouchers. Never touches the append-only audit chain (see CC-6).
+purge-retention:
+	cd backend && $(abspath $(PYTHON)) scripts/purge_retention.py
+
+# Encrypted backup of SISI_DATABASE_URL -> .backups/sisi-<utc-ts>.dump.enc
+# (AES-256-GCM under the envelope master key). Restore it with `make restore`.
+backup:
+	$(abspath $(PYTHON)) scripts/backup_db.py
+
+# Destructive: --clean --if-exists wipes every object in the target database, so the
+# script requires --yes. Rehearse against a scratch database first:
+#   make restore RESTORE_ARGS='--target-url postgresql+psycopg://sisi:sisi_dev_pw@localhost:5432/sisi_restore_test --create-db'
+RESTORE_ARGS ?=
+restore:
+	$(abspath $(PYTHON)) scripts/restore_db.py --yes $(RESTORE_ARGS)
 
 lint:
 	cd backend && $(abspath $(VENV)/bin/ruff) check app tests scripts

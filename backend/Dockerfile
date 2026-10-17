@@ -4,7 +4,10 @@ WORKDIR /srv
 
 COPY pyproject.toml ./
 COPY app ./app
-COPY alembic ./alembic
+# alembic.ini declares `script_location = migrations` — the migration package lives
+# in ./migrations (there is no ./alembic directory), so this must match it or
+# `docker compose run backend alembic upgrade head` has nothing to run.
+COPY migrations ./migrations
 COPY alembic.ini ./
 COPY scripts ./scripts
 

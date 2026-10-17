@@ -41,6 +41,15 @@ jobs:
           SISI_TEST_DATABASE_URL: postgresql+psycopg://sisi:sisi_dev_pw@localhost:5432/sisi_test
           SISI_MASTER_KEY_B64: dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHQ=
         run: cd backend && pytest --cov=app --cov=app.rules --cov-report=term-missing --cov-fail-under=70
+      - name: Mutation sweep (rule JSON mutants, 100% killed)
+        run: cd backend && pytest tests/test_rules_mutation.py -q
+      - name: Rules coverage gate (app/rules >= 80%, band files 100%)
+        env:
+          SISI_TEST_DATABASE_URL: postgresql+psycopg://sisi:sisi_dev_pw@localhost:5432/sisi_test
+          SISI_MASTER_KEY_B64: dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHQ=
+        run: cd backend && python scripts/check_coverage.py
+      - name: Dependency consistency (pip check)
+        run: pip check
       - name: Dependency security scan
         run: pip install pip-audit && pip-audit
       - name: Secrets scan

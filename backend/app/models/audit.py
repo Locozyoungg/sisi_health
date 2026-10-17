@@ -1,12 +1,14 @@
-"""Schema audit: append-only, hash-chained. Hashing is computed by a DB trigger
-(migration 0001) so the writer and the Python verifier can never drift. Payloads are
-sanitized in the service layer: never names, phone numbers, or symptom content."""
+"""Schema audit: append-only, hash-chained. Hashing and seq assignment are
+computed by a DB trigger (migrations 0001 + 0011: seq is taken under the
+advisory lock so seq order always equals chain order under concurrency) so the
+writer and the Python verifier can never drift. Payloads are sanitized in the
+service layer: never names, phone numbers, or symptom content."""
 
 import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, BigInteger, DateTime, Identity, LargeBinary, String
+from sqlalchemy import JSON, BigInteger, DateTime, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.ids import uuid7
@@ -19,7 +21,8 @@ class AuditEvent(Base):
     __table_args__ = {"schema": "audit"}
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
-    seq: Mapped[int] = mapped_column(BigInteger, Identity(), unique=True)
+    # Trigger-assigned under the advisory lock (CC-7): the app never sets seq.
+    seq: Mapped[int] = mapped_column(BigInteger, unique=True)
     event_type: Mapped[str] = mapped_column(String(64))
     actor_type: Mapped[str] = mapped_column(String(16))  # user | staff | system
     actor_id: Mapped[uuid.UUID | None] = mapped_column()

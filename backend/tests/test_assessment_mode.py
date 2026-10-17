@@ -2,7 +2,10 @@
 diary engine, without the 14-day window gate. One-time USSD/WhatsApp
 assessments must still produce immediate deterministic guidance."""
 
+import pytest
+
 from app.config import get_settings
+from app.core.errors import ValidationError
 from app.rules.loader import build_engine
 
 
@@ -69,6 +72,13 @@ def test_assessment_safeguarding_for_self_harm():
     result = _engine().evaluate_assessment(age=15, features=_features(self_harm_signal=True))
     assert result.band == "RED"
     assert result.safeguarding is True
+
+
+def test_assessment_age_below_13_rejected():
+    """The under-13 block holds on the assessment path too (non-negotiable:
+    users under 13 never reach the rules engine)."""
+    with pytest.raises(ValidationError):
+        _engine().evaluate_assessment(age=12, features=_features())
 
 
 def test_assessment_age_gating_applies():

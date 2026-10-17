@@ -1,0 +1,225 @@
+# SISI Health — staging/production stack (Phase 8).
+#
+#   docker compose -f docker-compose.prod.yml --profile staging up -d --build
+#   docker compose -f docker-compose.prod.yml --profile prod    up -d --build
+#
+# Prefer `scripts/deploy.sh` / `scripts/deploy.ps1`, which load .env.prod, refuse dev
+# flags, run the migrations and health-check the result. See docs/runbook.md.
+#
+# Profile model: db, redis and caddy are ALWAYS started (they are the platform);
+# backend, gateway, ai and web carry the `staging`/`prod` profiles so a single host
+# can run both stacks (distinct compose projects, distinct volumes) if it ever must.
+#
+# Every secret below is substituted from the operator's environment / .env.prod and
+# DEFAULTS TO EMPTY. That is deliberate: `docker compose config` must work on a
+# machine with no secrets, and a container started without them fails at boot with an
+# explicit message from backend/app/config.py `_prod_guards` rather than serving
+# traffic with a development default.
+name: sisi-health
+
+x-backend-env: &backend-env
+  # Environment. staging | prod — both are guarded; there is no dev fallback here.
+  SISI_ENV: ${SISI_DEPLOY_ENV:-staging}
+  # Service DNS names, never localhost: containers talk over the compose network.
+  SISI_DATABASE_URL: postgresql+psycopg://sisi:${SISI_DB_PASSWORD:-}@db:5432/sisi
+  SISI_REDIS_URL: redis://redis:6379/0
+  # Ontology is a read-only bind mount (see the volumes: block on each service).
+  SISI_ONTOLOGY_DIR: /srv/ontology
+  # --- Safety flags: HARD-CODED FALSE. Non-negotiable 3: unvalidated rules must never
+  # be enabled for real users, so these are not overridable from the environment here.
+  SISI_ALLOW_UNVALIDATED_RULES: "false"
+  SISI_OTP_DEV_RETURN: "false"
+  # --- Secrets: empty by default, populated from .env.prod. Never committed.
+  SISI_JWT_SECRET: ${SISI_JWT_SECRET:-}
+  SISI_PHONE_PEPPER: ${SISI_PHONE_PEPPER:-}
+  SISI_MASTER_KEY_B64: ${SISI_MASTER_KEY_B64:-}
+  # --- CORS: an explicit comma-separated origin list; a wildcard is refused in
+  # staging/prod by app/main.py. Example: https://console.example.org
+  SISI_CORS_ORIGINS: ${SISI_CORS_ORIGINS:-}
+  # --- Telehealth (Jitsi) — self-hosted, JWT-gated rooms, no recording by default.
+  SISI_JITSI_DOMAIN: ${SISI_JITSI_DOMAIN:-}
+  SISI_JITSI_APP_ID: ${SISI_JITSI_APP_ID:-sisi}
+  SISI_JITSI_APP_SECRET: ${SISI_JITSI_APP_SECRET:-}
+  # --- Compliance config (docs/assumptions.md A1-A4). Counsel sets SELF_CONSENT_AGE.
+  SISI_SELF_CONSENT_AGE: ${SISI_SELF_CONSENT_AGE:-18}
+  SISI_DSR_DEADLINE_DAYS: ${SISI_DSR_DEADLINE_DAYS:-30}
+  SISI_RETENTION_DIARY_DAYS: ${SISI_RETENTION_DIARY_DAYS:-2555}
+  SISI_RETENTION_AUDIT_DAYS: ${SISI_RETENTION_AUDIT_DAYS:-3650}
+  SISI_RETENTION_VOUCHER_DAYS: ${SISI_RETENTION_VOUCHER_DAYS:-730}
+  # --- Hotlines: config values, never hard-coded. VERIFY before launch (both are
+  # currently UNVERIFIED placeholders — see docs/runbook.md "Hotline config checks").
+  SISI_HELPLINE_CHILD: ${SISI_HELPLINE_CHILD:-116}
+  SISI_HELPLINE_GBV: ${SISI_HELPLINE_GBV:-1195}
+  # --- OTP and staff session policy.
+  SISI_OTP_TTL_SECONDS: ${SISI_OTP_TTL_SECONDS:-300}
+  SISI_OTP_MAX_REQUESTS_PER_WINDOW: ${SISI_OTP_MAX_REQUESTS_PER_WINDOW:-5}
+  SISI_OTP_MAX_FAILURES: ${SISI_OTP_MAX_FAILURES:-10}
+  SISI_ACCESS_TOKEN_MINUTES: ${SISI_ACCESS_TOKEN_MINUTES:-15}
+  SISI_REFRESH_TOKEN_DAYS: ${SISI_REFRESH_TOKEN_DAYS:-30}
+  SISI_STAFF_IDLE_MINUTES: ${SISI_STAFF_IDLE_MINUTES:-15}
+
+x-ai-env: &ai-env
+  # LLM/embedding providers: never `stub` in staging/prod (guarded at boot).
+  # openweight is the self-hosted alternative to `hosted` — see docs/runbook.md.
+  SISI_AI_LLM_PROVIDER: ${SISI_AI_LLM_PROVIDER:-hosted}
+  SISI_AI_HOSTED_API_KEY: ${SISI_AI_HOSTED_API_KEY:-}
+  SISI_AI_HOSTED_BASE_URL: ${SISI_AI_HOSTED_BASE_URL:-https://api.anthropic.com}
+  SISI_AI_HOSTED_MODEL: ${SISI_AI_HOSTED_MODEL:-}
+  SISI_AI_OPENWEIGHT_BASE_URL: ${SISI_AI_OPENWEIGHT_BASE_URL:-}
+  SISI_AI_OPENWEIGHT_MODEL: ${SISI_AI_OPENWEIGHT_MODEL:-}
+  SISI_AI_EMBEDDING_PROVIDER: ${SISI_AI_EMBEDDING_PROVIDER:-bge_m3}
+  SISI_AI_EMBEDDING_BASE_URL: ${SISI_AI_EMBEDDING_BASE_URL:-}
+  SISI_AI_EMBEDDING_API_KEY: ${SISI_AI_EMBEDDING_API_KEY:-}
+  SISI_AI_EMBEDDING_MODEL: ${SISI_AI_EMBEDDING_MODEL:-}
+  SISI_AI_EMBEDDING_DIM: ${SISI_AI_EMBEDDING_DIM:-768}
+  # Shared bearer token between the backend/gateway and this internal service.
+  SISI_AI_INTERNAL_TOKEN: ${SISI_AI_INTERNAL_TOKEN:-}
+
+# The Python images are slim and ship no curl/wget, so health checks use the
+# interpreter that is already there. `urllib` is stdlib — no extra image layer.
+x-backend-healthcheck: &backend-healthcheck
+  test:
+    - CMD
+    - python
+    - -c
+    - import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/v1/health', timeout=5).status == 200 else 1)
+  interval: 30s
+  timeout: 10s
+  retries: 5
+  start_period: 40s
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  db:
+    image: pgvector/pgvector:pg16-alpine
+    <<: *restart
+    environment:
+      POSTGRES_USER: sisi
+      POSTGRES_PASSWORD: ${SISI_DB_PASSWORD:-}
+      POSTGRES_DB: sisi
+    # No published port: the database is reachable only on the compose network.
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sisi -d sisi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    <<: *restart
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "no"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: ./backend
+    <<: *restart
+    profiles: ["staging", "prod"]
+    environment:
+      <<: *backend-env
+    volumes:
+      # Read-only deployment content: rules, red-flag scripts, content chunks.
+      - ./ontology:/srv/ontology:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck: *backend-healthcheck
+
+  gateway:
+    # Context is the repo root: the gateway imports the backend's `app` package.
+    build:
+      context: .
+      dockerfile: ussd-whatsapp/Dockerfile
+    <<: *restart
+    profiles: ["staging", "prod"]
+    environment:
+      <<: *backend-env
+      # USSD session state: Redis with a 5-minute resume window (spec 5.3).
+      SISI_USSD_SESSION_BACKEND: ${SISI_USSD_SESSION_BACKEND:-redis}
+      SISI_USSD_SESSION_TTL_SECONDS: ${SISI_USSD_SESSION_TTL_SECONDS:-300}
+      # Messaging providers. Empty until the real credentials exist (human tasks
+      # H2/H4); the providers refuse to send without them rather than faking a send.
+      SISI_AT_USERNAME: ${SISI_AT_USERNAME:-}
+      SISI_AT_API_KEY: ${SISI_AT_API_KEY:-}
+      SISI_TURN_TOKEN: ${SISI_TURN_TOKEN:-}
+    volumes:
+      - ./ontology:/srv/ontology:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=5).status == 200 else 1)
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  ai:
+    build:
+      context: .
+      dockerfile: ai_service/Dockerfile
+    <<: *restart
+    profiles: ["staging", "prod"]
+    environment:
+      <<: [*backend-env, *ai-env]
+    volumes:
+      - ./ontology:/srv/ontology:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8002/health', timeout=5).status == 200 else 1)
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  web:
+    build: ./web
+    <<: *restart
+    profiles: ["staging", "prod"]
+    # nginx serves the SPA; Caddy is the only service that terminates TLS.
+
+  caddy:
+    image: caddy:2
+    <<: *restart
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    environment:
+      SISI_DOMAIN: ${SISI_DOMAIN:-localhost}
+      # Caddy's `email` directive refuses an empty argument, so this keeps a
+      # non-empty placeholder when the operator has not set one. Replace it.
+      SISI_ACME_EMAIL: ${SISI_ACME_EMAIL:-admin@sisi.invalid}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data       # ACME account + issued certificates
+      - caddy_config:/config
+
+volumes:
+  pgdata:       # PostgreSQL 16 data (nightly encrypted dumps — docs/runbook.md)
+  redisdata:    # USSD session state only; losing it drops in-flight sessions
+  caddy_data:   # ACME certificates
+  caddy_config:

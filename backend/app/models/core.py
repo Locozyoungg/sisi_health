@@ -172,3 +172,21 @@ class UssdSession(Base):
     state_json: Mapped[dict[str, Any]] = mapped_column(JSON)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
+
+
+class AuthThrottle(Base):
+    """Generic sliding-window auth throttle (CC-6, Phase 8). One row per throttle
+    key; `key` is a namespaced credential handle (e.g. `staff_login:<email>`,
+    lowercased) used only to count failures — it is never copied into the audit
+    trail, a notification, or a log line (audit payloads are counts-only)."""
+
+    __tablename__ = "auth_throttle"
+    __table_args__ = {"schema": "core"}
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
+    key: Mapped[str] = mapped_column(String(128), unique=True)
+    window_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
+    count: Mapped[int] = mapped_column(Integer, default=0)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now_naive)

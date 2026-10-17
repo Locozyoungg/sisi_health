@@ -1,6 +1,11 @@
 # SISI Health — PowerShell target wrapper (same targets as the Makefile).
 # Usage: .\make.ps1 <target>   e.g.  .\make.ps1 demo-phase1
-param([Parameter(Position = 0)][string]$Target = "help")
+# Extra arguments are forwarded verbatim to the target's script, e.g.
+#   .\make.ps1 restore --target-url "postgresql+psycopg://sisi:sisi_dev_pw@localhost:5432/sisi_restore_test" --create-db
+param(
+    [Parameter(Position = 0)][string]$Target = "help",
+    [Parameter(ValueFromRemainingArguments = $true)][string[]]$Rest = @()
+)
 
 $ErrorActionPreference = "Stop"
 $Repo = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -15,7 +20,7 @@ function Backend-Py([string[]]$PyArgs) {
 
 switch ($Target) {
     "help" {
-        Write-Host "Targets: setup db-up db-down migrate seed test coverage demo-phase1 openapi audit-verify lint typecheck phase4-demo phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
+        Write-Host "Targets: setup db-up db-down db-local migrate seed test coverage coverage-rules demo-phase1 openapi audit-verify purge-retention backup restore lint typecheck phase4-demo phase5-demo phase7-demo ai-setup ai-test ai-demo ai-eval ai-compare clean"
     }
     "setup" {
         py -3.12 -m venv (Join-Path $Backend ".venv")
@@ -37,6 +42,8 @@ switch ($Target) {
     "seed" { Backend-Py @("scripts/seed_demo.py") }
     "test" { Backend-Py @("-m", "pytest") }
     "coverage" { Backend-Py @("-m", "pytest", "--cov=app", "--cov-report=term-missing", "--cov-fail-under=70") }
+    # Rules coverage gate (plan §5): app/rules >= 80%; engine/bands/redflags 100%.
+    "coverage-rules" { Backend-Py @("scripts/check_coverage.py") }
     "demo-phase1" {
         & $MyInvocation.MyCommand.Path "db-up"
         Backend-Py @("-m", "alembic", "upgrade", "head")
@@ -45,6 +52,22 @@ switch ($Target) {
     }
     "openapi" { Backend-Py @("scripts/export_openapi.py") }
     "audit-verify" { Backend-Py @("scripts/verify_audit_chain.py") }
+    # Retention purge (spec 6, A3): diary data past the retention window and
+    # lapsed vouchers. Never touches the append-only audit chain (see CC-6).
+    "purge-retention" { Backend-Py @("scripts/purge_retention.py") }
+    # Backup/restore run from the repo root: the scripts add backend/ to sys.path
+    # themselves (they import app.config + the master key provider).
+    "backup" {
+        & $Python (Join-Path $Repo "scripts\backup_db.py")
+        if ($LASTEXITCODE -ne 0) { throw "backup failed (exit $LASTEXITCODE)" }
+    }
+    "restore" {
+        # Destructive: --clean --if-exists wipes every object in the target database,
+        # so the script requires --yes. Override the target with e.g.:
+        #   .\make.ps1 restore --target-url "postgresql+psycopg://sisi:sisi_dev_pw@localhost:5432/sisi_restore_test" --create-db
+        & $Python (Join-Path $Repo "scripts\restore_db.py") --yes @Rest
+        if ($LASTEXITCODE -ne 0) { throw "restore failed (exit $LASTEXITCODE)" }
+    }
     "lint" { Backend-Py @("-m", "ruff", "check", "app", "tests", "scripts") }
     "typecheck" { Backend-Py @("-m", "mypy", "app") }
     "android-test" { & (Join-Path $Repo "scripts\android.ps1") "testDebugUnitTest" }

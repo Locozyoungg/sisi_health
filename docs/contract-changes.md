@@ -130,4 +130,48 @@ OpenAPI spec).
 - **OpenAPI**: regenerated for the new `/v1/employers/*` surface (backend
   OpenAPI v4 frozen in `docs/openapi.yaml`).
 
+### CC-6 (2026-10-17, Phase 8) — auth throttle, CORS origins, retention purge
 
+- **Migration 0010** adds `core.auth_throttle` (id uuid7 PK, `key` String(128)
+  unique, `window_start` tz, `count` int, `locked_until` tz, `created_at` /
+  `updated_at` tz) — the store behind the new shared limiter
+  `backend/app/auth/rate_limit.py` (`check_and_record` / `clear` / `is_locked`),
+  which mirrors the Phase 1 OTP sliding-window + lockout semantics.
+- **Staff login brute-force protection**: `login_staff()` counts every failed
+  password/TOTP attempt per `staff_login:<email>` and serves HTTP 423 while
+  locked (`SISI_STAFF_LOGIN_MAX_FAILURES` 5 / `_WINDOW_MINUTES` 10 /
+  `_LOCKOUT_MINUTES` 15); a success clears the counter. `/v1/staff/auth/totp/setup`
+  is throttled the same way per `staff_totp_setup:<email>`. The lock writes a
+  counts-only `staff_login_locked` / `staff_totp_setup_locked` audit event; the
+  throttle handle itself never reaches the trail.
+- **CORS**: `SISI_CORS_ORIGINS` (comma-separated) is honoured everywhere; the
+  wildcard is dev/demo-only and staging/prod refuse to boot with it empty.
+- **Retention purge**: `purge_retention_job` (`app/workers/jobs.py`, runner
+  `backend/scripts/purge_retention.py`, `make purge-retention`) deletes diary
+  entries whose newest version predates `SISI_RETENTION_DIARY_DAYS`, together
+  with their versions and the owning user's older rule evaluations, destroys the
+  user's data keys only once no diary row remains for that user, and marks
+  lapsed vouchers expired past `SISI_RETENTION_VOUCHER_DAYS`. Counts-only audit:
+  `retention_purge_run`.
+- **Audit rows are NOT purged.** `SISI_RETENTION_AUDIT_DAYS` remains a recorded
+  placeholder with no automated effect: the audit table is append-only and
+  hash-chained, so deleting rows would break the nightly chain verifier. The
+  audit-retention-schedule vs append-only-chain conflict is an **OPEN maintainer
+  decision** (assumption A3); audit rows are currently retained indefinitely.
+- **No API shape change**: no route, request, or response schema changed, so the
+  frozen OpenAPI spec is unchanged.
+
+
+
+### CC-7 (2026-10-17, Phase 8) — audit chain integrity under concurrency
+
+- **Migration 0011**: the chain trigger previously took its advisory lock AFTER
+  the IDENTITY seq assignment, so concurrent inserts could get seqs in
+  row-formation order while the chain followed lock order — pairwise swaps
+  broke the chain (surfaced by the 1,000-concurrent-USSD load test; 42 breaks
+  in the dev DB). `audit.audit_events.seq` is now a plain sequence assigned
+  INSIDE the lock, so seq order always equals chain order.
+- Existing broken dev data is re-anchored with
+  `scripts/repair_audit_chain.py --yes` (dev/demo only; production breaks are
+  preserved as evidence per the breach runbook).
+- Regression test: `tests/test_audit_chain.py::test_concurrent_inserts_keep_the_chain_intact`.

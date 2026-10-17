@@ -91,3 +91,36 @@ def test_chain_survives_mixed_content(db):
     for n in range(3):
         _event(db, payload={"n": n})
     assert verify_chain(db)["ok"] is True
+
+
+def test_concurrent_inserts_keep_the_chain_intact(db):
+    """CC-7 regression: before migration 0011 the advisory lock was taken AFTER
+    the identity seq assignment, so concurrent inserts could swap adjacent seqs
+    and break the chain (surfaced by the 1,000-concurrent-USSD load test)."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from app.audit.service import record_event
+    from app.audit.verifier import verify_chain
+    from app.db import SessionLocal
+
+    def write(i: int) -> None:
+        with SessionLocal() as session:
+            for j in range(5):
+                record_event(
+                    session,
+                    event_type="concurrency_test",
+                    actor_type="system",
+                    actor_id=None,
+                    actor_role=None,
+                    resource_type="test",
+                    resource_id=None,
+                    payload={"i": i, "j": j},
+                )
+            session.commit()
+
+    with ThreadPoolExecutor(max_workers=20) as pool:
+        list(pool.map(write, range(20)))
+
+    with SessionLocal() as check:
+        report = verify_chain(check)
+    assert report["ok"], f"broken_seqs={report['broken_seqs']}"

@@ -31,14 +31,18 @@ def create_app() -> FastAPI:
             content=err(exc.code, exc.message, exc.status_code),
         )
 
-    if settings.env in {"dev", "demo"}:
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=["*"],  # dev/demo only; staging/prod origins are explicit (Phase 8)
-            allow_methods=["*"],
-            allow_headers=["*"],
-            allow_credentials=False,
-        )
+    # CORS. Dev/demo fall back to a wildcard (local Vite ports move), but
+    # staging/prod serve exactly the configured origin list — and refuse to boot
+    # with it empty (Settings guard). Credentials stay off either way.
+    origins = [origin.strip() for origin in settings.cors_origins.split(",") if origin.strip()]
+    allow_origins = origins or (["*"] if settings.env in {"dev", "demo"} else [])
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allow_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        allow_credentials=False,
+    )
 
     app.include_router(v1_router, prefix="/v1")
     return app

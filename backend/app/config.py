@@ -30,6 +30,14 @@ class Settings(BaseSettings):
 
     # Auth (staff)
     staff_idle_minutes: int = 15
+    # Brute-force throttle (CC-6, Phase 8): failures per sliding window before lockout.
+    staff_login_max_failures: int = 5
+    staff_login_window_minutes: int = 10
+    staff_login_lockout_minutes: int = 15
+
+    # CORS (Phase 8): comma-separated browser origins for staging/prod. Empty in
+    # dev/demo means the wildcard; staging/prod refuse to boot without it.
+    cors_origins: str = ""
 
     # Key management (envelope encryption)
     master_key_file: Path = REPO_ROOT / "backend" / "data" / "master.key"
@@ -76,6 +84,8 @@ class Settings(BaseSettings):
                 raise ValueError("SISI_JITSI_APP_SECRET must be set in staging/prod")
             if not self.master_key_b64:
                 raise ValueError("SISI_MASTER_KEY_B64 must be set in staging/prod")
+            if not any(origin.strip() for origin in self.cors_origins.split(",")):
+                raise ValueError("SISI_CORS_ORIGINS must be set in staging/prod (comma list)")
         if (
             self.env not in {"dev", "demo"}
             and self.master_key_b64 == ""

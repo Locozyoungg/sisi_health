@@ -1,0 +1,49 @@
+# Docker build context for the repo-root builds (gateway + ai_service).
+# Without this the daemon would receive .tools/ (portable PostgreSQL, JDK, Android SDK),
+# backend/.venv and web/node_modules — gigabytes of build context per build.
+# backend/Dockerfile and web/Dockerfile use their own, smaller contexts.
+
+# Version control
+.git
+.github
+.gitignore
+
+# Secrets and local state — must never enter an image layer
+.env
+.env.*
+!.env.example
+!.env.prod.example
+*.key
+data/
+.backups/
+
+# Python
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/*.egg-info
+**/.coverage
+**/htmlcov
+
+# Node / web (built separately with the ./web context)
+**/node_modules
+web/dist
+web/test-results
+web/playwright-report
+
+# Local tooling and scratch data
+.tools/
+pgdata/
+*.log
+
+# Not needed by any runtime image
+mobile/
+docs/
+ontology/          # mounted at runtime instead (SISI_ONTOLOGY_DIR)
+README.md
+LICENSE
+AGENTS.md
+*.md

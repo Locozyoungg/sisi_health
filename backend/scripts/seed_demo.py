@@ -1,5 +1,6 @@
 """Seed the dev/demo database: consent texts, staff (fixed TOTP secrets printed),
-and synthetic users with synthetic diaries. NEVER real patient data
+and synthetic users with synthetic diaries — the Phase 8 deliverable 5 roster of
+40 users spread across the 13-17 / 18-30 / 31-45 bands. NEVER real patient data
 (non-negotiable 2). Idempotent — safe to re-run."""
 
 import random
@@ -30,6 +31,31 @@ DEMO_PHONES = {
     "minor": "+254700000102",
     "minor_few_days": "+254700000103",
 }
+
+# Phase 8 deliverable 5: the roster grows to 40 users. The three phones above are
+# pinned and never move — tests and demos depend on them. The new users continue
+# the +2547000001xx block (the +2547000002xx block belongs to the corridor seed
+# users, which stay untouched).
+NEW_USER_PHONE_START = 110
+NEW_USER_AGES = (
+    # 12 users aged 13-17 (guardian grant + the minor's own assent)
+    (13, 14, 15, 16, 17, 13, 14, 15, 16, 17, 14, 15)
+    # 12 users aged 18-30 (self-consent)
+    + (18, 20, 22, 24, 26, 28, 30, 19, 21, 23, 25, 27)
+    # 13 users aged 31-45 (self-consent)
+    + (31, 34, 37, 40, 43, 45, 32, 35, 38, 41, 44, 33, 36)
+)
+DIARY_DAYS = 90
+TOTAL_DEMO_USERS = len(DEMO_PHONES) + len(NEW_USER_AGES)
+
+
+def _birth_date_for_age(age: int, today: date | None = None) -> date:
+    """The birth date that makes `age` exact today (29 February clamps to the 28th)."""
+    today = today or date.today()
+    try:
+        return today.replace(year=today.year - age)
+    except ValueError:  # 29 February with a non-leap target year
+        return today.replace(year=today.year - age, day=28)
 
 
 def _diary_entries(rng: random.Random, heavy: bool, days: int) -> list[SyncEntry]:
@@ -133,6 +159,53 @@ def main() -> int:
                 print(f"[seed] {name} ({phone}): {days} synthetic diary days")
             else:
                 print(f"[seed] {name} ({phone}): diary already present")
+
+        # Phase 8 deliverable 5: 37 more users across the 13-17 / 18-30 / 31-45
+        # bands, each with a 90-day synthetic diary and the consent its age band
+        # requires (minors: guardian grant + the minor's own assent).
+        for index, age in enumerate(NEW_USER_AGES):
+            phone = f"+2547{NEW_USER_PHONE_START + index:08d}"
+            user = get_by_phone(db, phone, settings)
+            if user is None:
+                user = create_user(
+                    db,
+                    provider,
+                    phone=phone,
+                    birth_date=_birth_date_for_age(age),
+                    language="sw" if index % 4 == 3 else "en",
+                    settings=settings,
+                )
+                db.commit()
+            current_age = age_of(provider, db, user)
+            if current_age is not None and current_age >= settings.self_consent_age:
+                grant_consent(db, user, event_type="self_grant", method="digital", age=current_age)
+            else:
+                grant_consent(
+                    db, user, event_type="guardian_grant", method="digital", age=current_age
+                )
+                grant_consent(
+                    db, user, event_type="minor_assent", method="digital", age=current_age
+                )
+            db.commit()
+            label = f"user{index:02d} (age {current_age}, {phone})"
+            has_entries = (
+                db.execute(select(DiaryEntry).where(DiaryEntry.user_id == user.id))
+                .scalars()
+                .first()
+            )
+            if has_entries is None:
+                sync_entries(
+                    db,
+                    provider,
+                    user,
+                    _diary_entries(rng, heavy=index % 5 == 0, days=DIARY_DAYS),
+                )
+                db.commit()
+                print(f"[seed] {label}: {DIARY_DAYS} synthetic diary days")
+            else:
+                print(f"[seed] {label}: diary already present")
+
+        print(f"[seed] demo roster complete: {TOTAL_DEMO_USERS} users across all age bands")
     print("[seed] done")
     return 0
 

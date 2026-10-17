@@ -1,0 +1,10 @@
+# Build context is ./web — keep the context small and deterministic.
+# node_modules is reinstalled from package-lock.json inside the image (`npm ci`).
+node_modules
+dist
+test-results
+playwright-report
+playwright/.cache
+e2e
+*.tsbuildinfo
+*.log

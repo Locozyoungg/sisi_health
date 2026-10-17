@@ -5,6 +5,7 @@ from app.models.audit import AuditEvent
 from app.models.base import Base
 from app.models.consent import ConsentEvent, ConsentText, DsrRequest, ProcessingRegister
 from app.models.core import (
+    AuthThrottle,
     ConfigValue,
     DataKey,
     Device,
@@ -61,6 +62,7 @@ from app.models.school import (
 __all__ = [
     "AssessmentAction",
     "AuditEvent",
+    "AuthThrottle",
     "Base",
     "ChunkEmbedding",
     "ConfigValue",

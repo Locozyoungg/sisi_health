@@ -7,6 +7,7 @@ __pycache__/
 .ruff_cache/
 .coverage
 coverage.xml
+coverage.json
 htmlcov/
 
 # Env & secrets
@@ -14,10 +15,20 @@ htmlcov/
 *.key
 data/
 
+# Staging/prod env files — only the template is committed (non-negotiable 7)
+.env.prod
+.env.prod.*
+!.env.prod.example
+.env.staging
+.env.staging.*
+
 # Local tooling (portable PostgreSQL, logs, data dir)
 .tools/
 pgdata/
 *.log
+
+# Encrypted database backups (scripts/backup_db.py) — never commit, never share
+.backups/
 
 # Build artifacts
 build/

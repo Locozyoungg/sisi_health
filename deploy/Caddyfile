@@ -1,0 +1,122 @@
+# SISI Health — Caddy edge configuration (TLS termination + path routing).
+#
+# Mounted read-only by the `caddy` service in docker-compose.prod.yml:
+#     ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+#
+# Two environment variables drive it (set on the caddy service):
+#     SISI_DOMAIN      the public hostname, e.g. console.sisi.health
+#                      ("localhost" keeps Caddy on its internal CA — useful for a
+#                       local smoke test with no public DNS)
+#     SISI_ACME_EMAIL  contact address for the Let's Encrypt account
+#
+# Reload after an edit without a restart:  docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+{
+	# ACME account contact. The `:default` fallback keeps the directive parseable when
+	# SISI_ACME_EMAIL is empty (Caddy rejects a bare `email` with no argument), so an
+	# unset address degrades to the reserved .invalid domain instead of refusing to
+	# start. Set a real address in staging/prod to receive certificate-expiry warnings.
+	email {$SISI_ACME_EMAIL:admin@sisi.invalid}
+
+	# Uncomment to test locally without public DNS:
+	# local_certs
+}
+
+{$SISI_DOMAIN} {
+	# --- TLS ------------------------------------------------------------------
+	# TLS 1.3 only. Everything that talks to this host is a modern browser or a
+	# server-side integration, so there is no reason to keep 1.2 (and its older
+	# cipher suites) alive. Caddy obtains and renews the certificate automatically
+	# and redirects plain :80 to HTTPS by default.
+	tls {
+		protocols tls1.3
+	}
+
+	encode zstd gzip
+
+	# --- Response headers -----------------------------------------------------
+	# `defer` keeps these on error responses too (e.g. a 502 while a container
+	# restarts), which is exactly when a browser would otherwise render its own page.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		# Health data: never leak the console URL to third parties via Referer.
+		Referrer-Policy "no-referrer"
+		X-Frame-Options "DENY"
+		-Server
+		defer
+	}
+
+	# --- Routing --------------------------------------------------------------
+	# `handle` blocks are mutually exclusive and Caddy evaluates the most specific
+	# path first, so /v1/ai/* below is matched before the generic /v1/* block.
+	# `handle_path` additionally STRIPS the matched prefix before proxying.
+	#
+	# Recording: there are NO recording endpoints in this system. Telehealth runs on
+	# self-hosted Jitsi with recording disabled by policy, and no service exposes a
+	# recording or call-archive route — so nothing extra is routed (or un-routed)
+	# here. If a recording feature is ever added, it needs its own explicit review.
+
+	# AI conversation service, native prefix. It sits at /v1/ai/*, which collides
+	# with the backend's /v1 namespace, so it must be routed before it.
+	# Every /v1/ai route requires the shared SISI_AI_INTERNAL_TOKEN bearer token;
+	# if the service is ever moved onto a private network, delete this block —
+	# nothing in the staff console calls it.
+	handle /v1/ai/* {
+		reverse_proxy ai:8002
+	}
+
+	# Backend API. The staff console is served from this same origin and calls
+	# relative /v1/... paths, so no CORS preflight is involved in prod.
+	# NOTE: this proxies /v1/admin/** as well — admin endpoints are protected by the
+	# backend's RBAC (super_admin role + TOTP), not by network policy. See the
+	# "Admin surface" note in docs/runbook.md if you would rather block them here.
+	handle /v1/* {
+		reverse_proxy backend:8000
+	}
+
+	# USSD callback (Africa's Talking posts here) and the WhatsApp webhook
+	# (Turn.io). Both are unauthenticated by design — the carriers cannot present a
+	# bearer token — and both are rate-limited and session-bound in the gateway.
+	handle /ussd/* {
+		reverse_proxy gateway:8001
+	}
+	handle /whatsapp/* {
+		reverse_proxy gateway:8001
+	}
+
+	# Operator aliases. These strip their prefix, so /api/v1/health reaches the
+	# backend as /v1/health and /ai/v1/ai/ask reaches the AI service as /v1/ai/ask.
+	handle_path /api/* {
+		reverse_proxy backend:8000
+	}
+	handle_path /ai/* {
+		reverse_proxy ai:8002
+	}
+	handle_path /gateway/* {
+		reverse_proxy gateway:8001
+	}
+
+	# Edge liveness: answered by Caddy itself, so an uptime monitor can tell
+	# "the edge is up" from "a container is down".
+	handle /health {
+		respond "ok" 200
+	}
+
+	# Everything else: the staff console SPA (nginx serves dist/ with a history
+	# fallback for client-side routes).
+	handle {
+		reverse_proxy web:80
+	}
+
+	# --- Structured access logs ---------------------------------------------
+	# Never contains diary content, phone numbers or names: only method, path, status
+	# and client address. Keep it that way — non-negotiable 4 (nothing
+	# condition-identifying in logs) applies to the edge as much as to the services.
+	log {
+		output file /data/access.log {
+			roll_size 100mb
+			roll_keep 10
+		}
+		format json
+	}
+}

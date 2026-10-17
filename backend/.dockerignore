@@ -1,0 +1,15 @@
+# Build context is ./backend — keep the local venv and caches out of the image.
+# The backend container needs only pyproject.toml, app/, migrations/, alembic.ini
+# and scripts/ (all COPY'd explicitly by the Dockerfile).
+.venv
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+*.egg-info
+data/
+tests/
+*.log

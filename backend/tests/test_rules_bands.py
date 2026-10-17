@@ -8,6 +8,7 @@ import pytest
 
 from app.config import get_settings
 from app.core.errors import UnvalidatedRulesError, ValidationError
+from app.rules.bands import Band, band_at_least
 from app.rules.loader import build_engine
 
 GOLDEN = json.loads(
@@ -42,6 +43,15 @@ def test_unvalidated_rules_refuse_without_flag():
     """The engine refuses to run unvalidated rules unless the dev/demo flag is on."""
     with pytest.raises(UnvalidatedRulesError):
         build_engine(get_settings().ontology_dir, allow_unvalidated=False)
+
+
+def test_band_at_least_orders_by_severity():
+    """band_at_least is the safety floor used by the minor post-coital safeguard:
+    ORANGE-or-above must be true at ORANGE and RED, false below."""
+    assert band_at_least(Band.RED, Band.ORANGE) is True
+    assert band_at_least(Band.ORANGE, Band.ORANGE) is True
+    assert band_at_least(Band.YELLOW, Band.ORANGE) is False
+    assert band_at_least(Band.GREEN, Band.GREEN) is True
 
 
 def test_engine_loads_expected_rules(engine):

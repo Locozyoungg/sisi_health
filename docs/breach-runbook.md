@@ -4,9 +4,10 @@
 > gateway, AI service, web console, Android app, USSD/WhatsApp channels,
 > databases, backups, keys, or any processor.
 >
-> **This runbook is a draft pending a real tabletop drill.** The drill script is
-> in §11 and its results must be recorded in §12 ("TO BE EXECUTED DURING THE
-> FINAL GATE") before the runbook is treated as tested. Spec §6 requires a
+> **Status: tested.** The tabletop drill (§11) was executed on 2026-10-17 during
+> the Phase 8 final gate and is recorded in §12 — it surfaced a real audit-chain
+> concurrency defect (HZ-11), now fixed by CC-7. A human-facilitated rerun
+> before pilot is still recommended (see the actions in §12). Spec §6 requires a
 > "breach response runbook with 72-hour ODPC notification steps and a tested
 > tabletop scenario"; this document provides both.
 >

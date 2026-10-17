@@ -79,11 +79,11 @@ journey with its encryption and audit points:
 | 5 | Specialist corridor (+ cervical screening module) | ✅ **Complete** — 423 backend tests (186 new), 4 corridor Playwright e2e, 37 golden cases on both engines |
 | 6 | AI conversation layer with RAG + guardrails | ✅ **Complete** — 292 ai-service tests, 177-case guardrail suite (157 + 20 cervical), 100% red-flag routing, minor two-step flow, stub comparison report (real run = H15) |
 | 7 | Employer admin (minimal) | ✅ **Complete** — employer wallet + ledger invariants + k-anon dashboard, 467 backend tests, 9 Playwright e2e |
-| 8 | Hardening: pen-test checklist, load test, restore drill, deploy, full docs | 🔄 **In progress** — rate limiting + retention purge, encrypted backup/restore with a recorded drill, prod compose + deploy assets, docs bundle and README (this file). Final gate pending |
+| 8 | Hardening: pen-test checklist, load test, restore drill, deploy, full docs | ✅ **Complete** — 1,000-concurrent-USSD load test (real run + report), encrypted backup/restore drill (48 tables byte-identical), staff-login throttle + retention purge (CC-6), audit-chain concurrency fix (CC-7, found by the load test), prod compose + Caddy + one-command deploy, full docs bundle, 97% rules coverage + 65/65 mutation kills, e2e 9/9 |
 
-Phase 8's Deploy, load-test, and penetration-test items are shipped as scripts,
-checklists, and self-assessment; the real VPS, registry, and third-party test
-remain human tasks — see [`docs/human-tasks.md`](docs/human-tasks.md).
+Phase 8's Deploy, load-test, and penetration-test items are shipped and locally
+verified as scripts, checklists, and self-assessment; the real VPS, registry,
+and third-party test remain human tasks — see [`docs/human-tasks.md`](docs/human-tasks.md).
 
 ## Safety architecture (how the non-negotiables are enforced)
 
@@ -198,14 +198,15 @@ The Android toolchain is fully portable (JDK 17, Android SDK, Gradle 8.9 under
 
 ## Roadmap
 
-Phases 1–7 are complete (see the status table). Phase 8 closes hardening:
-penetration-test checklist and ASVS mapping, a 1,000-concurrent-session USSD
-load test, backup/restore drill, one-command deploy for staging and prod, SBOM
-and dependency pinning, retention purge, auth rate limiting, and the docs
-bundle you are reading. After that, the path to a pilot runs through the human
-tasks: clinician sign-off (H7), ODPC registration and a signed DPIA (H5), the
-third-party penetration test (H8), provider go-lives (H2–H4), the VPS (H17),
-and ethics approval for the validation study (H11).
+All 8 phases of the build order are complete (see the status table). Phase 8
+closed hardening: penetration-test checklist and ASVS mapping, a
+1,000-concurrent-session USSD load test (which surfaced and fixed a real
+audit-chain concurrency defect, CC-7), backup/restore drill, one-command deploy
+for staging and prod, SBOM and dependency pinning, retention purge, auth rate
+limiting, and the docs bundle you are reading. The path to a pilot now runs
+through the human tasks: clinician sign-off (H7), ODPC registration and a
+signed DPIA (H5), the third-party penetration test (H8), provider go-lives
+(H2–H4), the VPS (H17), and ethics approval for the validation study (H11).
 
 ## Contributing
 
